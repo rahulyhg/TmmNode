@@ -209,6 +209,7 @@ module.exports = {
         });
     },
     saveblood: function (data, callback) {
+        console.log(data);
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
