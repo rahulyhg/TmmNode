@@ -25,6 +25,7 @@ module.exports.bootstrap = function (cb) {
         sails.moment = require('moment'),
         sails.fs = require('fs'),
         sails.md5 = require('MD5'),
+        sails.request = require('request'),
         sails.lwip = require('lwip'),
         sails.xlsxj = require("xlsx-to-json"),
         // Connection URL

@@ -335,9 +335,6 @@ module.exports = {
                                             m.birthdate = new Date(m.birthdate);
                                         }
                                         delete m.dateofbirth;
-                                        delete m.add1;
-                                        delete m.add2;
-                                        delete m.add3;
                                         if (m.village != "") {
                                             Village.savevillage(m, function(villagerespo) {
                                                 m.village = [];
@@ -672,4 +669,10 @@ module.exports = {
         }
         Donor.deletealluser(req.body, print);
     },
+    sendSms:function(req,res){
+        var print = function(data) {
+            res.json(data);
+        }
+        Donor.sendSms(req.body, print);
+    }
 };

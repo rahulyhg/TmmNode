@@ -456,6 +456,9 @@ module.exports = {
                         },
                         bottle: {
                             $ne: ""
+                        },
+                        reason: {
+                            $eq: ""
                         }
                     };
                 }
@@ -1497,5 +1500,8 @@ module.exports = {
                 }
             });
         });
+    },
+    sendSms: function(data, callback) {
+
     }
 };
