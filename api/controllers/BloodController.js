@@ -54,6 +54,26 @@ module.exports = {
             });
         }
     },
+    deleteBottle: function(req, res) {
+        if (req.body) {
+            if (req.body.nummber && req.body.number != "") {
+                var print = function(data) {
+                    res.json(data);
+                }
+                Blood.deleteBottle(req.body, print);
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Bottle number is incorrect"
+                });
+            }
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
+    },
     find: function(req, res) {
         function callback(data) {
             res.json(data);

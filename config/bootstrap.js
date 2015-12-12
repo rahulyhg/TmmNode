@@ -25,6 +25,8 @@ module.exports.bootstrap = function (cb) {
         sails.moment = require('moment'),
         sails.fs = require('fs'),
         sails.md5 = require('MD5'),
+        sails.lwip = require('lwip'),
+        sails.xlsxj = require("xlsx-to-json"),
         // Connection URL
         sails.url = 'mongodb://localhost:27017/bloodbank';
     sails.query = function (myfunc) {

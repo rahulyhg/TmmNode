@@ -8,6 +8,8 @@ module.exports = {
             password: data.password,
             accesslevel: data.accesslevel,
             camp: data.camp,
+            campnumber: data.campnumber,
+            status: "enable"
         };
         sails.query(function(err, db) {
             if (err) {
@@ -53,8 +55,11 @@ module.exports = {
             }
             if (db) {
                 if (!data._id) {
-                    data._id = sails.ObjectID();
-                    db.collection('admin').insert(data, function(err, created) {
+                    data.status = "enable";
+                    db.collection("user").find({
+                        email: data.email,
+                        camp: data.camp
+                    }).toArray(function(err, data2) {
                         if (err) {
                             console.log(err);
                             callback({
@@ -62,21 +67,40 @@ module.exports = {
                                 comment: "Error"
                             });
                             db.close();
-                        } else if (created) {
+                        } else if (data2 && data2[0]) {
                             callback({
-                                value: true,
-                                id: data._id
+                                value: false,
+                                comment: "User already exists"
                             });
                             db.close();
                         } else {
-                            callback({
-                                value: false,
-                                comment: "Not created"
+                            data._id = sails.ObjectID();
+                            db.collection('admin').insert(data, function(err, created) {
+                                if (err) {
+                                    console.log(err);
+                                    callback({
+                                        value: false,
+                                        comment: "Error"
+                                    });
+                                    db.close();
+                                } else if (created) {
+                                    callback({
+                                        value: true,
+                                        id: data._id
+                                    });
+                                    db.close();
+                                } else {
+                                    callback({
+                                        value: false,
+                                        comment: "Not created"
+                                    });
+                                    db.close();
+                                }
                             });
-                            db.close();
                         }
                     });
                 } else {
+                    data.status = "enable";
                     var admin = sails.ObjectID(data._id);
                     delete data._id
                     db.collection('admin').update({
@@ -115,6 +139,13 @@ module.exports = {
         });
     },
     find: function(data, callback) {
+        if (data.campnumber) {
+            var matchobj = {
+                campnumber: data.campnumber
+            };
+        } else {
+            var matchobj = {};
+        }
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
@@ -123,7 +154,7 @@ module.exports = {
                 });
             }
             if (db) {
-                db.collection("admin").find({}, {
+                db.collection("admin").find(matchobj, {
                     password: 0,
                     forgotpassword: 0
                 }).toArray(function(err, found) {

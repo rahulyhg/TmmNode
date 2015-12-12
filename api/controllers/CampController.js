@@ -99,5 +99,65 @@ module.exports = {
                 comment: "Please provide parameters"
             });
         }
+    },
+    countlevels: function(req, res) {
+        if (req.body) {
+            if (req.body.campnumber && req.body.campnumber != "") {
+                function callback(data) {
+                    res.json(data);
+                };
+                Camp.countlevels(req.body, callback);
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Please provide parameters"
+                });
+            }
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
+    },
+    countforHosp: function(req, res) {
+        if (req.body) {
+            if (req.body.campnumber && req.body.campnumber != "") {
+                function callback(data) {
+                    res.json(data);
+                };
+                Camp.countforHosp(req.body, callback);
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Please provide parameters"
+                });
+            }
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
+    },
+    donorlevels: function(req, res) {
+        if (req.body) {
+            if (req.body.accesslevel && req.body.accesslevel != "") {
+                function callback(data) {
+                    res.json(data);
+                };
+                Camp.donorlevels(req.body, callback);
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Please provide parameters"
+                });
+            }
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
     }
 };
