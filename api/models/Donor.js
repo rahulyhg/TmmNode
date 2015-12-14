@@ -456,10 +456,11 @@ module.exports = {
                         },
                         bottle: {
                             $ne: ""
-                        },
-                        reason: {
-                            $eq: ""
                         }
+                        // ,
+                        // reason: {
+                        //     $eq: ""
+                        // }
                     };
                 }
                 if (data.donorid == "") {
@@ -1501,7 +1502,14 @@ module.exports = {
             });
         });
     },
-    sendSms: function(data, callback) {
-
-    }
+    // sendSms: function(data, callback) {
+    //     Donor.find(data, function(donresp) {
+    //         request.get({
+    //             url: ""
+    //         }, function(err, httpResponse, body) {
+    //             console.log(httpResponse);
+    //             console.log(body);
+    //         });
+    //     });
+    // }
 };

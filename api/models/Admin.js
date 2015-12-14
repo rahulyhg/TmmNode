@@ -55,7 +55,6 @@ module.exports = {
             }
             if (db) {
                 if (!data._id) {
-                    data.status = "enable";
                     db.collection("user").find({
                         email: data.email,
                         camp: data.camp
@@ -100,7 +99,6 @@ module.exports = {
                         }
                     });
                 } else {
-                    data.status = "enable";
                     var admin = sails.ObjectID(data._id);
                     delete data._id
                     db.collection('admin').update({

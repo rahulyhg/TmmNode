@@ -669,10 +669,10 @@ module.exports = {
         }
         Donor.deletealluser(req.body, print);
     },
-    sendSms:function(req,res){
-        var print = function(data) {
-            res.json(data);
-        }
-        Donor.sendSms(req.body, print);
-    }
+    // sendSms:function(req,res){
+    //     var print = function(data) {
+    //         res.json(data);
+    //     }
+    //     Donor.sendSms(req.body, print);
+    // }
 };
