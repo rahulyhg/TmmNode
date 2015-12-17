@@ -447,59 +447,74 @@ module.exports = {
         });
     },
     countforHosp: function(data, callback) {
-        if (data.hospital && data.hospital != "") {
-            data.hospital = sails.ObjectID(data.hospital);
-        }
-        var newreturns = {};
-        var matchobj = {
-            "oldbottle.campnumber": data.campnumber,
-            "oldbottle.camp": data.camp,
-            "oldbottle.hospital": data.hospital,
-            "oldbottle.bottle": {
-                $exists: true
-            }
-        };
-        if (data.camp == "All") {
-            delete matchobj["oldbottle.camp"];
-        }
-        if (!data.hospital || data.hospital == "") {
-            delete matchobj["oldbottle.hospital"];
-        }
-        sails.query(function(err, db) {
-            if (err) {
-                console.log(err);
+        var i = 0;
+        var responseData = [];
+        Hospital.find(data, function(hospres) {
+            if (hospres.value != false) {
+                _.each(hospres, function(z) {
+                    sails.query(function(err, db) {
+                        if (err) {
+                            console.log(err);
+                            callback({
+                                value: false,
+                                comment: "Error"
+                            });
+                        } else if (db) {
+                            var matchobj = {
+                                "oldbottle.campnumber": data.campnumber,
+                                "oldbottle.camp": data.camp,
+                                "oldbottle.hospital": sails.ObjectID(z._id),
+                                "oldbottle.bottle": {
+                                    $exists: true
+                                },
+                                "oldbottle.verified": {
+                                    $exists: true
+                                }
+                            };
+                            if (data.camp == "All" || data.camp == "") {
+                                delete matchobj["oldbottle.camp"];
+                            }
+                            db.collection('donor').aggregate([{
+                                $unwind: "$oldbottle"
+                            }, {
+                                $match: matchobj
+                            }, {
+                                $project: {
+                                    _id: 0,
+                                    oldbottle: 1
+                                }
+                            }]).toArray(function(err, data2) {
+                                if (err) {
+                                    console.log(err);
+                                    callback({
+                                        value: false,
+                                        comment: "Error"
+                                    });
+                                    db.close();
+                                } else if (data2 && data2[0]) {
+                                    responseData.push({
+                                        name: z.name,
+                                        id: z._id,
+                                        count: data2.length
+                                    });
+                                    i++;
+                                    if (i == hospres.length) {
+                                        callback(responseData);
+                                    }
+                                } else {
+                                    i++;
+                                    if (i == hospres.length) {
+                                        callback(responseData);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                });
+            } else {
                 callback({
                     value: false,
-                    comment: "Error"
-                });
-            } else if (db) {
-                db.collection('donor').aggregate([{
-                    $unwind: "$oldbottle"
-                }, {
-                    $match: matchobj
-                }, {
-                    $project: {
-                        _id: 0,
-                        oldbottle: 1
-                    }
-                }]).toArray(function(err, data2) {
-                    if (err) {
-                        console.log(err);
-                        callback({
-                            value: false,
-                            comment: "Error"
-                        });
-                        db.close();
-                    } else if (data2 && data2[0]) {
-                        newreturns.entry = data2.length;
-                        // callfunc1();
-                    } else {
-                        callback({
-                            value: false,
-                            comment: "No data found"
-                        });
-                        db.close();
-                    }
+                    comment: "No hospital found"
                 });
             }
         });
@@ -680,5 +695,134 @@ module.exports = {
                 }
             }
         });
+    },
+    hospDonors: function(data, callback) {
+        var newreturns = {};
+        newreturns.data = [];
+        var check = new RegExp(data.donorid, "i");
+        var checkname = new RegExp(data.name, "i");
+        var checkfirstname = new RegExp(data.firstname, "i");
+        var checklastname = new RegExp(data.lastname, "i");
+        var checkmiddlename = new RegExp(data.middlename, "i");
+        var pagesize = parseInt(data.pagesize);
+        var pagenumber = parseInt(data.pagenumber);
+        var donor = sails.ObjectID(data.donor);
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false,
+                    comment: "Error"
+                });
+            } else if (db) {
+                var matchobj = {
+                    name: checkname,
+                    firstname: checkfirstname,
+                    middlename: checkmiddlename,
+                    lastname: checklastname,
+                    "oldbottle.campnumber": data.campnumber,
+                    "oldbottle.camp": data.camp,
+                    "oldbottle.hospital": sails.ObjectID(data.hospital),
+                    "oldbottle.bottle": {
+                        $exists: true
+                    },
+                    "oldbottle.verified": {
+                        $exists: true
+                    }
+                };
+                if (data.camp == "All") {
+                    delete matchobj["oldbottle.camp"];
+                }
+                if (data.donorid == "") {
+                    delete matchobj.donorid;
+                }
+                if (data.name == "") {
+                    delete matchobj.name;
+                }
+                if (data.firstname == "") {
+                    delete matchobj.firstname;
+                }
+                if (data.middlename == "") {
+                    delete matchobj.middlename;
+                }
+                if (data.lastname == "") {
+                    delete matchobj.lastname;
+                }
+                if (data.pincode == "") {
+                    delete matchobj.pincode;
+                }
+                callbackfunc1();
+
+                function callbackfunc1() {
+                    db.collection('donor').aggregate([{
+                        $unwind: "$oldbottle"
+                    }, {
+                        $match: matchobj
+                    }, {
+                        $group: {
+                            _id: donor,
+                            count: {
+                                $sum: 1
+                            }
+                        }
+                    }, {
+                        $project: {
+                            count: 1
+                        }
+                    }]).toArray(function(err, result) {
+                        if (result && result[0]) {
+                            newreturns.total = result[0].count;
+                            newreturns.totalpages = Math.ceil(result[0].count / data.pagesize);
+                            callbackfunc();
+                        } else if (err) {
+                            console.log(err);
+                            callback({
+                                value: false
+                            });
+                            db.close();
+                        } else {
+                            callback({
+                                value: false,
+                                comment: "Count of null"
+                            });
+                            db.close();
+                        }
+                    });
+
+                    function callbackfunc() {
+                        db.collection('donor').aggregate([{
+                            $unwind: "$oldbottle"
+                        }, {
+                            $match: matchobj
+                        }, {
+                            $project: {
+                                _id: 0,
+                                name: 1,
+                                oldbottle: 1
+                            }
+                        }]).toArray(function(err, data2) {
+                            if (err) {
+                                console.log(err);
+                                callback({
+                                    value: false,
+                                    comment: "Error"
+                                });
+                                db.close();
+                            } else if (data2 && data2[0]) {
+                                newreturns.data = data2;
+                                callback(newreturns);
+                                db.close();
+                            } else {
+                                callback({
+                                    value: false,
+                                    comment: "Error"
+                                });
+                                db.close();
+                            }
+                        });
+                    }
+                }
+            }
+        });
     }
-};
+}

@@ -551,6 +551,13 @@ module.exports = {
                                                     newdata.campnumber = m.campnumber;
                                                     donated.donorid = m.donorid;
                                                     donated.history.push(newdata);
+                                                    donated.oldbottle = dorespo.oldbottle;
+                                                    var newres = {};
+                                                    newres.date = m.date;
+                                                    newres.campnumber = m.campnumber;
+                                                    newres.bottle = "";
+                                                    newres.verified = true;
+                                                    donated.oldbottle.push(newres);
                                                     Donor.update(donated, function(respo) {
                                                         if (respo.value && respo.value == true) {
                                                             console.log(num);
@@ -572,6 +579,13 @@ module.exports = {
                                                     newdata.campnumber = m.campnumber;
                                                     donated.donorid = m.donorid;
                                                     donated.history.push(newdata);
+                                                    donated.oldbottle = [];
+                                                    var newres = {};
+                                                    newres.date = m.date;
+                                                    newres.campnumber = m.campnumber;
+                                                    newres.bottle = "";
+                                                    newres.verified = true;
+                                                    donated.oldbottle.push(newres);
                                                     Donor.update(donated, function(respo) {
                                                         if (respo.value && respo.value == true) {
                                                             console.log(num);

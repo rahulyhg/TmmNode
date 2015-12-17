@@ -159,5 +159,25 @@ module.exports = {
                 comment: "Please provide parameters"
             });
         }
+    },
+    hospDonors: function(req, res) {
+        if (req.body) {
+            if (req.body.campnumber && req.body.campnumber != "" && req.body.hospital && req.body.hospital != "" && sails.ObjectID.isValid(req.body.hospital)) {
+                function callback(data) {
+                    res.json(data);
+                };
+                Camp.hospDonors(req.body, callback);
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Please provide parameters"
+                });
+            }
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
     }
 };

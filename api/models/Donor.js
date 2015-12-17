@@ -431,6 +431,7 @@ module.exports = {
                         campnumber: data.campnumber,
                         camp: data.camp,
                         pincode: data.pincode,
+                        hospital:sails.ObjectID(data.hospital),
                         new: {
                             $exists: true
                         },
@@ -451,6 +452,7 @@ module.exports = {
                         campnumber: data.campnumber,
                         camp: data.camp,
                         pincode: data.pincode,
+                        hospital:sails.ObjectID(data.hospital),
                         new: {
                             $exists: true
                         },
@@ -566,6 +568,7 @@ module.exports = {
                         campnumber: data.campnumber,
                         camp: data.camp,
                         pincode: data.pincode,
+                        hospital:sails.ObjectID(data.hospital),
                         verified: {
                             $eq: true
                         },
@@ -583,6 +586,7 @@ module.exports = {
                         campnumber: data.campnumber,
                         camp: data.camp,
                         pincode: data.pincode,
+                        hospital:sails.ObjectID(data.hospital),
                         verified: {
                             $eq: true
                         }
@@ -690,6 +694,7 @@ module.exports = {
                     campnumber: data.campnumber,
                     camp: data.camp,
                     pincode: data.pincode,
+                    hospital:sails.ObjectID(data.hospital),
                     giftdone: {
                         $eq: true
                     }
