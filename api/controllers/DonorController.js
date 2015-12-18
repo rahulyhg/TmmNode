@@ -401,8 +401,22 @@ module.exports = {
                                     function createteam(num) {
                                         m = result[num];
                                         m.donationcount = parseInt(m.donationcount);
-                                        Donor.update(m, function(respo) {
-                                            if (respo.value && respo.value == true) {
+                                        Donor.getbyid(m, function(getresp) {
+                                            if (!getresp.donationcount) {
+                                                Donor.update(m, function(respo) {
+                                                    if (respo.value && respo.value == true) {
+                                                        console.log(num);
+                                                        num++;
+                                                        if (num < result.length) {
+                                                            setTimeout(function() {
+                                                                createteam(num);
+                                                            }, 15);
+                                                        } else {
+                                                            res.json("Done");
+                                                        }
+                                                    }
+                                                });
+                                            } else {
                                                 console.log(num);
                                                 num++;
                                                 if (num < result.length) {
