@@ -1293,9 +1293,7 @@ module.exports = {
             }
             if (db) {
                 db.collection("donor").find({
-                    donorid: {
-                        $regex: check
-                    }
+                    donorid: check
                 }, {
                     password: 0
                 }).toArray(function(err, data2) {
