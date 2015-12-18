@@ -62,24 +62,10 @@ module.exports = {
         }
     },
     find: function(req, res) {
-        if (req.body) {
-            if (req.body.theme && req.body.theme.length > 0) {
-                var print = function(data) {
-                    res.json(data);
-                }
-                Donor.find(req.body, print);
-            } else {
-                res.json({
-                    value: false,
-                    comment: "Please provide parameters"
-                });
-            }
-        } else {
-            res.json({
-                value: false,
-                comment: "Please provide parameters"
-            });
+        var print = function(data) {
+            res.json(data);
         }
+        Donor.find(req.body, print);
     },
     findone: function(req, res) {
         if (req.body) {
