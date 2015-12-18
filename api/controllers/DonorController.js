@@ -314,6 +314,7 @@ module.exports = {
 
                                     function createteam(num) {
                                         m = result[num];
+                                        delete m.donorid1;
                                         m.name = m.firstname + " " + m.middlename + " " + m.lastname;
                                         if (m.dateofbirth == "") {
                                             m.birthdate = new Date("01-01-1970");
@@ -400,6 +401,7 @@ module.exports = {
 
                                     function createteam(num) {
                                         m = result[num];
+                                        delete m.donorid1;
                                         m.donationcount = parseInt(m.donationcount);
                                         Donor.getbyid(m, function(getresp) {
                                             if (!getresp.donationcount) {
@@ -540,6 +542,7 @@ module.exports = {
 
                                     function createteam(num) {
                                         m = result[num];
+                                        delete m.donorid1;
                                         m.date = new Date(m.date);
                                         Donor.getbyid(m, function(dorespo) {
                                             if (dorespo.value != false) {

@@ -1297,7 +1297,6 @@ module.exports = {
                 });
             }
             if (db) {
-                console.log(matchobj);
                 db.collection("donor").find(matchobj, {
                     password: 0
                 }).toArray(function(err, data2) {
