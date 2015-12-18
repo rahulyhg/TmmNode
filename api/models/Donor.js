@@ -431,7 +431,7 @@ module.exports = {
                         campnumber: data.campnumber,
                         camp: data.camp,
                         pincode: data.pincode,
-                        hospital:sails.ObjectID(data.hospital),
+                        hospital: sails.ObjectID(data.hospital),
                         new: {
                             $exists: true
                         },
@@ -452,7 +452,7 @@ module.exports = {
                         campnumber: data.campnumber,
                         camp: data.camp,
                         pincode: data.pincode,
-                        hospital:sails.ObjectID(data.hospital),
+                        hospital: sails.ObjectID(data.hospital),
                         new: {
                             $exists: true
                         },
@@ -568,7 +568,7 @@ module.exports = {
                         campnumber: data.campnumber,
                         camp: data.camp,
                         pincode: data.pincode,
-                        hospital:sails.ObjectID(data.hospital),
+                        hospital: sails.ObjectID(data.hospital),
                         verified: {
                             $eq: true
                         },
@@ -586,7 +586,7 @@ module.exports = {
                         campnumber: data.campnumber,
                         camp: data.camp,
                         pincode: data.pincode,
-                        hospital:sails.ObjectID(data.hospital),
+                        hospital: sails.ObjectID(data.hospital),
                         verified: {
                             $eq: true
                         }
@@ -694,7 +694,7 @@ module.exports = {
                     campnumber: data.campnumber,
                     camp: data.camp,
                     pincode: data.pincode,
-                    hospital:sails.ObjectID(data.hospital),
+                    hospital: sails.ObjectID(data.hospital),
                     giftdone: {
                         $eq: true
                     }
@@ -1283,6 +1283,7 @@ module.exports = {
         });
     },
     getbyid: function(data, callback) {
+        var check = new RegExp(data.donorid, "i");
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
@@ -1292,7 +1293,9 @@ module.exports = {
             }
             if (db) {
                 db.collection("donor").find({
-                    donorid: data.donorid
+                    donorid: {
+                        $regex: check
+                    }
                 }, {
                     password: 0
                 }).toArray(function(err, data2) {
