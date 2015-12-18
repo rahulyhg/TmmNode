@@ -1284,6 +1284,11 @@ module.exports = {
     },
     getbyid: function(data, callback) {
         var check = new RegExp(data.donorid, "i");
+        var matchobj = {
+            donorid: {
+                $regex: check
+            }
+        };
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
@@ -1292,9 +1297,8 @@ module.exports = {
                 });
             }
             if (db) {
-                db.collection("donor").find({
-                    donorid: check
-                }, {
+
+                db.collection("donor").find(matchobj, {
                     password: 0
                 }).toArray(function(err, data2) {
                     if (err) {
