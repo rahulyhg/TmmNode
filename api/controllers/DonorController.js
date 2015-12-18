@@ -371,7 +371,7 @@ module.exports = {
             }
         });
     },
-    donorUpdate: function(req, res) {
+    donorCount: function(req, res) {
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);

@@ -29,7 +29,8 @@
     "request": "^2.67.0",
     "sails": "~0.11.0",
     "sails-disk": "~0.10.0",
-    "sails-mongo": "^0.11.2"
+    "sails-mongo": "^0.11.2",
+    "xlsx-to-json": "^0.2.4"
   },
   "scripts": {
     "debug": "node debug app.js",
