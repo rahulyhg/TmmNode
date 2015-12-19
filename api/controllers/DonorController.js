@@ -282,8 +282,8 @@ module.exports = {
                         console.log(err);
                     }
                     if (db) {
-                        res.connection.setTimeout(200000);
-                        req.connection.setTimeout(200000);
+                        res.connection.setTimeout(2000000000000000);
+                        req.connection.setTimeout(2000000000000000);
                         var extension = "";
                         var excelimages = [];
                         req.file("file").upload(function(err, uploadedFiles) {
@@ -369,8 +369,8 @@ module.exports = {
                         console.log(err);
                     }
                     if (db) {
-                        res.connection.setTimeout(200000);
-                        req.connection.setTimeout(200000);
+                        res.connection.setTimeout(2000000000000000);
+                        req.connection.setTimeout(2000000000000000);
                         var extension = "";
                         var excelimages = [];
                         req.file("file").upload(function(err, uploadedFiles) {
@@ -510,8 +510,8 @@ module.exports = {
                         console.log(err);
                     }
                     if (db) {
-                        res.connection.setTimeout(200000);
-                        req.connection.setTimeout(200000);
+                        res.connection.setTimeout(2000000000000000);
+                        req.connection.setTimeout(2000000000000000);
                         var extension = "";
                         var excelimages = [];
                         req.file("file").upload(function(err, uploadedFiles) {
