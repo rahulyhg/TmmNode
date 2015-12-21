@@ -282,8 +282,8 @@ module.exports = {
                         console.log(err);
                     }
                     if (db) {
-                        res.connection.setTimeout(2000000000000000);
-                        req.connection.setTimeout(2000000000000000);
+                        res.connection.setTimeout(200000000);
+                        req.connection.setTimeout(200000000);
                         var extension = "";
                         var excelimages = [];
                         req.file("file").upload(function(err, uploadedFiles) {
@@ -369,8 +369,8 @@ module.exports = {
                         console.log(err);
                     }
                     if (db) {
-                        res.connection.setTimeout(2000000000000000);
-                        req.connection.setTimeout(2000000000000000);
+                        res.connection.setTimeout(200000000);
+                        req.connection.setTimeout(200000000);
                         var extension = "";
                         var excelimages = [];
                         req.file("file").upload(function(err, uploadedFiles) {
@@ -510,8 +510,8 @@ module.exports = {
                         console.log(err);
                     }
                     if (db) {
-                        res.connection.setTimeout(2000000000000000);
-                        req.connection.setTimeout(2000000000000000);
+                        res.connection.setTimeout(200000000);
+                        req.connection.setTimeout(200000000);
                         var extension = "";
                         var excelimages = [];
                         req.file("file").upload(function(err, uploadedFiles) {
@@ -686,6 +686,36 @@ module.exports = {
         }
         Donor.deletealluser(req.body, print);
     },
+    emptyHistory: function(req, res) {
+        Donor.find(req.body, function(hisrespo) {
+            _.each(hisrespo, function(z) {
+                if (z.history) {
+                    var newdata = {};
+                    newdata.donorid = z.donorid;
+                    newdata.history = [];
+                    newdata.oldbottle = [];
+                    Donor.update(newdata, function {
+                        i++;
+                        if (i == hisrespo.length) {
+                            res.json({
+                                value: true,
+                                comment: "History removed"
+                            });
+                        }
+                    });
+                } else {
+                    i++;
+                    if (i == hisrespo.length) {
+                        res.json({
+                            value: true,
+                            comment: "History removed"
+                        });
+                    }
+                }
+            });
+        });
+    }
+
     // sendSms:function(req,res){
     //     var print = function(data) {
     //         res.json(data);

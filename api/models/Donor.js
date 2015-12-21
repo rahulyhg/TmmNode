@@ -314,6 +314,9 @@ module.exports = {
                         pincode: data.pincode,
                         new: {
                             $exists: false
+                        },
+                        reason: {
+                            $eq: ""
                         }
                     };
                 } else {
@@ -459,10 +462,6 @@ module.exports = {
                         bottle: {
                             $ne: ""
                         }
-                        // ,
-                        // reason: {
-                        //     $eq: ""
-                        // }
                     };
                 }
                 if (data.donorid == "") {
@@ -776,7 +775,6 @@ module.exports = {
         });
     },
     delete: function(data, callback) {
-        console.log(data);
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
@@ -789,6 +787,9 @@ module.exports = {
                         var bottleNum = "";
                         bottleNum = findrespo.bottle;
                         findrespo.bottle = "";
+                        if (data.reason) {
+                            findrespo.reason = data.reason;
+                        }
                         _.each(findrespo.oldbottle, function(a) {
                             if (a.bottle == bottleNum && a.campnumber == data.campnumber) {
                                 delete a.bottle;
