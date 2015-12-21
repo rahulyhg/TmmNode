@@ -694,7 +694,7 @@ module.exports = {
                     newdata.donorid = z.donorid;
                     newdata.history = [];
                     newdata.oldbottle = [];
-                    Donor.update(newdata, function {
+                    Donor.update(newdata, function(empty) {
                         i++;
                         if (i == hisrespo.length) {
                             res.json({
