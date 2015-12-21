@@ -67,6 +67,7 @@ module.exports = {
                     }
 
                     function insertid(data) {
+                        data.notexcel = 1;
                         db.collection('donor').insert(data, function(err, created) {
                             if (err) {
                                 console.log(err);
