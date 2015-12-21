@@ -262,8 +262,6 @@ module.exports = {
             if (db) {
                 db.collection("donor").find({
                     _id: sails.ObjectID(data._id)
-                }, {
-                    password: 0
                 }).toArray(function(err, data2) {
                     if (err) {
                         console.log(err);
@@ -272,7 +270,6 @@ module.exports = {
                         });
                         db.close();
                     } else if (data2 && data2[0]) {
-                        delete data2[0].password;
                         callback(data2[0]);
                         db.close();
                     } else {
