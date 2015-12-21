@@ -258,11 +258,10 @@ module.exports = {
                 callback({
                     value: false
                 });
-            }
-            if (db) {
+            } else if (db) {
                 db.collection("donor").find({
                     _id: sails.ObjectID(data._id)
-                }).toArray(function(err, data2) {
+                }, {}).toArray(function(err, data2) {
                     if (err) {
                         console.log(err);
                         callback({
