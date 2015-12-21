@@ -83,7 +83,7 @@ module.exports = {
                     _id: 1,
                     number: 1,
                     used: 1,
-                    hospital:1
+                    hospital: 1
                 }).limit(10).toArray(function(err, found) {
                     if (err) {
                         callback({
@@ -259,29 +259,30 @@ module.exports = {
                 callback({
                     value: false
                 });
+            } else {
+                db.collection('blood').remove({
+                    _id: sails.ObjectID(data._id)
+                }, function(err, deleted) {
+                    if (deleted) {
+                        callback({
+                            value: true
+                        });
+                        db.close();
+                    } else if (err) {
+                        console.log(err);
+                        callback({
+                            value: false
+                        });
+                        db.close();
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
+                });
             }
-            db.collection('blood').remove({
-                _id: sails.ObjectID(data._id)
-            }, function(err, deleted) {
-                if (deleted) {
-                    callback({
-                        value: true
-                    });
-                    db.close();
-                } else if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
-                    db.close();
-                } else {
-                    callback({
-                        value: false,
-                        comment: "No data found"
-                    });
-                    db.close();
-                }
-            });
         });
     },
     deleteBottle: function(data, callback) {
@@ -291,29 +292,30 @@ module.exports = {
                 callback({
                     value: false
                 });
+            } else {
+                db.collection('blood').remove({
+                    number: data.number
+                }, function(err, deleted) {
+                    if (deleted) {
+                        callback({
+                            value: true
+                        });
+                        db.close();
+                    } else if (err) {
+                        console.log(err);
+                        callback({
+                            value: false
+                        });
+                        db.close();
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
+                });
             }
-            db.collection('blood').remove({
-                number: data.number
-            }, function(err, deleted) {
-                if (deleted) {
-                    callback({
-                        value: true
-                    });
-                    db.close();
-                } else if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
-                    db.close();
-                } else {
-                    callback({
-                        value: false,
-                        comment: "No data found"
-                    });
-                    db.close();
-                }
-            });
         });
     }
 };

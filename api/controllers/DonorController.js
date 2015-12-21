@@ -719,6 +719,44 @@ module.exports = {
                 }
             });
         });
+    },
+    deletenew: function(req, res) {
+        res.connection.setTimeout(200000000);
+        req.connection.setTimeout(200000000);
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
+            } else if (db) {
+                db.collection('donor').remove({
+                    notexcel: {
+                        $exists: true
+                    }
+                }, function(err, deleted) {
+                    if (deleted) {
+                        callback({
+                            value: true,
+                            comment: "Donor deleted"
+                        });
+                        db.close();
+                    } else if (err) {
+                        console.log(err);
+                        callback({
+                            value: false
+                        });
+                        db.close();
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
     }
 
     // sendSms:function(req,res){
