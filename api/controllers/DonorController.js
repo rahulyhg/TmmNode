@@ -687,6 +687,8 @@ module.exports = {
         Donor.deletealluser(req.body, print);
     },
     emptyHistory: function(req, res) {
+        res.connection.setTimeout(200000000);
+        req.connection.setTimeout(200000000);
         var i = 0;
         Donor.find(req.body, function(hisrespo) {
             _.each(hisrespo, function(z) {
