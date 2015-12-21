@@ -687,6 +687,7 @@ module.exports = {
         Donor.deletealluser(req.body, print);
     },
     emptyHistory: function(req, res) {
+        var i = 0;
         Donor.find(req.body, function(hisrespo) {
             _.each(hisrespo, function(z) {
                 if (z.history) {
