@@ -695,9 +695,9 @@ module.exports = {
                     newdata.donorid = z.donorid;
                     newdata.history = [];
                     newdata.oldbottle = [];
-                    console.log(i);
                     Donor.update(newdata, function(empty) {
                         i++;
+                        console.log(i);
                         if (i == hisrespo.length) {
                             res.json({
                                 value: true,
@@ -707,6 +707,7 @@ module.exports = {
                     });
                 } else {
                     i++;
+                    console.log(i);
                     if (i == hisrespo.length) {
                         res.json({
                             value: true,
