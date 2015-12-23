@@ -4,11 +4,6 @@ module.exports = {
         if (data.hospital) {
             data.hospital = sails.ObjectID(data.hospital);
         }
-        var splitname = data.lastname.substring(0, 1);
-        var letter = splitname;
-        splitname = "^" + splitname + "[0-9]";
-        var checkname = new RegExp(splitname, "i");
-        data.donationcount = 0;
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
@@ -21,6 +16,10 @@ module.exports = {
                     check(data);
 
                     function generate(data) {
+                        var splitname = data.lastname.substring(0, 1);
+                        var letter = splitname;
+                        splitname = "^" + splitname + "[0-9]";
+                        var checkname = new RegExp(splitname, "i");
                         data.oldbottle = [];
                         var olddata = {};
                         olddata.bottle = data.bottle;
@@ -67,6 +66,7 @@ module.exports = {
                     }
 
                     function insertid(data) {
+                        data.donationcount = 0;
                         data.notexcel = 1;
                         db.collection('donor').insert(data, function(err, created) {
                             if (err) {
