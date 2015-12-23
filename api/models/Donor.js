@@ -79,6 +79,8 @@ module.exports = {
                             } else if (created) {
                                 var bloodData = {};
                                 bloodData.number = data.bottle;
+                                bloodData.campnumber = data.campnumber;
+                                bloodData.hospital = data.hospital;
                                 Blood.deleteBottle(bloodData, function(bloodrespo) {
                                     if (bloodrespo.value == true) {
                                         callback({
@@ -129,6 +131,8 @@ module.exports = {
                         } else if (updated.result.nModified != 0 && updated.result.n != 0) {
                             var bloodData = {};
                             bloodData.number = data.bottle;
+                            bloodData.campnumber = data.campnumber;
+                            bloodData.hospital = data.hospital;
                             Blood.deleteBottle(bloodData, function(bloodrespo) {
                                 if (bloodrespo.value == true) {
                                     callback({
@@ -147,6 +151,8 @@ module.exports = {
                         } else if (updated.result.nModified == 0 && updated.result.n != 0) {
                             var bloodData = {};
                             bloodData.number = data.bottle;
+                            bloodData.campnumber = data.campnumber;
+                            bloodData.hospital = data.hospital;
                             Blood.deleteBottle(bloodData, function(bloodrespo) {
                                 if (bloodrespo.value == true) {
                                     callback({
@@ -856,11 +862,12 @@ module.exports = {
                                 var hospdata = {};
                                 hospdata._id = sails.ObjectID(findrespo.hospital);
                                 Hospital.findone(hospdata, function(hosprespo) {
-                                    if (!hosprespo.value) {
+                                    if (hosprespo.value != false) {
                                         var newdata = {};
                                         newdata.number = bottleNum;
                                         newdata.hospital = hosprespo.name;
                                         newdata.camp = findrespo.camp;
+                                        newdata.campnumber = findrespo.campnumber;
                                         newdata.used = "Unused";
                                         Blood.save(newdata, function(respoblood) {
                                             callback({

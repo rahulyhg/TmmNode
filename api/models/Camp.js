@@ -605,6 +605,54 @@ module.exports = {
                             $exists: true
                         }
                     };
+                } else if (data.accesslevel == "pendingV") {
+                    var matchobj = {
+                        donorid: check,
+                        firstname: checkfirstname,
+                        middlename: checkmiddlename,
+                        lastname: checklastname,
+                        pincode: data.pincode,
+                        "oldbottle.campnumber": data.campnumber,
+                        "oldbottle.camp": data.camp,
+                        "oldbottle.bottle": {
+                            $exists: true
+                        },
+                        "oldbottle.verified": {
+                            $exists: false
+                        }
+                    };
+                } else if (data.accesslevel == "pendingG") {
+                    var matchobj = {
+                        donorid: check,
+                        firstname: checkfirstname,
+                        middlename: checkmiddlename,
+                        lastname: checklastname,
+                        pincode: data.pincode,
+                        "oldbottle.campnumber": data.campnumber,
+                        "oldbottle.camp": data.camp,
+                        "oldbottle.bottle": {
+                            $exists: true
+                        },
+                        "oldbottle.verified": {
+                            $exists: true
+                        },
+                        "oldbottle.giftdone": {
+                            $exists: false
+                        }
+                    };
+                } else if (data.accesslevel == "rejected") {
+                    var matchobj = {
+                        donorid: check,
+                        firstname: checkfirstname,
+                        middlename: checkmiddlename,
+                        lastname: checklastname,
+                        pincode: data.pincode,
+                        "oldbottle.campnumber": data.campnumber,
+                        "oldbottle.camp": data.camp,
+                        "oldbottle.bottle": {
+                            $exists: false
+                        }
+                    };
                 } else {
                     callback({
                         value: false,
