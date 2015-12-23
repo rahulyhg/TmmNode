@@ -415,7 +415,7 @@ module.exports = {
                                         delete m.donorid1;
                                         m.donationcount = parseInt(m.donationcount);
                                         Donor.getbyid(m, function(getresp) {
-                                            if (!getresp.donationcount) {
+                                            // if (!getresp.donationcount) {
                                                 Donor.update(m, function(respo) {
                                                     if (respo.value && respo.value == true) {
                                                         console.log(num);
@@ -429,17 +429,17 @@ module.exports = {
                                                         }
                                                     }
                                                 });
-                                            } else {
-                                                console.log(num);
-                                                num++;
-                                                if (num < result.length) {
-                                                    setTimeout(function() {
-                                                        createteam(num);
-                                                    }, 15);
-                                                } else {
-                                                    res.json("Done");
-                                                }
-                                            }
+                                            // } else {
+                                            //     console.log(num);
+                                            //     num++;
+                                            //     if (num < result.length) {
+                                            //         setTimeout(function() {
+                                            //             createteam(num);
+                                            //         }, 15);
+                                            //     } else {
+                                            //         res.json("Done");
+                                            //     }
+                                            // }
                                         });
                                     }
                                     createteam(0);
