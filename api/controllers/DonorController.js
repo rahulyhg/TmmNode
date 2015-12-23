@@ -251,6 +251,12 @@ module.exports = {
         };
         Donor.countgifted(req.body, callback);
     },
+    countdeleted: function(req, res) {
+        function callback(data) {
+            res.json(data);
+        };
+        Donor.countdeleted(req.body, callback);
+    },
     lastbottlenumber: function(req, res) {
         if (req.body) {
             if (req.body.camp && req.body.camp != "" && req.body.campnumber && req.body.campnumber != "" && req.body.hospital && req.body.hospital != "" && sails.ObjectID.isValid(req.body.hospital)) {

@@ -1061,6 +1061,49 @@ module.exports = {
             }
         });
     },
+    countdeleted: function(data, callback) {
+        var matchobj = {
+            camp: data.camp,
+            campnumber: data.campnumber,
+            bottle: {
+                $eq: ""
+            }
+        };
+        if (data.camp == "" || data.camp == "All") {
+            delete matchobj.camp;
+        }
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: "false"
+                });
+            }
+            if (db) {
+                db.collection("donor").count(matchobj, function(err, number) {
+                    if (number != null) {
+                        callback(number);
+                        db.close();
+                    } else if (number == null) {
+                        callback(0);
+                        db.close();
+                    } else if (err) {
+                        callback({
+                            value: "false",
+                            comment: "Error"
+                        });
+                        db.close();
+                    } else {
+                        callback({
+                            value: "false",
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
+    },
     countgifted: function(data, callback) {
         var matchobj = {
             camp: data.camp,
