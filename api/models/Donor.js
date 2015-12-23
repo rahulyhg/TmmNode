@@ -1343,6 +1343,7 @@ module.exports = {
                     value: false
                 });
             } else if (db) {
+                console.log(data);
                 db.collection('donor').update({
                     donorid: data.donorid
                 }, {
