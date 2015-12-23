@@ -315,12 +315,17 @@ module.exports = {
                                     function createteam(num) {
                                         m = result[num];
                                         delete m.donorid1;
-                                        m.name = m.firstname + " " + m.middlename + " " + m.lastname;
+                                        m.name = m.lastname + " " + m.middlename + " " + m.firstname;
                                         if (m.dateofbirth == "") {
-                                            m.birthdate = new Date("01-01-1970");
+                                            m.birthdate = new Date();
                                         } else {
                                             m.birthdate = new Date(m.birthdate);
                                         }
+                                        if (m.email = "@") {
+                                            m.email = "";
+                                        }
+                                        delete m.email1;
+                                        delete m.domainName;
                                         delete m.dateofbirth;
                                         if (m.village != "") {
                                             Village.savevillage(m, function(villagerespo) {

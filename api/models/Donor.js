@@ -1,6 +1,6 @@
 module.exports = {
     save: function(data, callback) {
-        data.name = data.firstname + " " + data.middlename + " " + data.lastname;
+        data.name = data.lastname + " " + data.middlename + " " + data.firstname;
         if (data.hospital) {
             data.hospital = sails.ObjectID(data.hospital);
         }
@@ -285,11 +285,30 @@ module.exports = {
     findlimited: function(data, callback) {
         var newreturns = {};
         newreturns.data = [];
+        var checklastname = "";
+        var checkmiddlename = "";
+        var checkfirstname = "";
+        if (data.name != "") {
+            var splitname = data.name.split(" ");
+            data.lastname = "^" + splitname[0];
+            checklastname = new RegExp(data.lastname, "i");
+            if (splitname[2] != "") {
+                data.middlename = "^" + splitname[2];
+                checkmiddlename = new RegExp(data.middlename, "i");
+            }
+            if (splitname[1] != "") {
+                data.firstname = "^" + splitname[1];
+                checkfirstname = new RegExp(data.firstname, "i");
+            }
+        } else {
+            data.firstname = "^" + data.firstname;
+            data.middlename = "^" + data.middlename;
+            data.lastname = "^" + data.lastname;
+            checkfirstname = new RegExp(data.firstname, "i");
+            checkmiddlename = new RegExp(data.middlename, "i");
+            checklastname = new RegExp(data.lastname, "i");
+        }
         var check = new RegExp(data.donorid, "i");
-        var checkname = new RegExp(data.name, "i");
-        var checkfirstname = new RegExp(data.firstname, "i");
-        var checklastname = new RegExp(data.lastname, "i");
-        var checkmiddlename = new RegExp(data.middlename, "i");
         var pagesize = parseInt(data.pagesize);
         var pagenumber = parseInt(data.pagenumber);
         sails.query(function(err, db) {
@@ -302,7 +321,6 @@ module.exports = {
                 if (data.accesslevel == "entry") {
                     var matchobj = {
                         donorid: check,
-                        name: checkname,
                         firstname: checkfirstname,
                         middlename: checkmiddlename,
                         lastname: checklastname,
@@ -311,15 +329,11 @@ module.exports = {
                         pincode: data.pincode,
                         new: {
                             $exists: false
-                        },
-                        reason: {
-                            $eq: ""
                         }
                     };
                 } else {
                     var matchobj = {
                         donorid: check,
-                        name: checkname,
                         firstname: checkfirstname,
                         middlename: checkmiddlename,
                         lastname: checklastname,
@@ -331,16 +345,13 @@ module.exports = {
                 if (data.donorid == "") {
                     delete matchobj.donorid;
                 }
-                if (data.name == "") {
-                    delete matchobj.name;
-                }
-                if (data.firstname == "") {
+                if (data.firstname == "" || data.firstname.indexOf("undefined") != -1) {
                     delete matchobj.firstname;
                 }
-                if (data.middlename == "") {
+                if (data.middlename == "" || data.middlename.indexOf("undefined") != -1) {
                     delete matchobj.middlename;
                 }
-                if (data.lastname == "") {
+                if (data.lastname == "" || data.lastname.indexOf("undefined") != -1) {
                     delete matchobj.lastname;
                 }
                 if (data.campnumber == "" || data.campnumber == "All") {
@@ -355,6 +366,7 @@ module.exports = {
                 callbackfunc1();
 
                 function callbackfunc1() {
+                    console.log(matchobj);
                     db.collection("donor").count(matchobj, function(err, number) {
                         if (number && number != "") {
                             newreturns.total = number;
@@ -407,11 +419,30 @@ module.exports = {
     findEntry: function(data, callback) {
         var newreturns = {};
         newreturns.data = [];
+        var checklastname = "";
+        var checkmiddlename = "";
+        var checkfirstname = "";
+        if (data.name != "") {
+            var splitname = data.name.split(" ");
+            data.lastname = "^" + splitname[0];
+            checklastname = new RegExp(data.lastname, "i");
+            if (splitname[2] != "") {
+                data.middlename = "^" + splitname[2];
+                checkmiddlename = new RegExp(data.middlename, "i");
+            }
+            if (splitname[1] != "") {
+                data.firstname = "^" + splitname[1];
+                checkfirstname = new RegExp(data.firstname, "i");
+            }
+        } else {
+            data.firstname = "^" + data.firstname;
+            data.middlename = "^" + data.middlename;
+            data.lastname = "^" + data.lastname;
+            checkfirstname = new RegExp(data.firstname, "i");
+            checkmiddlename = new RegExp(data.middlename, "i");
+            checklastname = new RegExp(data.lastname, "i");
+        }
         var check = new RegExp(data.donorid, "i");
-        var checkname = new RegExp(data.name, "i");
-        var checkfirstname = new RegExp(data.firstname, "i");
-        var checklastname = new RegExp(data.lastname, "i");
-        var checkmiddlename = new RegExp(data.middlename, "i");
         var pagesize = parseInt(data.pagesize);
         var pagenumber = parseInt(data.pagenumber);
         sails.query(function(err, db) {
@@ -424,7 +455,6 @@ module.exports = {
                 if (data.accesslevel == 'verify') {
                     var matchobj = {
                         donorid: check,
-                        name: checkname,
                         firstname: checkfirstname,
                         middlename: checkmiddlename,
                         lastname: checklastname,
@@ -445,7 +475,6 @@ module.exports = {
                 } else {
                     var matchobj = {
                         donorid: check,
-                        name: checkname,
                         firstname: checkfirstname,
                         middlename: checkmiddlename,
                         lastname: checklastname,
@@ -464,16 +493,13 @@ module.exports = {
                 if (data.donorid == "") {
                     delete matchobj.donorid;
                 }
-                if (data.name == "") {
-                    delete matchobj.name;
-                }
-                if (data.firstname == "") {
+                if (data.firstname == "" || data.firstname.indexOf("undefined") != -1) {
                     delete matchobj.firstname;
                 }
-                if (data.middlename == "") {
+                if (data.middlename == "" || data.middlename.indexOf("undefined") != -1) {
                     delete matchobj.middlename;
                 }
-                if (data.lastname == "") {
+                if (data.lastname == "" || data.lastname.indexOf("undefined") != -1) {
                     delete matchobj.lastname;
                 }
                 if (data.campnumber == "" || data.campnumber == "All") {
@@ -540,11 +566,30 @@ module.exports = {
     findVerified: function(data, callback) {
         var newreturns = {};
         newreturns.data = [];
+        var checklastname = "";
+        var checkmiddlename = "";
+        var checkfirstname = "";
+        if (data.name != "") {
+            var splitname = data.name.split(" ");
+            data.lastname = "^" + splitname[0];
+            checklastname = new RegExp(data.lastname, "i");
+            if (splitname[2] != "") {
+                data.middlename = "^" + splitname[2];
+                checkmiddlename = new RegExp(data.middlename, "i");
+            }
+            if (splitname[1] != "") {
+                data.firstname = "^" + splitname[1];
+                checkfirstname = new RegExp(data.firstname, "i");
+            }
+        } else {
+            data.firstname = "^" + data.firstname;
+            data.middlename = "^" + data.middlename;
+            data.lastname = "^" + data.lastname;
+            checkfirstname = new RegExp(data.firstname, "i");
+            checkmiddlename = new RegExp(data.middlename, "i");
+            checklastname = new RegExp(data.lastname, "i");
+        }
         var check = new RegExp(data.donorid, "i");
-        var checkname = new RegExp(data.name, "i");
-        var checkfirstname = new RegExp(data.firstname, "i");
-        var checklastname = new RegExp(data.lastname, "i");
-        var checkmiddlename = new RegExp(data.middlename, "i");
         var pagesize = parseInt(data.pagesize);
         var pagenumber = parseInt(data.pagenumber);
         sails.query(function(err, db) {
@@ -557,7 +602,6 @@ module.exports = {
                 if (data.accesslevel == 'gift') {
                     var matchobj = {
                         donorid: check,
-                        name: checkname,
                         firstname: checkfirstname,
                         middlename: checkmiddlename,
                         lastname: checklastname,
@@ -575,7 +619,6 @@ module.exports = {
                 } else {
                     var matchobj = {
                         donorid: check,
-                        name: checkname,
                         firstname: checkfirstname,
                         middlename: checkmiddlename,
                         lastname: checklastname,
@@ -591,16 +634,13 @@ module.exports = {
                 if (data.donorid == "") {
                     delete matchobj.donorid;
                 }
-                if (data.name == "") {
-                    delete matchobj.name;
-                }
-                if (data.firstname == "") {
+                if (data.firstname == "" || data.firstname.indexOf("undefined") != -1) {
                     delete matchobj.firstname;
                 }
-                if (data.middlename == "") {
+                if (data.middlename == "" || data.middlename.indexOf("undefined") != -1) {
                     delete matchobj.middlename;
                 }
-                if (data.lastname == "") {
+                if (data.lastname == "" || data.lastname.indexOf("undefined") != -1) {
                     delete matchobj.lastname;
                 }
                 if (data.campnumber == "" || data.campnumber == "All") {
@@ -667,11 +707,30 @@ module.exports = {
     findGifted: function(data, callback) {
         var newreturns = {};
         newreturns.data = [];
+        var checklastname = "";
+        var checkmiddlename = "";
+        var checkfirstname = "";
+        if (data.name != "") {
+            var splitname = data.name.split(" ");
+            data.lastname = "^" + splitname[0];
+            checklastname = new RegExp(data.lastname, "i");
+            if (splitname[2] != "") {
+                data.middlename = "^" + splitname[2];
+                checkmiddlename = new RegExp(data.middlename, "i");
+            }
+            if (splitname[1] != "") {
+                data.firstname = "^" + splitname[1];
+                checkfirstname = new RegExp(data.firstname, "i");
+            }
+        } else {
+            data.firstname = "^" + data.firstname;
+            data.middlename = "^" + data.middlename;
+            data.lastname = "^" + data.lastname;
+            checkfirstname = new RegExp(data.firstname, "i");
+            checkmiddlename = new RegExp(data.middlename, "i");
+            checklastname = new RegExp(data.lastname, "i");
+        }
         var check = new RegExp(data.donorid, "i");
-        var checkname = new RegExp(data.name, "i");
-        var checkfirstname = new RegExp(data.firstname, "i");
-        var checklastname = new RegExp(data.lastname, "i");
-        var checkmiddlename = new RegExp(data.middlename, "i");
         var pagesize = parseInt(data.pagesize);
         var pagenumber = parseInt(data.pagenumber);
         sails.query(function(err, db) {
@@ -683,7 +742,6 @@ module.exports = {
             } else if (db) {
                 var matchobj = {
                     donorid: check,
-                    name: checkname,
                     firstname: checkfirstname,
                     middlename: checkmiddlename,
                     lastname: checklastname,
@@ -698,16 +756,13 @@ module.exports = {
                 if (data.donorid == "") {
                     delete matchobj.donorid;
                 }
-                if (data.name == "") {
-                    delete matchobj.name;
-                }
-                if (data.firstname == "") {
+                if (data.firstname == "" || data.firstname.indexOf("undefined") != -1) {
                     delete matchobj.firstname;
                 }
-                if (data.middlename == "") {
+                if (data.middlename == "" || data.middlename.indexOf("undefined") != -1) {
                     delete matchobj.middlename;
                 }
-                if (data.lastname == "") {
+                if (data.lastname == "" || data.lastname.indexOf("undefined") != -1) {
                     delete matchobj.lastname;
                 }
                 if (data.campnumber == "" || data.campnumber == "All") {

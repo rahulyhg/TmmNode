@@ -75,10 +75,17 @@ module.exports = {
         }
     },
     find: function(req, res) {
-        function callback(data) {
-            res.json(data);
-        };
-        Admin.find(req.body, callback);
+        if (req.body) {
+            function callback(data) {
+                res.json(data);
+            };
+            Admin.find(req.body, callback);
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
     },
     findone: function(req, res) {
         if (req.body) {

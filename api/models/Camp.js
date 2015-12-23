@@ -522,11 +522,30 @@ module.exports = {
     donorlevels: function(data, callback) {
         var newreturns = {};
         newreturns.data = [];
+        var checklastname = "";
+        var checkmiddlename = "";
+        var checkfirstname = "";
+        if (data.name != "") {
+            var splitname = data.name.split(" ");
+            data.lastname = "^" + splitname[0];
+            checklastname = new RegExp(data.lastname, "i");
+            if (splitname[2] != "") {
+                data.middlename = "^" + splitname[2];
+                checkmiddlename = new RegExp(data.middlename, "i");
+            }
+            if (splitname[1] != "") {
+                data.firstname = "^" + splitname[1];
+                checkfirstname = new RegExp(data.firstname, "i");
+            }
+        } else {
+            data.firstname = "^" + data.firstname;
+            data.middlename = "^" + data.middlename;
+            data.lastname = "^" + data.lastname;
+            checkfirstname = new RegExp(data.firstname, "i");
+            checkmiddlename = new RegExp(data.middlename, "i");
+            checklastname = new RegExp(data.lastname, "i");
+        }
         var check = new RegExp(data.donorid, "i");
-        var checkname = new RegExp(data.name, "i");
-        var checkfirstname = new RegExp(data.firstname, "i");
-        var checklastname = new RegExp(data.lastname, "i");
-        var checkmiddlename = new RegExp(data.middlename, "i");
         var pagesize = parseInt(data.pagesize);
         var pagenumber = parseInt(data.pagenumber);
         var donor = sails.ObjectID(data.donor);
@@ -541,7 +560,6 @@ module.exports = {
                 if (data.accesslevel == "entry") {
                     var matchobj = {
                         donorid: check,
-                        name: checkname,
                         firstname: checkfirstname,
                         middlename: checkmiddlename,
                         lastname: checklastname,
@@ -555,7 +573,6 @@ module.exports = {
                 } else if (data.accesslevel == "verify") {
                     var matchobj = {
                         donorid: check,
-                        name: checkname,
                         firstname: checkfirstname,
                         middlename: checkmiddlename,
                         lastname: checklastname,
@@ -572,7 +589,6 @@ module.exports = {
                 } else if (data.accesslevel == "gift") {
                     var matchobj = {
                         donorid: check,
-                        name: checkname,
                         firstname: checkfirstname,
                         middlename: checkmiddlename,
                         lastname: checklastname,
@@ -601,16 +617,13 @@ module.exports = {
                 if (data.donorid == "") {
                     delete matchobj.donorid;
                 }
-                if (data.name == "") {
-                    delete matchobj.name;
-                }
-                if (data.firstname == "") {
+                if (data.firstname == "" || data.firstname.indexOf("undefined") != -1) {
                     delete matchobj.firstname;
                 }
-                if (data.middlename == "") {
+                if (data.middlename == "" || data.middlename.indexOf("undefined") != -1) {
                     delete matchobj.middlename;
                 }
-                if (data.lastname == "") {
+                if (data.lastname == "" || data.lastname.indexOf("undefined") != -1) {
                     delete matchobj.lastname;
                 }
                 if (data.pincode == "") {
@@ -699,11 +712,30 @@ module.exports = {
     hospDonors: function(data, callback) {
         var newreturns = {};
         newreturns.data = [];
+        var checklastname = "";
+        var checkmiddlename = "";
+        var checkfirstname = "";
+        if (data.name != "") {
+            var splitname = data.name.split(" ");
+            data.lastname = "^" + splitname[0];
+            checklastname = new RegExp(data.lastname, "i");
+            if (splitname[2] != "") {
+                data.middlename = "^" + splitname[2];
+                checkmiddlename = new RegExp(data.middlename, "i");
+            }
+            if (splitname[1] != "") {
+                data.firstname = "^" + splitname[1];
+                checkfirstname = new RegExp(data.firstname, "i");
+            }
+        } else {
+            data.firstname = "^" + data.firstname;
+            data.middlename = "^" + data.middlename;
+            data.lastname = "^" + data.lastname;
+            checkfirstname = new RegExp(data.firstname, "i");
+            checkmiddlename = new RegExp(data.middlename, "i");
+            checklastname = new RegExp(data.lastname, "i");
+        }
         var check = new RegExp(data.donorid, "i");
-        var checkname = new RegExp(data.name, "i");
-        var checkfirstname = new RegExp(data.firstname, "i");
-        var checklastname = new RegExp(data.lastname, "i");
-        var checkmiddlename = new RegExp(data.middlename, "i");
         var pagesize = parseInt(data.pagesize);
         var pagenumber = parseInt(data.pagenumber);
         var donor = sails.ObjectID(data.donor);
@@ -716,7 +748,6 @@ module.exports = {
                 });
             } else if (db) {
                 var matchobj = {
-                    name: checkname,
                     firstname: checkfirstname,
                     middlename: checkmiddlename,
                     lastname: checklastname,
@@ -736,16 +767,13 @@ module.exports = {
                 if (data.donorid == "") {
                     delete matchobj.donorid;
                 }
-                if (data.name == "") {
-                    delete matchobj.name;
-                }
-                if (data.firstname == "") {
+                if (data.firstname == "" || data.firstname.indexOf("undefined") != -1) {
                     delete matchobj.firstname;
                 }
-                if (data.middlename == "") {
+                if (data.middlename == "" || data.middlename.indexOf("undefined") != -1) {
                     delete matchobj.middlename;
                 }
-                if (data.lastname == "") {
+                if (data.lastname == "" || data.lastname.indexOf("undefined") != -1) {
                     delete matchobj.lastname;
                 }
                 if (data.pincode == "") {
