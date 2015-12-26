@@ -78,20 +78,33 @@ module.exports = {
                                 db.close();
                             } else if (created) {
                                 var bloodData = {};
+                                bloodData.camp = data.camp;
                                 bloodData.number = data.bottle;
                                 bloodData.campnumber = data.campnumber;
-                                bloodData.hospital = data.hospital;
-                                Blood.deleteBottle(bloodData, function(bloodrespo) {
-                                    if (bloodrespo.value == true) {
-                                        callback({
-                                            value: true,
-                                            id: data._id
+                                Hospital.findone({
+                                    _id: data.hospital
+                                }, function(hosprespo) {
+                                    if (hosprespo.value != false) {
+                                        bloodData.hospital = hosprespo.name;
+                                        Blood.deleteBottle(bloodData, function(bloodrespo) {
+                                            if (bloodrespo.value == true) {
+                                                callback({
+                                                    value: true,
+                                                    id: data._id
+                                                });
+                                                db.close();
+                                            } else {
+                                                callback({
+                                                    value: true,
+                                                    id: data._id
+                                                });
+                                                db.close();
+                                            }
                                         });
-                                        db.close();
                                     } else {
                                         callback({
-                                            value: true,
-                                            id: data._id
+                                            value: false,
+                                            comment: "No data found"
                                         });
                                         db.close();
                                     }
@@ -132,18 +145,31 @@ module.exports = {
                             var bloodData = {};
                             bloodData.number = data.bottle;
                             bloodData.campnumber = data.campnumber;
-                            bloodData.hospital = data.hospital;
-                            Blood.deleteBottle(bloodData, function(bloodrespo) {
-                                if (bloodrespo.value == true) {
-                                    callback({
-                                        value: true,
-                                        comment: "Donor updated"
+                            bloodData.camp = data.camp;
+                            Hospital.findone({
+                                _id: data.hospital
+                            }, function(hosprespo) {
+                                if (hosprespo.value != false) {
+                                    bloodData.hospital = hosprespo.name;
+                                    Blood.deleteBottle(bloodData, function(bloodrespo) {
+                                        if (bloodrespo.value == true) {
+                                            callback({
+                                                value: true,
+                                                comment: "Donor updated"
+                                            });
+                                            db.close();
+                                        } else {
+                                            callback({
+                                                value: true,
+                                                comment: "Donor updated"
+                                            });
+                                            db.close();
+                                        }
                                     });
-                                    db.close();
                                 } else {
                                     callback({
-                                        value: true,
-                                        comment: "Donor updated"
+                                        value: false,
+                                        comment: "No data found"
                                     });
                                     db.close();
                                 }
@@ -152,18 +178,31 @@ module.exports = {
                             var bloodData = {};
                             bloodData.number = data.bottle;
                             bloodData.campnumber = data.campnumber;
-                            bloodData.hospital = data.hospital;
-                            Blood.deleteBottle(bloodData, function(bloodrespo) {
-                                if (bloodrespo.value == true) {
-                                    callback({
-                                        value: true,
-                                        comment: "Donor updated"
+                            bloodData.camp = data.camp;
+                            Hospital.findone({
+                                _id: data.hospital
+                            }, function(hosprespo) {
+                                if (hosprespo.value != false) {
+                                    bloodData.hospital = hosprespo.name;
+                                    Blood.deleteBottle(bloodData, function(bloodrespo) {
+                                        if (bloodrespo.value == true) {
+                                            callback({
+                                                value: true,
+                                                comment: "Donor updated"
+                                            });
+                                            db.close();
+                                        } else {
+                                            callback({
+                                                value: true,
+                                                comment: "Donor updated"
+                                            });
+                                            db.close();
+                                        }
                                     });
-                                    db.close();
                                 } else {
                                     callback({
-                                        value: true,
-                                        comment: "Donor updated"
+                                        value: false,
+                                        comment: "No data found"
                                     });
                                     db.close();
                                 }
@@ -372,7 +411,6 @@ module.exports = {
                 callbackfunc1();
 
                 function callbackfunc1() {
-                    console.log(matchobj);
                     db.collection("donor").count(matchobj, function(err, number) {
                         if (number && number != "") {
                             newreturns.total = number;

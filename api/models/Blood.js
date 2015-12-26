@@ -79,20 +79,32 @@ module.exports = {
                 });
             }
             if (db) {
-                db.collection("blood").find({}, {
-                    _id: 1,
-                    number: 1,
-                    used: 1,
-                    hospital: 1
-                }).limit(10).toArray(function(err, found) {
-                    if (err) {
-                        callback({
-                            value: false
+                Hospital.findone(data, function(hosrespo) {
+                    if (data.value != false) {
+                        db.collection("blood").find({
+                            hospital: hosrespo.name
+                        }, {
+                            _id: 1,
+                            number: 1,
+                            used: 1,
+                            hospital: 1
+                        }).limit(10).toArray(function(err, found) {
+                            if (err) {
+                                callback({
+                                    value: false
+                                });
+                                db.close();
+                            } else if (found && found[0]) {
+                                callback(found);
+                                db.close();
+                            } else {
+                                callback({
+                                    value: false,
+                                    comment: "No data found"
+                                });
+                                db.close();
+                            }
                         });
-                        db.close();
-                    } else if (found && found[0]) {
-                        callback(found);
-                        db.close();
                     } else {
                         callback({
                             value: false,
@@ -294,7 +306,10 @@ module.exports = {
                 });
             } else {
                 db.collection('blood').remove({
-                    number: data.number
+                    number: data.number,
+                    campnumber: data.campnumber,
+                    hospital: data.hospital,
+                    camp: data.camp,
                 }, function(err, deleted) {
                     if (deleted) {
                         callback({
