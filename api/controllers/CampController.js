@@ -2,9 +2,9 @@
  * CampController
  *
  * @description :: Server-side logic for managing users
- * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
+ * @help                :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-
+var pdf = require('html-pdf');
 module.exports = {
     save: function(req, res) {
         if (req.body) {
@@ -71,6 +71,26 @@ module.exports = {
                 res.json({
                     value: false,
                     comment: "Camp-id is incorrect"
+                });
+            }
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
+    },
+    findCampHospital: function(req, res) {
+        if (req.body) {
+            if (req.body.camp && req.body.camp != "" && req.body.campnumber && req.body.campnumber != "") {
+                var print = function(data) {
+                    res.json(data);
+                }
+                Camp.findCampHospital(req.body, print);
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Please provide parameters"
                 });
             }
         } else {
@@ -179,5 +199,199 @@ module.exports = {
                 comment: "Please provide parameters"
             });
         }
+    },
+    excelDonor: function(req, res) {
+        var camp = req.param('camp');
+        var campnumber = req.param('campnumber');
+        var accesslevel = req.param('accesslevel');
+        res.connection.setTimeout(20000000);
+        req.connection.setTimeout(20000000);
+        if (accesslevel == "entry") {
+            var matchobj = {
+                "oldbottle.campnumber": campnumber,
+                "oldbottle.camp": camp,
+                "oldbottle.bottle": {
+                    $exists: true
+                }
+            };
+        } else if (accesslevel == "verify") {
+            var matchobj = {
+                "oldbottle.campnumber": campnumber,
+                "oldbottle.camp": camp,
+                "oldbottle.bottle": {
+                    $exists: true
+                },
+                "oldbottle.verified": {
+                    $exists: true
+                }
+            };
+        } else if (accesslevel == "gift") {
+            var matchobj = {
+                "oldbottle.campnumber": campnumber,
+                "oldbottle.camp": camp,
+                "oldbottle.bottle": {
+                    $exists: true
+                },
+                "oldbottle.verified": {
+                    $exists: true
+                },
+                "oldbottle.giftdone": {
+                    $exists: true
+                }
+            };
+        } else if (accesslevel == "pendingV") {
+            var matchobj = {
+                "oldbottle.campnumber": campnumber,
+                "oldbottle.camp": camp,
+                "oldbottle.bottle": {
+                    $exists: true
+                },
+                "oldbottle.verified": {
+                    $exists: false
+                }
+            };
+        } else if (accesslevel == "pendingG") {
+            var matchobj = {
+                "oldbottle.campnumber": campnumber,
+                "oldbottle.camp": camp,
+                "oldbottle.bottle": {
+                    $exists: true
+                },
+                "oldbottle.verified": {
+                    $exists: true
+                },
+                "oldbottle.giftdone": {
+                    $exists: false
+                }
+            };
+        } else if (accesslevel == "rejected") {
+            var matchobj = {
+                "oldbottle.campnumber": campnumber,
+                "oldbottle.camp": camp,
+                "oldbottle.bottle": {
+                    $exists: false
+                }
+            };
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide accesslevel"
+            });
+        }
+        if (camp == "All" || camp == "") {
+            delete matchobj["oldbottle.camp"];
+        }
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: false
+                });
+            } else if (db) {
+                db.collection("donor").aggregate([{
+                    $unwind: "$oldbottle"
+                }, {
+                    $match: matchobj
+                }, {
+                    $project: {
+                        _id: 0,
+                        donorid: 1,
+                        name: 1,
+                        bloodgroup: 1
+                    }
+                }, {
+                    $sort: {
+                        name: 1
+                    }
+                }]).toArray(function(err, data2) {
+                    if (err) {
+                        console.log(err);
+                        res.json({
+                            value: false
+                        });
+                    } else if (data2 && data2[0]) {
+                        // res.json(data2);
+                        var locals = {
+                            data: data2
+                        };
+                        res.view("donors", locals);
+                    } else {
+                        res.json({
+                            value: false,
+                            comment: "No data found"
+                        });
+                    }
+                });
+            }
+        });
+    },
+    hospitalDonor: function(req, res) {
+        var camp = req.param('camp');
+        var campnumber = req.param('campnumber');
+        var accesslevel = req.param('accesslevel');
+        var hospital = req.param('hospital');
+        if (hospital && hospital != "") {
+            hospital = sails.ObjectID(hospital);
+        }
+        res.connection.setTimeout(20000000);
+        req.connection.setTimeout(20000000);
+        var matchobj = {
+            "oldbottle.campnumber": campnumber,
+            "oldbottle.camp": camp,
+            "oldbottle.hospital": hospital,
+            "oldbottle.bottle": {
+                $exists: true
+            },
+            "oldbottle.verified": {
+                $exists: true
+            }
+        };
+        if (camp == "All" || camp == "") {
+            delete matchobj["oldbottle.camp"];
+        }
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: false
+                });
+            } else if (db) {
+                db.collection("donor").aggregate([{
+                    $unwind: "$oldbottle"
+                }, {
+                    $match: matchobj
+                }, {
+                    $project: {
+                        _id: 0,
+                        donorid: 1,
+                        name: 1,
+                        "oldbottle.bottle": 1
+                    }
+                }, {
+                    $sort: {
+                        name: 1
+                    }
+                }]).toArray(function(err, data2) {
+                    if (err) {
+                        console.log(err);
+                        res.json({
+                            value: false
+                        });
+                    } else if (data2 && data2[0]) {
+                        var xls = sails.json2xls(data2);
+                        sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
+                        var excel = sails.fs.readFileSync('./data.xlsx');
+                        var mimetype = sails.mime.lookup('./data.xlsx');
+                        res.set('Content-Type', mimetype);
+                        res.send(excel);
+                    } else {
+                        res.json({
+                            value: false,
+                            comment: "No data found"
+                        });
+                    }
+                });
+            }
+        });
     }
 };

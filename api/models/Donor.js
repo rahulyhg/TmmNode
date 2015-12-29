@@ -435,7 +435,7 @@ module.exports = {
                         db.collection("donor").find(matchobj, {
                             password: 0
                         }).sort({
-                            donorid: 1
+                            name: 1
                         }).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function(err, found) {
                             if (err) {
                                 callback({
@@ -582,7 +582,7 @@ module.exports = {
                         db.collection("donor").find(matchobj, {
                             password: 0
                         }).sort({
-                            donorid: 1
+                            name: 1
                         }).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function(err, found) {
                             if (err) {
                                 callback({
@@ -652,7 +652,6 @@ module.exports = {
                         campnumber: data.campnumber,
                         camp: data.camp,
                         pincode: data.pincode,
-                        hospital: sails.ObjectID(data.hospital),
                         verified: {
                             $eq: true
                         },
@@ -723,7 +722,7 @@ module.exports = {
                         db.collection("donor").find(matchobj, {
                             password: 0
                         }).sort({
-                            donorid: 1
+                            name: 1
                         }).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function(err, found) {
                             if (err) {
                                 callback({
@@ -792,7 +791,6 @@ module.exports = {
                     campnumber: data.campnumber,
                     camp: data.camp,
                     pincode: data.pincode,
-                    hospital: sails.ObjectID(data.hospital),
                     giftdone: {
                         $eq: true
                     }
@@ -845,7 +843,7 @@ module.exports = {
                         db.collection("donor").find(matchobj, {
                             password: 0
                         }).sort({
-                            donorid: 1
+                            name: 1
                         }).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function(err, found) {
                             if (err) {
                                 callback({
@@ -883,6 +881,9 @@ module.exports = {
                         var bottleNum = "";
                         bottleNum = findrespo.bottle;
                         findrespo.bottle = "";
+                        if (data.deletereason) {
+                            findrespo.deletereason = data.deletereason;
+                        }
                         if (data.reason) {
                             findrespo.reason = data.reason;
                         }

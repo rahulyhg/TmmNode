@@ -1,0 +1,55 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <title>
+        Donor List - Camp Wise
+    </title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+<body>
+    <div style="margin: 30px 0">
+      <img src="/img/logo-dark.png" alt="TMM" style="width: 10%">
+    </div>
+    <table class="table table-bordered">
+    <thead>
+        <th>
+            Sr No.
+        </th>
+         <th>
+            Donor Id
+        </th>
+        <th>
+            Name
+        </th>
+        <th>
+            Blood Group
+        </th>
+    </thead>
+    <tbody>
+        <% for(var i=0; i<data.length; i++) {%>
+            <tr>
+                <td>
+                    <%= (i+1) %>
+                </td>
+                <td>
+                    <%= data[i].donorid %>
+                </td>
+                <td>
+                    <%= data[i].name %>
+                </td>
+                <td>
+                    <%= data[i].bloodgroup %>
+                </td>
+            </tr>
+            <% } %>
+    </tbody>
+</table>
+</body>
+</html>

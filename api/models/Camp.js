@@ -730,7 +730,7 @@ module.exports = {
                             }
                         }, {
                             $sort: {
-                                donorid: 1
+                                name: 1
                             }
                         }]).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function(err, found) {
                             if (err) {
@@ -898,6 +898,54 @@ module.exports = {
                         });
                     }
                 }
+            }
+        });
+    },
+    findCampHospital: function(data, callback) {
+        sails.query(function(err, db) {
+            if (err) {
+
+                console.log(err);
+                callback({
+                    value: false,
+                    comment: "Error"
+                });
+            } else if (db) {
+                console.log(data);
+                db.collection('camp').aggregate([{
+                    $match: {
+                        campnumber: data.campnumber
+                    }
+                }, {
+                    $unwind: "$venues"
+                }, {
+                    $match: {
+                        "venues.value": data.camp
+                    }
+                }, {
+                    $project: {
+                        _id: 0,
+                        "venues.hospital": 1
+                    }
+                }]).toArray(function(err, data2) {
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false,
+                            comment: "Error"
+                        });
+                        db.close();
+                    } else if (data2 && data2[0]) {
+                        callback(data2[0].venues);
+                        db.close();
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
+                });
             }
         });
     }
