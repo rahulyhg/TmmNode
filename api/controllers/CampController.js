@@ -330,9 +330,6 @@ module.exports = {
         var campnumber = req.param('campnumber');
         var accesslevel = req.param('accesslevel');
         var hospital = req.param('hospital');
-        if (hospital && hospital != "") {
-            hospital = sails.ObjectID(hospital);
-        }
         res.connection.setTimeout(20000000);
         req.connection.setTimeout(20000000);
         var matchobj = {
@@ -378,12 +375,10 @@ module.exports = {
                             value: false
                         });
                     } else if (data2 && data2[0]) {
-                        var xls = sails.json2xls(data2);
-                        sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
-                        var excel = sails.fs.readFileSync('./data.xlsx');
-                        var mimetype = sails.mime.lookup('./data.xlsx');
-                        res.set('Content-Type', mimetype);
-                        res.send(excel);
+                        var locals = {
+                            data: data2
+                        };
+                        res.view("hospital", locals);
                     } else {
                         res.json({
                             value: false,
