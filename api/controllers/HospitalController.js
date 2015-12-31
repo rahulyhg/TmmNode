@@ -99,5 +99,25 @@ module.exports = {
                 comment: "Please provide parameters"
             });
         }
+    },
+    findForCamp: function(req, res) {
+        if (req.body) {
+            if (req.body.hospital && Array.isArray(req.body.hospital)) {
+                var print = function(data) {
+                    res.json(data);
+                }
+                Hospital.findForCamp(req.body, print);
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Please provide parameters"
+                });
+            }
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
     }
 };
