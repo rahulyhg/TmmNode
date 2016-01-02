@@ -1,6 +1,6 @@
 module.exports = {
     save: function(data, callback) {
-        data.name = data.lastname + " " + data.middlename + " " + data.firstname;
+        data.name = data.lastname + " " + data.firstname+ " " + data.middlename;
         if (data.hospital && data.hospital != "") {
             data.hospital = sails.ObjectID(data.hospital);
             var insert = {};
@@ -1428,7 +1428,7 @@ module.exports = {
         delete data.camp;
         delete data.bottle;
         delete data.campnumber;
-        data.name = data.firstname + " " + data.middlename + " " + data.lastname;
+        data.name = data.lastname + " " + data.firstname+ " " + data.middlename;
         var splitname = data.lastname.substring(0, 1);
         var letter = splitname;
         splitname = "^" + splitname + "[0-9]";

@@ -120,7 +120,7 @@
       }
    </style>
 </head>
- 
+
 <body>
    <div class="tmm">
       <div class="container-fluid">
@@ -155,19 +155,19 @@
                               <span class="underline"></span>
                               <div class="">
                                  <span>Name of the Blood Bank</span>
-                                 <span class="fz9 text-uppercase"><b style="font-size:8px">Kem blood bank dept</b></span>
+                                 <span class="fz9 text-uppercase"><b style="font-size:8px"><%= data.hospitalname %></b></span>
                               </div>
                               <p class="nomg">Date :
-                                 <span><b style="font-size:8px">04/10/2015</b></span>
+                                 <span><b style="font-size:8px"><%= date %></b></span>
                               </p>
                               <p class="nomg">Donor ID :
-                                 <span><b>V20456</b></span>
+                                 <span><b><%= data.donorid %></b></span>
                               </p>
                               <p class="nomg">Name of the Donor :
-                                 <span class="text-uppercase"><b style="font-size:8px">vira vikas</b></span>
+                                 <span class="text-uppercase"><b style="font-size:8px"><%= data.name %></b></span>
                               </p>
                               <p class="nomg">Place of Donation :
-                                 <span class="text-uppercase"><b style="font-size:8px">shri k.v.o.s mahajanwadi</b></span>
+                                 <span class="text-uppercase"><b style="font-size:8px"><%= data.camp %></b></span>
                               </p>
                            </div>
                         </div>
@@ -223,20 +223,20 @@
                                  <div class="clearfix">
                                     <div class="pull-left">
                                        <span>Date:</span>
-                                       <span><b class="fz9">04/10/2015</b></span>
+                                       <span><b class="fz9"><%= date %></b></span>
                                     </div>
                                     <div class="pull-right">
                                        <span>Blood Group:</span>
-                                       <span><b style="font-size:17px">O+</b></span>
+                                       <span><b style="font-size:17px"><%= data.bloodgroup %></b></span>
                                     </div>
                                  </div>
                               </div>
                               <p>Name :
-                                 <span class="text-uppercase"><b class="fz9">vira vikas shashikant</b></span>
+                                 <span class="text-uppercase"><b class="fz9"><%= data.name %></b></span>
                               </p>
                               <div class="add">
                                  <span class="ib v-top">Add :</span>
-                                 <span class="text-uppercase ib" style="width: 80%"><b class="fz9">1/30, POONAWALA CRAWL, G. K M LOWER PAREL, BOMBAY. MUMBAI 400013</b></span>
+                                 <span class="text-uppercase ib" style="width: 80%"><b class="fz9"><%= data.address1 %> <%= data.address2 %> <%= data.address3 %></b></span>
                               </div>
                               <p class="nomg clearfix">
                                  <span class="pull-left fz9">DONOR'S SIGNATURE</span>
@@ -244,17 +244,17 @@
                               </p>
                               <div class="text-center">
                                  <span><i class="block">This is to Certify that</i></span>
-                                 <b class="text-uppercase">vira VIKAS (V00287)</b>
+                                 <b class="text-uppercase"><%= data.lastname %> <%= data.firstname %> (<%= data.donorid %>)</b>
                               </div>
                               <p class="nomg text-justify"><i>donated blood for the benefit of needy patients in the Blood Donation Drive organised by</i>
-                                 <span><b class="text-uppercase">tarun mitra mandal</b> <i>on</i> <b>04/10/2015</b></b>
+                                 <span><b class="text-uppercase">tarun mitra mandal</b> <i>on</i> <b><%= date %></b></b>
                                  </span>
                               </p>
                            </div>
                         </div>
                         <div class="text-center" style="border-bottom:2px solid #2d2d2d;">
                            <p class="nomg">Blood Donations made till date :
-                              <span><b style="font-size:15px">47</b></span>
+                              <span><b style="font-size:15px"><%= data.donationcount + 1 %></b></span>
                            </p>
                         </div>
                         <div class="sec3-foot" style="">
@@ -262,7 +262,7 @@
                               <div class="bottle-no pull-left">
                                  <div class="text-center">
                                     <p class="nomg">Regn/Bottle No</p>
-                                    <span class="regn-no pd5" style="border:1px solid #2d2d2d">26455</span>
+                                    <span class="regn-no pd5" style="border:1px solid #2d2d2d"><%= data.oldbottle.bottle %></span>
                                  </div>
                               </div>
                               <div class="sign pull-right">
@@ -296,51 +296,52 @@
                            <div class="clearfix">
                               <div class="pull-left">
                                  <span>Blood Group :</span>
-                                 <span><b>O+</b></span>
+                                 <span><b><%= data.bloodgroup %></b></span>
                               </div>
                               <div class="pull-right">
                                  <span>Donor ID :</span>
-                                 <span><b>V00287</b></span>
+                                 <span><b><%= data.donorid %></b></span>
                               </div>
                            </div>
                            <div class="" style="">
                               <span>Blood Bank Regn No. /Bottle No. :</span>
-                              <span><b>26455</b></span>
+                              <span><b><%= data.oldbottle.bottle %></b></span>
                            </div>
                            <div class="clearfix" style="">
                               <div class="pull-left">
                                  <span>Age :</span>
-                                 <span><b>37</b></span>
+                                 <span><b><%= data.age %></b></span>
                               </div>
                               <div class="pull-right">
                                  <span>Sex :</span>
-                                 <span><b>Male</b></span>
+                                 <span><b><%= data.gender %></b></span>
                               </div>
                            </div>
                            <p class="nomg">Name :
-                              <span class="text-uppercase"><b>vira vikas shashikant</b></span>
+                              <span class="text-uppercase"><b><%= data.name %></b></span>
                            </p>
                            <div class="add">
                               <span class="ib v-top">Add :</span>
-                              <span class="text-uppercase ib" style="width: 80%"><b class="fz9">1/30, POONAWALA CRAWL, G. K M LOWER PAREL, BOMBAY, MUMBAI 400013</b></span>
+                              <span class="text-uppercase ib" style="width: 80%"><b class="fz9"><%= data.address1 %> <%= data.address2 %> <%= data.address3 %></b></span>
                            </div>
                            <div class="land-no" style="">
                               <div style="width:50%;" class="ib">
                                  <span>Phone No : </span>
-                                 <span><b>24784123</b></span>
+                                 <span><b><%= data.tel1 %></b></span>
                               </div>
                               <div class="ib">
                                  <span>(Off.) : </span>
+                                 <span><b><%= data.offctel1 %></b></span>
                               </div>
                            </div>
                            <div class="mob-no clearfix">
                               <div class="pull-left">
                                  <span>Mobile : </span>
-                                 <span><b>87160134923</b></span>
+                                 <span><b><%= data.mobile %></b></span>
                               </div>
                               <div class="pull-right">
                                  <span>Weight (in Kgs) : </span>
-                                 <span><b>69</b></span>
+                                 <span><b><%= data.weight %></b></span>
                               </div>
                            </div>
                            <p class="text-justify" style="margin-bottom:2px;">At the call of humanity, I am willing to donate my blood voluntarily in the BLOOD DONATION DRIVE organised by
@@ -352,7 +353,7 @@
                            <div class="clearfix" style="margin-top:5px">
                               <div class="pull-left">
                                  <span>Date :</span>
-                                 <span><b>04/10/2015</b></span>
+                                 <span><b><%= date %></b></span>
                               </div>
                               <div class="pull-right">
                                  <span class="underline" style="min-width: 120px;"></span>
@@ -436,12 +437,12 @@
                               <div class="pull-left">
                                  <div class="box text-center pd5" style="border: 1px solid #000;">
                                     <span>Date</span>
-                                    <span class="block"><b>04/10/2015</b></span>
+                                    <span class="block"><b><%= date %></b></span>
                                  </div>
                               </div>
                               <div class="pull-right pd5" style="border: 1px solid #000;">
                                  <span>Bottle No.</span>
-                                 <span class="text-center block"><b>26455</b></span>
+                                 <span class="text-center block"><b><%= data.oldbottle.bottle %></b></span>
                               </div>
                            </div>
                            <div class="text-center" style="margin-top:-7px;margin-bottom:10px;">

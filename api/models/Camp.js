@@ -463,10 +463,12 @@ module.exports = {
                         newreturns.entry = data2.length;
                         callfunc1();
                     } else {
-                        callback({
-                            value: false,
-                            comment: "No data found"
-                        });
+                        newreturns.entry = 0;
+                        newreturns.verify = 0;
+                        newreturns.gift = 0;
+                        newreturns.pendingV = 0;
+                        newreturns.pendingG = 0;
+                        callback(newreturns);
                         db.close();
                     }
                 });
@@ -510,8 +512,11 @@ module.exports = {
                             newreturns.verify = data3.length;
                             callfunc2();
                         } else {
+                            newreturns.verify = 0;
+                            newreturns.gift = 0;
+                            newreturns.pendingV = 0;
+                            newreturns.pendingG = 0;
                             callback(newreturns);
-                            db.close();
                         }
                     });
                 }
@@ -556,9 +561,106 @@ module.exports = {
                             db.close();
                         } else if (data4 && data4[0]) {
                             newreturns.gift = data4.length;
+                            callfunc3();
+                        } else {
+                            newreturns.gift = 0;
+                            newreturns.pendingV = 0;
+                            newreturns.pendingG = 0;
+                            callfunc3();
+                        }
+                    });
+                }
+
+                function callfunc3() {
+                    var matchobj = {
+                        "oldbottle.campnumber": data.campnumber,
+                        "oldbottle.camp": data.camp,
+                        "oldbottle.hospital": data.hospital,
+                        "oldbottle.bottle": {
+                            $exists: true
+                        },
+                        "oldbottle.verified": {
+                            $exists: false
+                        }
+                    };
+                    if (data.camp == "All") {
+                        delete matchobj["oldbottle.camp"];
+                    }
+                    if (!data.hospital || data.hospital == "") {
+                        delete matchobj["oldbottle.hospital"];
+                    }
+                    db.collection('donor').aggregate([{
+                        $unwind: "$oldbottle"
+                    }, {
+                        $match: matchobj
+                    }, {
+                        $project: {
+                            _id: 0,
+                            oldbottle: 1
+                        }
+                    }]).toArray(function(err, data5) {
+                        if (err) {
+                            console.log(err);
+                            callback({
+                                value: false,
+                                comment: "Error"
+                            });
+                            db.close();
+                        } else if (data5 && data5[0]) {
+                            newreturns.pendingV = data5.length;
+                            callfunc4();
+                        } else {
+                            newreturns.pendingV = 0;
+                            newreturns.pendingG = 0;
+                            callfunc4();
+                        }
+                    });
+                }
+
+                function callfunc4() {
+                    var matchobj = {
+                        "oldbottle.campnumber": data.campnumber,
+                        "oldbottle.camp": data.camp,
+                        "oldbottle.hospital": data.hospital,
+                        "oldbottle.bottle": {
+                            $exists: true
+                        },
+                        "oldbottle.verified": {
+                            $exists: true
+                        },
+                        "oldbottle.giftdone": {
+                            $exists: false
+                        }
+                    };
+                    if (data.camp == "All") {
+                        delete matchobj["oldbottle.camp"];
+                    }
+                    if (!data.hospital || data.hospital == "") {
+                        delete matchobj["oldbottle.hospital"];
+                    }
+                    db.collection('donor').aggregate([{
+                        $unwind: "$oldbottle"
+                    }, {
+                        $match: matchobj
+                    }, {
+                        $project: {
+                            _id: 0,
+                            oldbottle: 1
+                        }
+                    }]).toArray(function(err, data6) {
+                        if (err) {
+                            console.log(err);
+                            callback({
+                                value: false,
+                                comment: "Error"
+                            });
+                            db.close();
+                        } else if (data6 && data6[0]) {
+                            newreturns.pendingG = data6.length;
                             callback(newreturns);
                             db.close();
                         } else {
+                            newreturns.pendingG = 0;
                             callback(newreturns);
                             db.close();
                         }

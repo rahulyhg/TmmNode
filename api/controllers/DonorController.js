@@ -321,7 +321,7 @@ module.exports = {
                                     function createteam(num) {
                                         m = result[num];
                                         delete m.donorid1;
-                                        m.name = m.lastname + " " + m.middlename + " " + m.firstname;
+                                        m.name = m.lastname + " " + m.firstname+ " " + m.middlename;
                                         if (m.birthdate == "") {
                                             m.birthdate = new Date();
                                         } else {

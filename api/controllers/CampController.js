@@ -122,6 +122,8 @@ module.exports = {
         }
     },
     countlevels: function(req, res) {
+        res.connection.setTimeout(200000000);
+        req.connection.setTimeout(200000000);
         if (req.body) {
             if (req.body.campnumber && req.body.campnumber != "") {
                 function callback(data) {
@@ -384,7 +386,7 @@ module.exports = {
                             }
                         }, {
                             $sort: {
-                                name: 1
+                                "oldbottle.bottle": 1
                             }
                         }]).toArray(function(err, data2) {
                             if (err) {
