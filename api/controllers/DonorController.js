@@ -322,7 +322,7 @@ module.exports = {
                                         m = result[num];
                                         delete m.donorid1;
                                         m.name = m.lastname + " " + m.middlename + " " + m.firstname;
-                                        if (m.dateofbirth == "") {
+                                        if (m.birthdate == "") {
                                             m.birthdate = new Date();
                                         } else {
                                             m.birthdate = new Date(m.birthdate);
@@ -332,7 +332,6 @@ module.exports = {
                                         }
                                         delete m.email1;
                                         delete m.domainName;
-                                        delete m.dateofbirth;
                                         if (m.village != "") {
                                             Village.savevillage(m, function(villagerespo) {
                                                 m.village = [];
@@ -778,12 +777,57 @@ module.exports = {
                 });
             }
         });
+    },
+    findForPrint: function(req, res) {
+        if (req.param('_id') && req.param('_id') != "" && sails.ObjectID.isValid(req.param('_id')) && req.param('campnumber') && req.param('campnumber') != "" && req.param('campnumber') != "All") {
+            sails.query(function(err, db) {
+                if (err) {
+                    console.log(err);
+                    res.json({
+                        value: "false"
+                    });
+                    db.close();
+                } else if (db) {
+                    db.collection('donor').aggregate([{
+                        $match: {
+                            _id: sails.ObjectID(req.param('_id'))
+                        }
+                    }, {
+                        $unwind: "$oldbottle"
+                    }, {
+                        $match: {
+                            "oldbottle.campnumber": req.param('campnumber')
+                        }
+                    }]).toArray(function(err, data2) {
+                        if (err) {
+                            console.log(err);
+                            res.json({
+                                value: "false"
+                            });
+                            db.close();
+                        } else if (data2 && data2[0]) {
+                            // res.json(data2[0]);
+                            var locals = {
+                                data: data2[0]
+                            };
+                            locals.date = sails.moment().format("DD-MM-YYYY");
+                            res.view("print", locals);
+                            db.close();
+                        } else {
+                            res.json({
+                                value: "false",
+                                comment: "No data found"
+                            });
+                            db.close();
+                        }
+                    });
+                }
+            });
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
     }
-
-    // sendSms:function(req,res){
-    //     var print = function(data) {
-    //         res.json(data);
-    //     }
-    //     Donor.sendSms(req.body, print);
-    // }
 };

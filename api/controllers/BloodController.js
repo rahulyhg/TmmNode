@@ -74,6 +74,12 @@ module.exports = {
             });
         }
     },
+    deleteAll: function(req, res) {
+        var print = function(data) {
+            res.json(data);
+        }
+        Blood.deleteAll(req.body, print);
+    },
     find: function(req, res) {
         function callback(data) {
             res.json(data);

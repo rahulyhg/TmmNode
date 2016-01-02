@@ -7,6 +7,8 @@
 var pdf = require('html-pdf');
 module.exports = {
     save: function(req, res) {
+        res.connection.setTimeout(200000000);
+        req.connection.setTimeout(200000000);
         if (req.body) {
             if (req.body._id) {
                 if (req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
@@ -297,7 +299,10 @@ module.exports = {
                         _id: 0,
                         donorid: 1,
                         name: 1,
-                        bloodgroup: 1
+                        bloodgroup: 1,
+                        oldbottle: 1,
+                        age: 1,
+                        gender: 1
                     }
                 }, {
                     $sort: {
@@ -309,17 +314,23 @@ module.exports = {
                         res.json({
                             value: false
                         });
+                        db.close();
                     } else if (data2 && data2[0]) {
                         // res.json(data2);
                         var locals = {
                             data: data2
                         };
+                        locals.date = sails.moment().format("DD-MM-YYYY");
+                        locals.camp = camp;
+                        locals.campnumber = campnumber;
                         res.view("donors", locals);
+                        db.close();
                     } else {
                         res.json({
                             value: false,
                             comment: "No data found"
                         });
+                        db.close();
                     }
                 });
             }
@@ -328,62 +339,153 @@ module.exports = {
     hospitalDonor: function(req, res) {
         var camp = req.param('camp');
         var campnumber = req.param('campnumber');
-        var accesslevel = req.param('accesslevel');
         var hospital = req.param('hospital');
-        res.connection.setTimeout(20000000);
-        req.connection.setTimeout(20000000);
-        var matchobj = {
-            "oldbottle.campnumber": campnumber,
-            "oldbottle.camp": camp,
-            "oldbottle.hospital": hospital,
-            "oldbottle.bottle": {
-                $exists: true
-            },
-            "oldbottle.verified": {
-                $exists: true
-            }
-        };
-        if (camp == "All" || camp == "") {
-            delete matchobj["oldbottle.camp"];
-        }
-        sails.query(function(err, db) {
-            if (err) {
-                console.log(err);
-                res.json({
-                    value: false
-                });
-            } else if (db) {
-                db.collection("donor").aggregate([{
-                    $unwind: "$oldbottle"
-                }, {
-                    $match: matchobj
-                }, {
-                    $project: {
-                        _id: 0,
-                        donorid: 1,
-                        name: 1,
-                        "oldbottle.bottle": 1
+        hospital = sails.ObjectID(hospital);
+        var data5 = {};
+        data5._id = hospital;
+        Hospital.findone(data5, function(respo) {
+            if (respo.value != false) {
+                var hospitalname = respo.name;
+                res.connection.setTimeout(20000000);
+                req.connection.setTimeout(20000000);
+                var matchobj = {
+                    "oldbottle.campnumber": campnumber,
+                    "oldbottle.camp": camp,
+                    "oldbottle.hospital": hospital,
+                    "oldbottle.bottle": {
+                        $exists: true
+                    },
+                    "oldbottle.verified": {
+                        $exists: true
                     }
-                }, {
-                    $sort: {
-                        name: 1
-                    }
-                }]).toArray(function(err, data2) {
+                };
+                if (camp == "All" || camp == "") {
+                    delete matchobj["oldbottle.camp"];
+                }
+                sails.query(function(err, db) {
                     if (err) {
                         console.log(err);
                         res.json({
                             value: false
                         });
-                    } else if (data2 && data2[0]) {
-                        var locals = {
-                            data: data2
-                        };
-                        res.view("hospital", locals);
-                    } else {
-                        res.json({
-                            value: false,
-                            comment: "No data found"
+                    } else if (db) {
+                        db.collection("donor").aggregate([{
+                            $unwind: "$oldbottle"
+                        }, {
+                            $match: matchobj
+                        }, {
+                            $project: {
+                                _id: 0,
+                                donorid: 1,
+                                name: 1,
+                                bloodgroup: 1,
+                                oldbottle: 1,
+                                age: 1,
+                                gender: 1
+                            }
+                        }, {
+                            $sort: {
+                                name: 1
+                            }
+                        }]).toArray(function(err, data2) {
+                            if (err) {
+                                console.log(err);
+                                res.json({
+                                    value: false
+                                });
+                                db.close();
+                            } else if (data2 && data2[0]) {
+                                // res.json(data2);
+                                var locals = {
+                                    data: data2
+                                };
+                                locals.date = sails.moment().format("DD-MM-YYYY");
+                                locals.hospitalname = hospitalname;
+                                locals.camp = camp;
+                                locals.campnumber = campnumber;
+                                res.view("hospital", locals);
+                                db.close();
+                            } else {
+                                res.json({
+                                    value: false,
+                                    comment: "No data found"
+                                });
+                                db.close();
+                            }
                         });
+                    }
+                });
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Hospital id is incorrect"
+                });
+            }
+        });
+    },
+    excelobject: function(req, res) {
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+            }
+            if (db) {
+                db.open(function(err, db) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    if (db) {
+                        res.connection.setTimeout(200000);
+                        req.connection.setTimeout(200000);
+                        var extension = "";
+                        var excelimages = [];
+                        req.file("file").upload(function(err, uploadedFiles) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            _.each(uploadedFiles, function(n) {
+                                writedata = n.fd;
+                                excelcall(writedata);
+                            });
+                        });
+
+                        function excelcall(datapath) {
+                            var outputpath = "./.tmp/output.json";
+                            sails.xlsxj({
+                                input: datapath,
+                                output: outputpath
+                            }, function(err, result) {
+                                if (err) {
+                                    console.error(err);
+                                }
+                                if (result) {
+                                    sails.fs.unlink(datapath, function(data) {
+                                        if (data) {
+                                            sails.fs.unlink(outputpath, function(data2) {});
+                                        }
+                                    });
+
+                                    function createteam(num) {
+                                        m = result[num];
+                                        m.date = new Date(m.date);
+                                        m.status = "yes";
+                                        Camp.saveExcel(m, function(respo) {
+                                            if (respo.value && respo.value == true) {
+                                                console.log(num);
+                                                num++;
+                                                if (num < result.length) {
+                                                    setTimeout(function() {
+                                                        createteam(num);
+                                                    }, 15);
+                                                } else {
+                                                    res.json("Done");
+                                                }
+                                            }
+                                        });
+                                    }
+                                    createteam(0);
+                                }
+                            });
+                        }
                     }
                 });
             }

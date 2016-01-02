@@ -1,106 +1,124 @@
 module.exports = {
     save: function(data, callback) {
         data.name = data.lastname + " " + data.middlename + " " + data.firstname;
-        if (data.hospital) {
+        if (data.hospital && data.hospital != "") {
             data.hospital = sails.ObjectID(data.hospital);
-        }
-        sails.query(function(err, db) {
-            if (err) {
-                console.log(err);
-                callback({
-                    value: false
-                });
-            }
-            if (db) {
-                if (!data._id) {
-                    check(data);
+            var insert = {};
+            insert._id = data.hospital;
+            Hospital.findone(insert, function(respo) {
+                if (respo != false) {
+                    data.hospitalname = respo.name;
+                    sails.query(function(err, db) {
+                        if (err) {
+                            console.log(err);
+                            callback({
+                                value: false
+                            });
+                        }
+                        if (db) {
+                            if (!data._id) {
+                                check(data);
 
-                    function generate(data) {
-                        var splitname = data.lastname.substring(0, 1);
-                        var letter = splitname;
-                        splitname = "^" + splitname + "[0-9]";
-                        var checkname = new RegExp(splitname, "i");
-                        data.oldbottle = [];
-                        var olddata = {};
-                        olddata.bottle = data.bottle;
-                        olddata.camp = data.camp;
-                        olddata.hospital = data.hospital;
-                        olddata.campnumber = data.campnumber;
-                        data.oldbottle.push(olddata);
-                        data._id = sails.ObjectID();
-                        db.collection('donor').find({
-                            donorid: {
-                                $regex: checkname
-                            }
-                        }).sort({
-                            donorid: -1
-                        }).limit(1).toArray(function(err, data2) {
-                            if (err) {
-                                console.log(err);
-                                callback({
-                                    value: false,
-                                    comment: "Error"
-                                });
-                            } else if (data2 && data2[0]) {
-                                var regsplit = data2[0].donorid.split(letter);
-                                regsplit[1] = parseInt(regsplit[1]);
-                                data.donorid = regsplit[1] + 1;
-                                data.donorid = data.donorid.toString();
-                                if (data.donorid.length == 1) {
-                                    data.donorid = letter + "0000" + data.donorid;
-                                } else if (data.donorid.length == 2) {
-                                    data.donorid = letter + "000" + data.donorid;
-                                } else if (data.donorid.length == 3) {
-                                    data.donorid = letter + "00" + data.donorid;
-                                } else if (data.donorid.length == 4) {
-                                    data.donorid = letter + "0" + data.donorid;
-                                } else {
-                                    data.donorid = letter + data.donorid;
-                                }
-                                insertid(data);
-                            } else {
-                                data.donorid = letter + "00001";
-                                insertid(data);
-                            }
-                        });
-                    }
-
-                    function insertid(data) {
-                        data.donationcount = 0;
-                        data.notexcel = 1;
-                        db.collection('donor').insert(data, function(err, created) {
-                            if (err) {
-                                console.log(err);
-                                callback({
-                                    value: false,
-                                    comment: "Error"
-                                });
-                                db.close();
-                            } else if (created) {
-                                var bloodData = {};
-                                bloodData.camp = data.camp;
-                                bloodData.number = data.bottle;
-                                bloodData.campnumber = data.campnumber;
-                                Hospital.findone({
-                                    _id: data.hospital
-                                }, function(hosprespo) {
-                                    if (hosprespo.value != false) {
-                                        bloodData.hospital = hosprespo.name;
-                                        Blood.deleteBottle(bloodData, function(bloodrespo) {
-                                            if (bloodrespo.value == true) {
-                                                callback({
-                                                    value: true,
-                                                    id: data._id
-                                                });
-                                                db.close();
+                                function generate(data) {
+                                    var splitname = data.lastname.substring(0, 1);
+                                    var letter = splitname;
+                                    splitname = "^" + splitname + "[0-9]";
+                                    var checkname = new RegExp(splitname, "i");
+                                    data.oldbottle = [];
+                                    var olddata = {};
+                                    olddata.bottle = data.bottle;
+                                    olddata.camp = data.camp;
+                                    olddata.hospital = data.hospital;
+                                    olddata.hospitalname = data.hospitalname;
+                                    olddata.campnumber = data.campnumber;
+                                    data.oldbottle.push(olddata);
+                                    data._id = sails.ObjectID();
+                                    db.collection('donor').find({
+                                        donorid: {
+                                            $regex: checkname
+                                        }
+                                    }).sort({
+                                        donorid: -1
+                                    }).limit(1).toArray(function(err, data2) {
+                                        if (err) {
+                                            console.log(err);
+                                            callback({
+                                                value: false,
+                                                comment: "Error"
+                                            });
+                                        } else if (data2 && data2[0]) {
+                                            var regsplit = data2[0].donorid.split(letter);
+                                            regsplit[1] = parseInt(regsplit[1]);
+                                            data.donorid = regsplit[1] + 1;
+                                            data.donorid = data.donorid.toString();
+                                            if (data.donorid.length == 1) {
+                                                data.donorid = letter + "0000" + data.donorid;
+                                            } else if (data.donorid.length == 2) {
+                                                data.donorid = letter + "000" + data.donorid;
+                                            } else if (data.donorid.length == 3) {
+                                                data.donorid = letter + "00" + data.donorid;
+                                            } else if (data.donorid.length == 4) {
+                                                data.donorid = letter + "0" + data.donorid;
                                             } else {
-                                                callback({
-                                                    value: true,
-                                                    id: data._id
-                                                });
-                                                db.close();
+                                                data.donorid = letter + data.donorid;
                                             }
+                                            insertid(data);
+                                        } else {
+                                            data.donorid = letter + "00001";
+                                            insertid(data);
+                                        }
+                                    });
+                                }
+
+                                function insertid(data) {
+                                    data.donationcount = 0;
+                                    data.notexcel = 1;
+                                    db.collection('donor').insert(data, function(err, created) {
+                                        if (err) {
+                                            console.log(err);
+                                            callback({
+                                                value: false,
+                                                comment: "Error"
+                                            });
+                                            db.close();
+                                        } else if (created) {
+                                            blood();
+                                        } else {
+                                            callback({
+                                                value: false,
+                                                comment: "Not created"
+                                            });
+                                            db.close();
+                                        }
+                                    });
+                                }
+                            } else {
+                                var donor = sails.ObjectID(data._id);
+                                delete data._id;
+                                if (data.new) {
+                                    editdonor(data);
+                                } else {
+                                    check(data);
+                                }
+                            }
+
+                            function editdonor(data) {
+                                db.collection('donor').update({
+                                    _id: donor
+                                }, {
+                                    $set: data
+                                }, function(err, updated) {
+                                    if (err) {
+                                        console.log(err);
+                                        callback({
+                                            value: false,
+                                            comment: "Error"
                                         });
+                                        db.close();
+                                    } else if (updated.result.nModified != 0 && updated.result.n != 0) {
+                                        blood();
+                                    } else if (updated.result.nModified == 0 && updated.result.n != 0) {
+                                        blood();
                                     } else {
                                         callback({
                                             value: false,
@@ -109,161 +127,94 @@ module.exports = {
                                         db.close();
                                     }
                                 });
-                            } else {
-                                callback({
-                                    value: false,
-                                    comment: "Not created"
+                            }
+
+                            function blood() {
+                                var bloodData = {};
+                                bloodData.camp = data.camp;
+                                bloodData.number = data.bottle;
+                                bloodData.campnumber = data.campnumber;
+                                bloodData.hospital = data.hospitalname;
+                                Blood.deleteBottle(bloodData, function(bloodrespo) {
+                                    if (bloodrespo.value == true) {
+                                        callback({
+                                            value: true,
+                                            id: data._id
+                                        });
+                                        db.close();
+                                    } else {
+                                        callback({
+                                            value: true,
+                                            id: data._id
+                                        });
+                                        db.close();
+                                    }
                                 });
-                                db.close();
                             }
-                        });
-                    }
+
+                            function check(data) {
+                                db.collection("donor").find({
+                                    campnumber: data.campnumber,
+                                    bottle: data.bottle,
+                                    camp: data.camp,
+                                    hospital: data.hospital
+                                }).toArray(function(err, data2) {
+                                    if (err) {
+                                        console.log(err);
+                                        callback({
+                                            value: false
+                                        });
+                                        db.close();
+                                    } else if (data2 && data2[0]) {
+                                        callback({
+                                            value: true,
+                                            comment: "Bottle already exists"
+                                        });
+                                        db.close();
+                                    } else {
+                                        data.new = 1;
+                                        if (data.donorid) {
+                                            if (data.oldbottle && data.oldbottle.length > 0) {
+                                                var olddata = {};
+                                                olddata.bottle = data.bottle;
+                                                olddata.camp = data.camp;
+                                                olddata.hospital = data.hospital;
+                                                olddata.hospitalname = data.hospitalname;
+                                                olddata.campnumber = data.campnumber;
+                                                data.oldbottle.push(olddata);
+                                                editdonor(data);
+                                            } else {
+                                                data.oldbottle = [];
+                                                var olddata = {};
+                                                olddata.bottle = data.bottle;
+                                                olddata.camp = data.camp;
+                                                olddata.hospital = data.hospital;
+                                                olddata.hospitalname = data.hospitalname;
+                                                olddata.campnumber = data.campnumber;
+                                                data.oldbottle.push(olddata);
+                                                editdonor(data);
+                                            }
+                                        } else {
+                                            generate(data);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
                 } else {
-                    var donor = sails.ObjectID(data._id);
-                    delete data._id;
-                    if (!data.new) {
-                        check(data);
-                    } else {
-                        editdonor(data);
-                    }
-                }
-
-                function editdonor(data) {
-                    db.collection('donor').update({
-                        _id: donor
-                    }, {
-                        $set: data
-                    }, function(err, updated) {
-                        if (err) {
-                            console.log(err);
-                            callback({
-                                value: false,
-                                comment: "Error"
-                            });
-                            db.close();
-                        } else if (updated.result.nModified != 0 && updated.result.n != 0) {
-                            var bloodData = {};
-                            bloodData.number = data.bottle;
-                            bloodData.campnumber = data.campnumber;
-                            bloodData.camp = data.camp;
-                            Hospital.findone({
-                                _id: data.hospital
-                            }, function(hosprespo) {
-                                if (hosprespo.value != false) {
-                                    bloodData.hospital = hosprespo.name;
-                                    Blood.deleteBottle(bloodData, function(bloodrespo) {
-                                        if (bloodrespo.value == true) {
-                                            callback({
-                                                value: true,
-                                                comment: "Donor updated"
-                                            });
-                                            db.close();
-                                        } else {
-                                            callback({
-                                                value: true,
-                                                comment: "Donor updated"
-                                            });
-                                            db.close();
-                                        }
-                                    });
-                                } else {
-                                    callback({
-                                        value: false,
-                                        comment: "No data found"
-                                    });
-                                    db.close();
-                                }
-                            });
-                        } else if (updated.result.nModified == 0 && updated.result.n != 0) {
-                            var bloodData = {};
-                            bloodData.number = data.bottle;
-                            bloodData.campnumber = data.campnumber;
-                            bloodData.camp = data.camp;
-                            Hospital.findone({
-                                _id: data.hospital
-                            }, function(hosprespo) {
-                                if (hosprespo.value != false) {
-                                    bloodData.hospital = hosprespo.name;
-                                    Blood.deleteBottle(bloodData, function(bloodrespo) {
-                                        if (bloodrespo.value == true) {
-                                            callback({
-                                                value: true,
-                                                comment: "Donor updated"
-                                            });
-                                            db.close();
-                                        } else {
-                                            callback({
-                                                value: true,
-                                                comment: "Donor updated"
-                                            });
-                                            db.close();
-                                        }
-                                    });
-                                } else {
-                                    callback({
-                                        value: false,
-                                        comment: "No data found"
-                                    });
-                                    db.close();
-                                }
-                            });
-                        } else {
-                            callback({
-                                value: false,
-                                comment: "No data found"
-                            });
-                            db.close();
-                        }
+                    callback({
+                        value: false,
+                        comment: "Hospital id is incorrect"
                     });
                 }
-
-                function check(data) {
-                    db.collection("donor").find({
-                        campnumber: data.campnumber,
-                        bottle: data.bottle,
-                        camp: data.camp,
-                        hospital: sails.ObjectID(data.hospital)
-                    }).toArray(function(err, data2) {
-                        if (err) {
-                            console.log(err);
-                            callback({
-                                value: false
-                            });
-                            db.close();
-                        } else if (data2 && data2[0]) {
-                            callback({
-                                value: true,
-                                comment: "Bottle already exists"
-                            });
-                            db.close();
-                        } else {
-                            data.new = 1;
-                            if (data.donorid) {
-                                if (data.oldbottle && data.oldbottle.length > 0) {
-                                    var olddata = {};
-                                    olddata.bottle = data.bottle;
-                                    olddata.camp = data.camp;
-                                    olddata.hospital = data.hospital;
-                                    olddata.campnumber = data.campnumber;
-                                    data.oldbottle.push(olddata);
-                                } else {
-                                    data.oldbottle = [];
-                                    var olddata = {};
-                                    olddata.bottle = data.bottle;
-                                    olddata.camp = data.camp;
-                                    olddata.hospital = data.hospital;
-                                    olddata.campnumber = data.campnumber;
-                                    data.oldbottle.push(olddata);
-                                }
-                                editdonor(data);
-                            } else {
-                                generate(data);
-                            }
-                        }
-                    });
-                }
-            }
-        });
+            });
+        } else {
+            callback({
+                value: false,
+                comment: "Hospital id is incorrect"
+            });
+        }
     },
     find: function(data, callback) {
         sails.query(function(err, db) {
@@ -374,6 +325,9 @@ module.exports = {
                         pincode: data.pincode,
                         new: {
                             $exists: false
+                        },
+                        new: {
+                            $ne: 1
                         }
                     };
                 } else {
@@ -527,6 +481,9 @@ module.exports = {
                         pincode: data.pincode,
                         hospital: sails.ObjectID(data.hospital),
                         new: {
+                            $exists: true
+                        },
+                        bottle: {
                             $exists: true
                         },
                         bottle: {
@@ -1028,6 +985,9 @@ module.exports = {
         var matchobj = {
             camp: data.camp,
             campnumber: data.campnumber,
+            new: {
+                $exists: true
+            },
             bottle: {
                 $ne: ""
             }
@@ -1464,12 +1424,17 @@ module.exports = {
         });
     },
     saveforapp: function(data, callback) {
+        delete data.hospital;
+        delete data.camp;
+        delete data.bottle;
+        delete data.campnumber;
         data.name = data.firstname + " " + data.middlename + " " + data.lastname;
         var splitname = data.lastname.substring(0, 1);
         var letter = splitname;
         splitname = "^" + splitname + "[0-9]";
         var checkname = new RegExp(splitname, "i");
         data.donationcount = 0;
+
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
@@ -1652,15 +1617,5 @@ module.exports = {
                 }
             });
         });
-    },
-    // sendSms: function(data, callback) {
-    //     Donor.find(data, function(donresp) {
-    //         request.get({
-    //             url: ""
-    //         }, function(err, httpResponse, body) {
-    //             console.log(httpResponse);
-    //             console.log(body);
-    //         });
-    //     });
-    // }
+    }
 };

@@ -1,5 +1,8 @@
 module.exports = {
     save: function(data, callback) {
+        if (data.date) {
+            data.date = new Date(data.date);
+        }
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
@@ -69,6 +72,7 @@ module.exports = {
                             }
                         });
                     } else {
+                        var i = 0;
                         db.collection('camp').update({
                             _id: camp
                         }, {
@@ -88,13 +92,58 @@ module.exports = {
                                     campnumber: data.campnumber
                                 }, {
                                     $set: newdata
+                                }, {
+                                    multi: true
                                 }, function(err, deleted) {
                                     if (deleted) {
-                                        callback({
-                                            value: true,
-                                            comment: "Admin deleted"
+                                        Blood.deleteAll(data, function(blrespo) {
+                                            Donor.find(data, function(dorespo) {
+                                                _.each(dorespo, function(z) {
+                                                    db.collection('donor').update({
+                                                        _id: sails.ObjectID(z._id)
+                                                    }, {
+                                                        $unset: {
+                                                            bottle: "",
+                                                            new: "",
+                                                            hospital: "",
+                                                            hospitalname: "",
+                                                            camp: "",
+                                                            campnumber: "",
+                                                            hospital: "",
+                                                            verified: "",
+                                                            giftdone: "",
+                                                            deletereason: ""
+                                                        }
+                                                    }, function(err, updated) {
+                                                        if (err) {
+                                                            console.log(err);
+                                                            callback({
+                                                                value: false
+                                                            });
+                                                            db.close();
+                                                        } else if (updated) {
+                                                            i++;
+                                                            if (i == dorespo.length) {
+                                                                callback({
+                                                                    value: true,
+                                                                    comment: "Camp closed"
+                                                                });
+                                                                db.close();
+                                                            }
+                                                        } else {
+                                                            i++;
+                                                            if (i == dorespo.length) {
+                                                                callback({
+                                                                    value: true,
+                                                                    comment: "Camp closed"
+                                                                });
+                                                                db.close();
+                                                            }
+                                                        }
+                                                    });
+                                                });
+                                            });
                                         });
-                                        db.close();
                                     } else if (err) {
                                         console.log(err);
                                         callback({
@@ -128,6 +177,76 @@ module.exports = {
             }
         });
     },
+    saveExcel: function(data, callback) {
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
+            } else if (db) {
+                if (!data._id) {
+                    data._id = sails.ObjectID();
+                    db.collection('camp').insert(data, function(err, created) {
+                        if (err) {
+                            console.log(err);
+                            callback({
+                                value: false,
+                                comment: "Error"
+                            });
+                            db.close();
+                        } else if (created) {
+                            callback({
+                                value: true,
+                                id: data._id
+                            });
+                            db.close();
+                        } else {
+                            callback({
+                                value: false,
+                                comment: "Not created"
+                            });
+                            db.close();
+                        }
+                    });
+                } else {
+                    var camp = sails.ObjectID(data._id);
+                    delete data._id;
+                    db.collection('camp').update({
+                        _id: camp
+                    }, {
+                        $set: data
+                    }, function(err, updated) {
+                        if (err) {
+                            console.log(err);
+                            callback({
+                                value: false,
+                                comment: "Error"
+                            });
+                            db.close();
+                        } else if (updated.result.nModified != 0 && updated.result.n != 0) {
+                            callback({
+                                value: true
+                            });
+                            db.close();
+                        } else if (updated.result.nModified == 0 && updated.result.n != 0) {
+                            callback({
+                                value: true,
+                                comment: "Data already updated"
+                            });
+                            db.close();
+                        } else {
+                            callback({
+                                value: false,
+                                comment: "No data found"
+                            });
+                            db.close();
+                        }
+                    });
+                }
+            }
+        });
+    },
     find: function(data, callback) {
         sails.query(function(err, db) {
             if (err) {
@@ -137,7 +256,9 @@ module.exports = {
                 });
             }
             if (db) {
-                db.collection("camp").find().toArray(function(err, found) {
+                db.collection("camp").find().sort({
+                    date: -1
+                }).toArray(function(err, found) {
                     if (err) {
                         callback({
                             value: false
@@ -911,7 +1032,6 @@ module.exports = {
                     comment: "Error"
                 });
             } else if (db) {
-                console.log(data);
                 db.collection('camp').aggregate([{
                     $match: {
                         campnumber: data.campnumber
