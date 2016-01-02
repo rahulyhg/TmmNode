@@ -4,7 +4,6 @@
  * @description :: Server-side logic for managing users
  * @help                :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-var pdf = require('html-pdf');
 module.exports = {
     save: function(req, res) {
         res.connection.setTimeout(200000000);
