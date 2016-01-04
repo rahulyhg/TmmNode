@@ -416,23 +416,9 @@ module.exports = {
         });
     },
     countlevels: function(data, callback) {
+        var newreturns = {};
         if (data.hospital && data.hospital != "") {
             data.hospital = sails.ObjectID(data.hospital);
-        }
-        var newreturns = {};
-        var matchobj = {
-            "oldbottle.campnumber": data.campnumber,
-            "oldbottle.camp": data.camp,
-            "oldbottle.hospital": data.hospital,
-            "oldbottle.bottle": {
-                $exists: true
-            }
-        };
-        if (data.camp == "All") {
-            delete matchobj["oldbottle.camp"];
-        }
-        if (!data.hospital || data.hospital == "") {
-            delete matchobj["oldbottle.hospital"];
         }
         sails.query(function(err, db) {
             if (err) {
@@ -442,16 +428,303 @@ module.exports = {
                     comment: "Error"
                 });
             } else if (db) {
-                db.collection('donor').aggregate([{
-                    $unwind: "$oldbottle"
-                }, {
-                    $match: matchobj
-                }, {
-                    $project: {
-                        _id: 0,
-                        oldbottle: 1
+                async.parallel([
+                    function(callback) {
+                        var matchobj = {
+                            "oldbottle.campnumber": data.campnumber,
+                            "oldbottle.camp": data.camp,
+                            "oldbottle.hospital": data.hospital,
+                            "oldbottle.bottle": {
+                                $exists: true
+                            }
+                        };
+                        if (data.camp == "All" || data.camp == "") {
+                            delete matchobj["oldbottle.camp"];
+                        }
+                        if (!data.hospital || data.hospital == "") {
+                            delete matchobj["oldbottle.hospital"];
+                        }
+                        db.collection('donor').aggregate([{
+                            $unwind: "$oldbottle"
+                        }, {
+                            $match: matchobj
+                        }, {
+                            $project: {
+                                _id: 0,
+                                oldbottle: 1
+                            }
+                        }]).toArray(function(err, data1) {
+                            if (err) {
+                                console.log(err);
+                                callback(err, null);
+                            } else if (data1 && data1[0]) {
+                                newreturns.entry = data1.length;
+                                callback(null, newreturns);
+                            } else {
+                                newreturns.entry = 0;
+                                callback(null, newreturns);
+                            }
+                        });
+                    },
+                    function(callback) {
+                        var matchobj = {
+                            "oldbottle.campnumber": data.campnumber,
+                            "oldbottle.camp": data.camp,
+                            "oldbottle.hospital": data.hospital,
+                            "oldbottle.bottle": {
+                                $exists: true
+                            },
+                            "oldbottle.verified": {
+                                $exists: true
+                            }
+                        };
+                        if (data.camp == "All" || data.camp == "") {
+                            delete matchobj["oldbottle.camp"];
+                        }
+                        if (!data.hospital || data.hospital == "") {
+                            delete matchobj["oldbottle.hospital"];
+                        }
+                        db.collection('donor').aggregate([{
+                            $unwind: "$oldbottle"
+                        }, {
+                            $match: matchobj
+                        }, {
+                            $project: {
+                                _id: 0,
+                                oldbottle: 1
+                            }
+                        }]).toArray(function(err, data2) {
+                            if (err) {
+                                console.log(err);
+                                callback(err, null);
+                            } else if (data2 && data2[0]) {
+                                newreturns.verify = data2.length;
+                                callback(null, newreturns);
+                            } else {
+                                newreturns.verify = 0;
+                                callback(null, newreturns);
+                            }
+                        });
+                    },
+                    function(callback) {
+                        var matchobj = {
+                            "oldbottle.campnumber": data.campnumber,
+                            "oldbottle.camp": data.camp,
+                            "oldbottle.hospital": data.hospital,
+                            "oldbottle.bottle": {
+                                $exists: true
+                            },
+                            "oldbottle.verified": {
+                                $exists: true
+                            },
+                            "oldbottle.giftdone": {
+                                $exists: true
+                            }
+                        };
+                        if (data.camp == "All" || data.camp == "") {
+                            delete matchobj["oldbottle.camp"];
+                        }
+                        if (!data.hospital || data.hospital == "") {
+                            delete matchobj["oldbottle.hospital"];
+                        }
+                        db.collection('donor').aggregate([{
+                            $unwind: "$oldbottle"
+                        }, {
+                            $match: matchobj
+                        }, {
+                            $project: {
+                                _id: 0,
+                                oldbottle: 1
+                            }
+                        }]).toArray(function(err, data3) {
+                            if (err) {
+                                console.log(err);
+                                callback(err, null);
+                            } else if (data3 && data3[0]) {
+                                newreturns.gift = data3.length;
+                                callback(null, newreturns);
+                            } else {
+                                newreturns.gift = 0;
+                                callback(null, newreturns);
+                            }
+                        });
+                    },
+                    function(callback) {
+                        var matchobj = {
+                            "oldbottle.campnumber": data.campnumber,
+                            "oldbottle.camp": data.camp,
+                            "oldbottle.hospital": data.hospital,
+                            "oldbottle.bottle": {
+                                $exists: true
+                            },
+                            "oldbottle.verified": {
+                                $exists: false
+                            }
+                        };
+                        if (data.camp == "All") {
+                            delete matchobj["oldbottle.camp"];
+                        }
+                        if (!data.hospital || data.hospital == "") {
+                            delete matchobj["oldbottle.hospital"];
+                        }
+                        db.collection('donor').aggregate([{
+                            $unwind: "$oldbottle"
+                        }, {
+                            $match: matchobj
+                        }, {
+                            $project: {
+                                _id: 0,
+                                oldbottle: 1
+                            }
+                        }]).toArray(function(err, data4) {
+                            if (err) {
+                                console.log(err);
+                                callback({
+                                    value: false,
+                                    comment: "Error"
+                                });
+                            } else if (data4 && data4[0]) {
+                                newreturns.pendingV = data4.length;
+                                callback(null, newreturns);
+                            } else {
+                                newreturns.pendingV = 0;
+                                callback(null, newreturns);
+                            }
+                        });
+                    },
+                    function(callback) {
+                        var matchobj = {
+                            "oldbottle.campnumber": data.campnumber,
+                            "oldbottle.camp": data.camp,
+                            "oldbottle.hospital": data.hospital,
+                            "oldbottle.bottle": {
+                                $exists: true
+                            },
+                            "oldbottle.verified": {
+                                $exists: true
+                            },
+                            "oldbottle.giftdone": {
+                                $exists: false
+                            }
+                        };
+                        if (data.camp == "All") {
+                            delete matchobj["oldbottle.camp"];
+                        }
+                        if (!data.hospital || data.hospital == "") {
+                            delete matchobj["oldbottle.hospital"];
+                        }
+                        db.collection('donor').aggregate([{
+                            $unwind: "$oldbottle"
+                        }, {
+                            $match: matchobj
+                        }, {
+                            $project: {
+                                _id: 0,
+                                oldbottle: 1
+                            }
+                        }]).toArray(function(err, data5) {
+                            if (err) {
+                                console.log(err);
+                                callback({
+                                    value: false,
+                                    comment: "Error"
+                                });
+                            } else if (data5 && data5[0]) {
+                                newreturns.pendingG = data5.length;
+                                callback(null, newreturns);
+                            } else {
+                                newreturns.pendingG = 0;
+                                callback(null, newreturns);
+                            }
+                        });
+                    },
+                    function(callback) {
+                        var matchobj = {
+                            "oldbottle.campnumber": data.campnumber,
+                            "oldbottle.camp": data.camp,
+                            "oldbottle.hospital": data.hospital,
+                            "oldbottle.bottle": {
+                                $exists: true
+                            },
+                            "oldbottle.verified": {
+                                $exists: true
+                            },
+                            "oldbottle.giftdone": {
+                                $exists: false
+                            }
+                        };
+                        if (data.camp == "All") {
+                            delete matchobj["oldbottle.camp"];
+                        }
+                        if (!data.hospital || data.hospital == "") {
+                            delete matchobj["oldbottle.hospital"];
+                        }
+                        db.collection('donor').aggregate([{
+                            $unwind: "$oldbottle"
+                        }, {
+                            $match: matchobj
+                        }, {
+                            $project: {
+                                _id: 0,
+                                oldbottle: 1
+                            }
+                        }]).toArray(function(err, data6) {
+                            if (err) {
+                                console.log(err);
+                                callback({
+                                    value: false,
+                                    comment: "Error"
+                                });
+                            } else if (data6 && data6[0]) {
+                                newreturns.pendingG = data6.length;
+                                callback(null, newreturns);
+                            } else {
+                                newreturns.pendingG = 0;
+                                callback(null, newreturns);
+                            }
+                        });
+                    },
+                    function(callback) {
+                        var matchobj = {
+                            "oldbottle.campnumber": data.campnumber,
+                            "oldbottle.camp": data.camp,
+                            "oldbottle.hospital": data.hospital,
+                            "oldbottle.bottle": {
+                                $exists: false
+                            }
+                        };
+                        if (data.camp == "All") {
+                            delete matchobj["oldbottle.camp"];
+                        }
+                        if (!data.hospital || data.hospital == "") {
+                            delete matchobj["oldbottle.hospital"];
+                        }
+                        db.collection('donor').aggregate([{
+                            $unwind: "$oldbottle"
+                        }, {
+                            $match: matchobj
+                        }, {
+                            $project: {
+                                _id: 0,
+                                oldbottle: 1
+                            }
+                        }]).toArray(function(err, data6) {
+                            if (err) {
+                                console.log(err);
+                                callback({
+                                    value: false,
+                                    comment: "Error"
+                                });
+                            } else if (data6 && data6[0]) {
+                                newreturns.rejected = data6.length;
+                                callback(null, newreturns);
+                            } else {
+                                newreturns.rejected = 0;
+                                callback(null, newreturns);
+                            }
+                        });
                     }
-                }]).toArray(function(err, data2) {
+                ], function(err, data7) {
                     if (err) {
                         console.log(err);
                         callback({
@@ -459,216 +732,245 @@ module.exports = {
                             comment: "Error"
                         });
                         db.close();
-                    } else if (data2 && data2[0]) {
-                        newreturns.entry = data2.length;
-                        callfunc1();
-                    } else {
-                        newreturns.entry = 0;
-                        newreturns.verify = 0;
-                        newreturns.gift = 0;
-                        newreturns.pendingV = 0;
-                        newreturns.pendingG = 0;
+                    } else if (data7) {
                         callback(newreturns);
+                        db.close();
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No data found"
+                        });
                         db.close();
                     }
                 });
-
-                function callfunc1() {
-                    var matchobj = {
-                        "oldbottle.campnumber": data.campnumber,
-                        "oldbottle.camp": data.camp,
-                        "oldbottle.hospital": data.hospital,
-                        "oldbottle.bottle": {
-                            $exists: true
-                        },
-                        "oldbottle.verified": {
-                            $exists: true
-                        }
-                    };
-                    if (data.camp == "All") {
-                        delete matchobj["oldbottle.camp"];
-                    }
-                    if (!data.hospital || data.hospital == "") {
-                        delete matchobj["oldbottle.hospital"];
-                    }
-                    db.collection('donor').aggregate([{
-                        $unwind: "$oldbottle"
-                    }, {
-                        $match: matchobj
-                    }, {
-                        $project: {
-                            _id: 0,
-                            oldbottle: 1
-                        }
-                    }]).toArray(function(err, data3) {
-                        if (err) {
-                            console.log(err);
-                            callback({
-                                value: false,
-                                comment: "Error"
-                            });
-                            db.close();
-                        } else if (data3 && data3[0]) {
-                            newreturns.verify = data3.length;
-                            callfunc2();
-                        } else {
-                            newreturns.verify = 0;
-                            newreturns.gift = 0;
-                            newreturns.pendingV = 0;
-                            newreturns.pendingG = 0;
-                            callback(newreturns);
-                        }
-                    });
-                }
-
-                function callfunc2() {
-                    var matchobj = {
-                        "oldbottle.campnumber": data.campnumber,
-                        "oldbottle.camp": data.camp,
-                        "oldbottle.hospital": data.hospital,
-                        "oldbottle.bottle": {
-                            $exists: true
-                        },
-                        "oldbottle.verified": {
-                            $exists: true
-                        },
-                        "oldbottle.giftdone": {
-                            $exists: true
-                        }
-                    };
-                    if (data.camp == "All") {
-                        delete matchobj["oldbottle.camp"];
-                    }
-                    if (!data.hospital || data.hospital == "") {
-                        delete matchobj["oldbottle.hospital"];
-                    }
-                    db.collection('donor').aggregate([{
-                        $unwind: "$oldbottle"
-                    }, {
-                        $match: matchobj
-                    }, {
-                        $project: {
-                            _id: 0,
-                            oldbottle: 1
-                        }
-                    }]).toArray(function(err, data4) {
-                        if (err) {
-                            console.log(err);
-                            callback({
-                                value: false,
-                                comment: "Error"
-                            });
-                            db.close();
-                        } else if (data4 && data4[0]) {
-                            newreturns.gift = data4.length;
-                            callfunc3();
-                        } else {
-                            newreturns.gift = 0;
-                            newreturns.pendingV = 0;
-                            newreturns.pendingG = 0;
-                            callfunc3();
-                        }
-                    });
-                }
-
-                function callfunc3() {
-                    var matchobj = {
-                        "oldbottle.campnumber": data.campnumber,
-                        "oldbottle.camp": data.camp,
-                        "oldbottle.hospital": data.hospital,
-                        "oldbottle.bottle": {
-                            $exists: true
-                        },
-                        "oldbottle.verified": {
-                            $exists: false
-                        }
-                    };
-                    if (data.camp == "All") {
-                        delete matchobj["oldbottle.camp"];
-                    }
-                    if (!data.hospital || data.hospital == "") {
-                        delete matchobj["oldbottle.hospital"];
-                    }
-                    db.collection('donor').aggregate([{
-                        $unwind: "$oldbottle"
-                    }, {
-                        $match: matchobj
-                    }, {
-                        $project: {
-                            _id: 0,
-                            oldbottle: 1
-                        }
-                    }]).toArray(function(err, data5) {
-                        if (err) {
-                            console.log(err);
-                            callback({
-                                value: false,
-                                comment: "Error"
-                            });
-                            db.close();
-                        } else if (data5 && data5[0]) {
-                            newreturns.pendingV = data5.length;
-                            callfunc4();
-                        } else {
-                            newreturns.pendingV = 0;
-                            newreturns.pendingG = 0;
-                            callfunc4();
-                        }
-                    });
-                }
-
-                function callfunc4() {
-                    var matchobj = {
-                        "oldbottle.campnumber": data.campnumber,
-                        "oldbottle.camp": data.camp,
-                        "oldbottle.hospital": data.hospital,
-                        "oldbottle.bottle": {
-                            $exists: true
-                        },
-                        "oldbottle.verified": {
-                            $exists: true
-                        },
-                        "oldbottle.giftdone": {
-                            $exists: false
-                        }
-                    };
-                    if (data.camp == "All") {
-                        delete matchobj["oldbottle.camp"];
-                    }
-                    if (!data.hospital || data.hospital == "") {
-                        delete matchobj["oldbottle.hospital"];
-                    }
-                    db.collection('donor').aggregate([{
-                        $unwind: "$oldbottle"
-                    }, {
-                        $match: matchobj
-                    }, {
-                        $project: {
-                            _id: 0,
-                            oldbottle: 1
-                        }
-                    }]).toArray(function(err, data6) {
-                        if (err) {
-                            console.log(err);
-                            callback({
-                                value: false,
-                                comment: "Error"
-                            });
-                            db.close();
-                        } else if (data6 && data6[0]) {
-                            newreturns.pendingG = data6.length;
-                            callback(newreturns);
-                            db.close();
-                        } else {
-                            newreturns.pendingG = 0;
-                            callback(newreturns);
-                            db.close();
-                        }
-                    });
-                }
             }
         });
     },
+    // countlevels: function(data, callback) {
+    //     if (data.hospital && data.hospital != "") {
+    //         data.hospital = sails.ObjectID(data.hospital);
+    //     }
+    //     var newreturns = {};
+    //     var matchobj = {
+    //         "oldbottle.campnumber": data.campnumber,
+    //         "oldbottle.camp": data.camp,
+    //         "oldbottle.hospital": data.hospital,
+    //         "oldbottle.bottle": {
+    //             $exists: true
+    //         }
+    //     };
+    //     if (data.camp == "All") {
+    //         delete matchobj["oldbottle.camp"];
+    //     }
+    //     if (!data.hospital || data.hospital == "") {
+    //         delete matchobj["oldbottle.hospital"];
+    //     }
+    //     sails.query(function(err, db) {
+    //         if (err) {
+    //             console.log(err);
+    //             callback({
+    //                 value: false,
+    //                 comment: "Error"
+    //             });
+    //         } else if (db) {
+
+
+    //             function callfunc1() {
+    //                 var matchobj = {
+    //                     "oldbottle.campnumber": data.campnumber,
+    //                     "oldbottle.camp": data.camp,
+    //                     "oldbottle.hospital": data.hospital,
+    //                     "oldbottle.bottle": {
+    //                         $exists: true
+    //                     },
+    //                     "oldbottle.verified": {
+    //                         $exists: true
+    //                     }
+    //                 };
+    //                 if (data.camp == "All") {
+    //                     delete matchobj["oldbottle.camp"];
+    //                 }
+    //                 if (!data.hospital || data.hospital == "") {
+    //                     delete matchobj["oldbottle.hospital"];
+    //                 }
+    //                 db.collection('donor').aggregate([{
+    //                     $unwind: "$oldbottle"
+    //                 }, {
+    //                     $match: matchobj
+    //                 }, {
+    //                     $project: {
+    //                         _id: 0,
+    //                         oldbottle: 1
+    //                     }
+    //                 }]).toArray(function(err, data3) {
+    //                     if (err) {
+    //                         console.log(err);
+    //                         callback({
+    //                             value: false,
+    //                             comment: "Error"
+    //                         });
+    //                         db.close();
+    //                     } else if (data3 && data3[0]) {
+    //                         newreturns.verify = data3.length;
+    //                         callfunc2();
+    //                     } else {
+    //                         newreturns.verify = 0;
+    //                         newreturns.gift = 0;
+    //                         newreturns.pendingV = 0;
+    //                         newreturns.pendingG = 0;
+    //                         callback(newreturns);
+    //                     }
+    //                 });
+    //             }
+
+    //             function callfunc2() {
+    //                 var matchobj = {
+    //                     "oldbottle.campnumber": data.campnumber,
+    //                     "oldbottle.camp": data.camp,
+    //                     "oldbottle.hospital": data.hospital,
+    //                     "oldbottle.bottle": {
+    //                         $exists: true
+    //                     },
+    //                     "oldbottle.verified": {
+    //                         $exists: true
+    //                     },
+    //                     "oldbottle.giftdone": {
+    //                         $exists: true
+    //                     }
+    //                 };
+    //                 if (data.camp == "All") {
+    //                     delete matchobj["oldbottle.camp"];
+    //                 }
+    //                 if (!data.hospital || data.hospital == "") {
+    //                     delete matchobj["oldbottle.hospital"];
+    //                 }
+    //                 db.collection('donor').aggregate([{
+    //                     $unwind: "$oldbottle"
+    //                 }, {
+    //                     $match: matchobj
+    //                 }, {
+    //                     $project: {
+    //                         _id: 0,
+    //                         oldbottle: 1
+    //                     }
+    //                 }]).toArray(function(err, data4) {
+    //                     if (err) {
+    //                         console.log(err);
+    //                         callback({
+    //                             value: false,
+    //                             comment: "Error"
+    //                         });
+    //                         db.close();
+    //                     } else if (data4 && data4[0]) {
+    //                         newreturns.gift = data4.length;
+    //                         callfunc3();
+    //                     } else {
+    //                         newreturns.gift = 0;
+    //                         newreturns.pendingV = 0;
+    //                         newreturns.pendingG = 0;
+    //                         callfunc3();
+    //                     }
+    //                 });
+    //             }
+
+    //             function callfunc3() {
+    //                 var matchobj = {
+    //                     "oldbottle.campnumber": data.campnumber,
+    //                     "oldbottle.camp": data.camp,
+    //                     "oldbottle.hospital": data.hospital,
+    //                     "oldbottle.bottle": {
+    //                         $exists: true
+    //                     },
+    //                     "oldbottle.verified": {
+    //                         $exists: false
+    //                     }
+    //                 };
+    //                 if (data.camp == "All") {
+    //                     delete matchobj["oldbottle.camp"];
+    //                 }
+    //                 if (!data.hospital || data.hospital == "") {
+    //                     delete matchobj["oldbottle.hospital"];
+    //                 }
+    //                 db.collection('donor').aggregate([{
+    //                     $unwind: "$oldbottle"
+    //                 }, {
+    //                     $match: matchobj
+    //                 }, {
+    //                     $project: {
+    //                         _id: 0,
+    //                         oldbottle: 1
+    //                     }
+    //                 }]).toArray(function(err, data5) {
+    //                     if (err) {
+    //                         console.log(err);
+    //                         callback({
+    //                             value: false,
+    //                             comment: "Error"
+    //                         });
+    //                         db.close();
+    //                     } else if (data5 && data5[0]) {
+    //                         newreturns.pendingV = data5.length;
+    //                         callfunc4();
+    //                     } else {
+    //                         newreturns.pendingV = 0;
+    //                         newreturns.pendingG = 0;
+    //                         callfunc4();
+    //                     }
+    //                 });
+    //             }
+
+    //             function callfunc4() {
+    //                 var matchobj = {
+    //                     "oldbottle.campnumber": data.campnumber,
+    //                     "oldbottle.camp": data.camp,
+    //                     "oldbottle.hospital": data.hospital,
+    //                     "oldbottle.bottle": {
+    //                         $exists: true
+    //                     },
+    //                     "oldbottle.verified": {
+    //                         $exists: true
+    //                     },
+    //                     "oldbottle.giftdone": {
+    //                         $exists: false
+    //                     }
+    //                 };
+    //                 if (data.camp == "All") {
+    //                     delete matchobj["oldbottle.camp"];
+    //                 }
+    //                 if (!data.hospital || data.hospital == "") {
+    //                     delete matchobj["oldbottle.hospital"];
+    //                 }
+    //                 db.collection('donor').aggregate([{
+    //                     $unwind: "$oldbottle"
+    //                 }, {
+    //                     $match: matchobj
+    //                 }, {
+    //                     $project: {
+    //                         _id: 0,
+    //                         oldbottle: 1
+    //                     }
+    //                 }]).toArray(function(err, data6) {
+    //                     if (err) {
+    //                         console.log(err);
+    //                         callback({
+    //                             value: false,
+    //                             comment: "Error"
+    //                         });
+    //                         db.close();
+    //                     } else if (data6 && data6[0]) {
+    //                         newreturns.pendingG = data6.length;
+    //                         callback(newreturns);
+    //                         db.close();
+    //                     } else {
+    //                         newreturns.pendingG = 0;
+    //                         callback(newreturns);
+    //                         db.close();
+    //                     }
+    //                 });
+    //             }
+    //         }
+    //     });
+    // },
     countforHosp: function(data, callback) {
         var i = 0;
         var responseData = [];

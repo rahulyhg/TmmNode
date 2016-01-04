@@ -320,18 +320,19 @@ module.exports = {
 
                                     function createteam(num) {
                                         m = result[num];
-                                        delete m.donorid1;
-                                        m.name = m.lastname + " " + m.firstname+ " " + m.middlename;
+                                        m.name = m.lastname + " " + m.firstname + " " + m.middlename;
                                         if (m.birthdate == "") {
                                             m.birthdate = new Date();
                                         } else {
                                             m.birthdate = new Date(m.birthdate);
                                         }
-                                        if (m.email = "@") {
-                                            m.email = "";
+                                        if (m.email != "") {
+                                            m.email = m.email + m.domainName;
                                         }
-                                        delete m.email1;
+                                        delete m.donorid1;
                                         delete m.domainName;
+                                        delete m.address21;
+                                        delete m.address3;
                                         if (m.village != "") {
                                             Village.savevillage(m, function(villagerespo) {
                                                 m.village = [];
@@ -562,8 +563,9 @@ module.exports = {
 
                                     function createteam(num) {
                                         m = result[num];
-                                        delete m.donorid1;
+                                        m.donorid = m.donorid1.toUpperCase();
                                         m.date = new Date(m.date);
+                                        delete m.donorid1;
                                         Donor.getbyid(m, function(dorespo) {
                                             if (dorespo.value != false) {
                                                 if (dorespo.history) {
