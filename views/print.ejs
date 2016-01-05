@@ -113,7 +113,6 @@
     @media screen,
     print {
       .black-bg {
-        margin-top: 12px;
         border: 2px solid #2d2d2d;
         padding-bottom: 2px;
       }
@@ -129,7 +128,7 @@
           <div class="row">
             <div class="col-xs-4" style="padding-right: 0;">
               <div class="section1">
-                <div class="text-center pd5" style="border-bottom: 2px solid #2D2D2D;">
+                <div class="text-center pd5" style="border-bottom: 2px solid #2D2D2D;padding-top:3px;">
                   <h6 class="text-uppercase fz11"><b style="font-size:13px">Tarun mitra mandal</b></h6>
                   <p class="nomg">C/o. Gada & Haria, 5, Framroz Court, 2nd Floor, D.S.P Road, Dadar(E), Mumbai - 14.</p>
                 </div>
@@ -175,7 +174,7 @@
             </div>
             <div class="col-xs-4" style="padding: 0;border-left: 2px solid #000;border-right:2px solid #000;">
               <div class="section2 ">
-                <div class="text-center pd5" style="border-bottom: 2px solid #2D2D2D;">
+                <div class="text-center pd5" style="border-bottom: 2px solid #2D2D2D;padding-top:3px;">
                   <h6 class="fz11"><b style="font-size:13px">State Blood Transfusion Council</b></h6>
                   <p class="nomg">Government of Maharashtra</p>
                 </div>
@@ -213,7 +212,7 @@
             </div>
             <div class="col-xs-4" style="padding-left:0">
               <div class="section3 text-center">
-                <div class="text-center pd5" style="border-bottom: 2px solid #2D2D2D;">
+                <div class="text-center pd5" style="border-bottom: 2px solid #2D2D2D;padding-top:3px;">
                   <h6 class="fz11"><b style="font-size:13px">State Blood Transfusion Council</b></h6>
                   <p style="margin: 0">Government of Maharashtra</p>
                   <p style="margin: 0">Blood Group (Cells &amp; Serum tested)</p>
@@ -237,9 +236,9 @@
                     </p>
                     <div class="add">
                       <span class="ib v-top">Add :</span>
-                      <span class="text-uppercase ib" style="width: 80%"><b class="fz9"><%= data.address1 %> <%= data.address2 %> <%= data.address3 %></b></span>
+                      <span class="text-uppercase ib" style="width: 80%"><b class="fz9"><%= data.address1 %>, <%= data.address2 %></b></span>
                     </div>
-                    <p class="nomg clearfix">
+                    <p class="nomg clearfix" style="margin-top: 23px;">
                       <span class="pull-left fz9">DONOR'S SIGNATURE</span>
                       <span class="underline pull-right"></span>
                     </p>
@@ -259,23 +258,23 @@
                   </p>
                 </div>
                 <div class="sec3-foot" style="">
-                  <div class="reg clearfix" style="padding: 20px 5px 0">
+                  <div class="reg clearfix" style="padding: 26px 5px 0">
                     <div class="bottle-no pull-left">
                       <div class="text-center">
                         <p class="nomg">Regn/Bottle No</p>
-                        <span class="regn-no pd5" style="border:1px solid #2d2d2d">
+                        <span class="regn-no pd5" style="border:1px solid #2d2d2d;font-weight: 800;">
                           <%= data.oldbottle.bottle %>
                         </span>
                       </div>
                     </div>
                     <div class="sign pull-right">
                       <span class="underline"></span>
-                      <p>Medical Officer Blood Bank</p>
+                      <p style="margin-bottom: 0;">Medical Officer Blood Bank</p>
                     </div>
                   </div>
-                  <div class="text-left pd5">
-                    <span class="text-uppercase ib fz9" style="width:60%">check group before transfusion</span>
-                    <span class="ib" style="border:1px solid #2d2d2d; padding: 6px 26px;"></span>
+                  <div class="text-left pd5" style="line-height: 10px;">
+                    <span class="text-uppercase ib fz9" style="width: 70%;vertical-align: super;">check group before transfusion</span>
+                    <span class="ib" style="border:1px solid #2d2d2d; padding: 10px 30px;"></span>
                   </div>
                   <div class="text-center" style="padding:7px">
                     <div class="black-bg">
@@ -326,7 +325,7 @@
                   </p>
                   <div class="add">
                     <span class="ib v-top">Add :</span>
-                    <span class="text-uppercase ib" style="width: 80%"><b class="fz9"><%= data.address1 %> <%= data.address2 %> <%= data.address3 %></b></span>
+                    <span class="text-uppercase ib" style="width: 80%"><b class="fz9"><%= data.address1 %>, <%= data.address2 %></b></span>
                   </div>
                   <div class="land-no" style="line-height:10px">
                     <div style="width:50%;" class="ib">
