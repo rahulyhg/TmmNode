@@ -314,6 +314,8 @@ module.exports = {
                             campnumber: {
                                 '$regex': check
                             }
+                        }).sort({
+                            campnumber: -1
                         }).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function(err, found) {
                             if (err) {
                                 callback({
