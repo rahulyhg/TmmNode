@@ -109,6 +109,8 @@ module.exports = {
                                                     giftdone: "",
                                                     deletereason: ""
                                                 }
+                                            }, {
+                                                multi: true
                                             }, function(err, updated) {
                                                 if (err) {
                                                     console.log(err);

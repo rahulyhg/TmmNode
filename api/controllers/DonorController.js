@@ -723,6 +723,8 @@ module.exports = {
                         history: "",
                         oldbottle: ""
                     }
+                }, {
+                    multi: true
                 }, function(err, updated) {
                     if (err) {
                         console.log(err);
