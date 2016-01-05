@@ -711,30 +711,39 @@ module.exports = {
     emptyHistory: function(req, res) {
         res.connection.setTimeout(200000000);
         req.connection.setTimeout(200000000);
-        db.collection('donor').update({}, {
-            $unset: {
-                history: "",
-                oldbottle: ""
-            }
-        }, function(err, updated) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
-                callback({
+                res.json({
                     value: false
                 });
-                db.close();
-            } else if (updated) {
-                callback({
-                    value: true,
-                    comment: "History closed"
+            } else if (db) {
+                db.collection('donor').update({}, {
+                    $unset: {
+                        history: "",
+                        oldbottle: ""
+                    }
+                }, function(err, updated) {
+                    if (err) {
+                        console.log(err);
+                        res.json({
+                            value: false
+                        });
+                        db.close();
+                    } else if (updated) {
+                        res.json({
+                            value: true,
+                            comment: "History closed"
+                        });
+                        db.close();
+                    } else {
+                        res.json({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
                 });
-                db.close();
-            } else {
-                callback({
-                    value: false,
-                    comment: "No data found"
-                });
-                db.close();
             }
         });
     },
