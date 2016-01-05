@@ -72,7 +72,6 @@ module.exports = {
                             }
                         });
                     } else {
-                        var i = 0;
                         db.collection('camp').update({
                             _id: camp
                         }, {
@@ -97,51 +96,39 @@ module.exports = {
                                 }, function(err, deleted) {
                                     if (deleted) {
                                         Blood.deleteAll(data, function(blrespo) {
-                                            Donor.find(data, function(dorespo) {
-                                                _.each(dorespo, function(z) {
-                                                    db.collection('donor').update({
-                                                        _id: sails.ObjectID(z._id)
-                                                    }, {
-                                                        $unset: {
-                                                            bottle: "",
-                                                            new: "",
-                                                            hospital: "",
-                                                            hospitalname: "",
-                                                            camp: "",
-                                                            campnumber: "",
-                                                            hospital: "",
-                                                            verified: "",
-                                                            giftdone: "",
-                                                            deletereason: ""
-                                                        }
-                                                    }, function(err, updated) {
-                                                        if (err) {
-                                                            console.log(err);
-                                                            callback({
-                                                                value: false
-                                                            });
-                                                            db.close();
-                                                        } else if (updated) {
-                                                            i++;
-                                                            if (i == dorespo.length) {
-                                                                callback({
-                                                                    value: true,
-                                                                    comment: "Camp closed"
-                                                                });
-                                                                db.close();
-                                                            }
-                                                        } else {
-                                                            i++;
-                                                            if (i == dorespo.length) {
-                                                                callback({
-                                                                    value: true,
-                                                                    comment: "Camp closed"
-                                                                });
-                                                                db.close();
-                                                            }
-                                                        }
+                                            db.collection('donor').update({}, {
+                                                $unset: {
+                                                    bottle: "",
+                                                    new: "",
+                                                    hospital: "",
+                                                    hospitalname: "",
+                                                    camp: "",
+                                                    campnumber: "",
+                                                    hospital: "",
+                                                    verified: "",
+                                                    giftdone: "",
+                                                    deletereason: ""
+                                                }
+                                            }, function(err, updated) {
+                                                if (err) {
+                                                    console.log(err);
+                                                    callback({
+                                                        value: false
                                                     });
-                                                });
+                                                    db.close();
+                                                } else if (updated) {
+                                                    callback({
+                                                        value: true,
+                                                        comment: "Camp closed"
+                                                    });
+                                                    db.close();
+                                                } else {
+                                                    callback({
+                                                        value: true,
+                                                        comment: "Camp closed"
+                                                    });
+                                                    db.close();
+                                                }
                                             });
                                         });
                                     } else if (err) {

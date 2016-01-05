@@ -711,35 +711,31 @@ module.exports = {
     emptyHistory: function(req, res) {
         res.connection.setTimeout(200000000);
         req.connection.setTimeout(200000000);
-        var i = 0;
-        Donor.find(req.body, function(hisrespo) {
-            _.each(hisrespo, function(z) {
-                if (z.history) {
-                    var newdata = {};
-                    newdata.donorid = z.donorid;
-                    newdata.history = [];
-                    newdata.oldbottle = [];
-                    Donor.update(newdata, function(empty) {
-                        i++;
-                        console.log(i);
-                        if (i == hisrespo.length) {
-                            res.json({
-                                value: true,
-                                comment: "History removed"
-                            });
-                        }
-                    });
-                } else {
-                    i++;
-                    console.log(i);
-                    if (i == hisrespo.length) {
-                        res.json({
-                            value: true,
-                            comment: "History removed"
-                        });
-                    }
-                }
-            });
+        db.collection('donor').update({}, {
+            $unset: {
+                history: "",
+                oldbottle: ""
+            }
+        }, function(err, updated) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
+                db.close();
+            } else if (updated) {
+                callback({
+                    value: true,
+                    comment: "History closed"
+                });
+                db.close();
+            } else {
+                callback({
+                    value: false,
+                    comment: "No data found"
+                });
+                db.close();
+            }
         });
     },
     deletenew: function(req, res) {
