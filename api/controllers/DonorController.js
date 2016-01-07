@@ -87,6 +87,26 @@ module.exports = {
             });
         }
     },
+    getbyid: function(req, res) {
+        if (req.body) {
+            if (req.body.donorid && req.body.donorid != "") {
+                var print = function(data) {
+                    res.json(data);
+                }
+                Donor.getbyid(req.body, print);
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Donor-id is incorrect"
+                });
+            }
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
+    },
     acksave: function(req, res) {
         if (req.body) {
             if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id) && req.body.verified && req.body.verified == true) {
@@ -838,5 +858,95 @@ module.exports = {
                 comment: "Please provide parameters"
             });
         }
+    },
+    updateMail: function(req, res) {
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+            }
+            if (db) {
+                db.open(function(err, db) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    if (db) {
+                        res.connection.setTimeout(200000000);
+                        req.connection.setTimeout(200000000);
+                        var extension = "";
+                        var excelimages = [];
+                        req.file("file").upload(function(err, uploadedFiles) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            _.each(uploadedFiles, function(n) {
+                                writedata = n.fd;
+                                excelcall(writedata);
+                            });
+                        });
+
+                        function excelcall(datapath) {
+                            var outputpath = "./.tmp/output.json";
+                            sails.xlsxj({
+                                input: datapath,
+                                output: outputpath
+                            }, function(err, result) {
+                                if (err) {
+                                    console.error(err);
+                                }
+                                if (result) {
+                                    sails.fs.unlink(datapath, function(data) {
+                                        if (data) {
+                                            sails.fs.unlink(outputpath, function(data2) {});
+                                        }
+                                    });
+
+                                    function createteam(num) {
+                                        m = result[num];
+                                        delete m.donorid1;
+                                        if (m.email != "") {
+                                            m.email = m.email + "@" + m.domainName;
+                                            Donor.update(m, function(respo) {
+                                                if (respo.value && respo.value == true) {
+                                                    console.log(num);
+                                                    num++;
+                                                    if (num < result.length) {
+                                                        setTimeout(function() {
+                                                            createteam(num);
+                                                        }, 15);
+                                                    } else {
+                                                        res.json("Done");
+                                                    }
+                                                } else {
+                                                    console.log(num);
+                                                    num++;
+                                                    if (num < result.length) {
+                                                        setTimeout(function() {
+                                                            createteam(num);
+                                                        }, 15);
+                                                    } else {
+                                                        res.json("Done");
+                                                    }
+                                                }
+                                            });
+                                        } else {
+                                            console.log(num);
+                                            num++;
+                                            if (num < result.length) {
+                                                setTimeout(function() {
+                                                    createteam(num);
+                                                }, 15);
+                                            } else {
+                                                res.json("Done");
+                                            }
+                                        }
+                                    }
+                                    createteam(0);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
     }
 };

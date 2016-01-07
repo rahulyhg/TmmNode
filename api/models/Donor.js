@@ -1,6 +1,6 @@
 module.exports = {
     save: function(data, callback) {
-        data.name = data.lastname + " " + data.firstname+ " " + data.middlename;
+        data.name = data.lastname + " " + data.firstname + " " + data.middlename;
         if (data.hospital && data.hospital != "") {
             data.hospital = sails.ObjectID(data.hospital);
             var insert = {};
@@ -1185,6 +1185,7 @@ module.exports = {
                         data.oldbottle = userrespo.oldbottle;
                         _.each(data.oldbottle, function(z) {
                             if (z.bottle == data.bottle && z.campnumber == data.campnumber) {
+                                z.ackdate = new Date();
                                 z.verified = true;
                             }
                         });
@@ -1428,7 +1429,7 @@ module.exports = {
         delete data.camp;
         delete data.bottle;
         delete data.campnumber;
-        data.name = data.lastname + " " + data.firstname+ " " + data.middlename;
+        data.name = data.lastname + " " + data.firstname + " " + data.middlename;
         var splitname = data.lastname.substring(0, 1);
         var letter = splitname;
         splitname = "^" + splitname + "[0-9]";
