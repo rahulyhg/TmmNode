@@ -61,6 +61,26 @@ module.exports = {
             });
         }
     },
+    deletedata: function(req, res) {
+        if (req.body) {
+            if (req.body.donorid && req.body.donorid != "" && req.body.campnumber && req.body.campnumber != "") {
+                var print = function(data) {
+                    res.json(data);
+                }
+                Donor.deletedata(req.body, print);
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Donor-id is incorrect"
+                });
+            }
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
+    },
     find: function(req, res) {
         var print = function(data) {
             res.json(data);

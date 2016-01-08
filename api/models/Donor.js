@@ -1618,5 +1618,91 @@ module.exports = {
                 }
             });
         });
+    },
+    deletedata: function(data, callback) {
+        var i = 0;
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
+            } else if (db) {
+                db.collection('donor').find({
+                    donorid: data.donorid
+                }).toArray(function(err, found) {
+                    if (found && found.length > 0) {
+                        if (found[0].oldbottle && found[0].oldbottle.length > 0) {
+                            var index = sails._.findIndex(found[0].oldbottle, function(chr) {
+                                return chr.campnumber == data.campnumber;
+                            });
+                            if (index != -1) {
+                                found[0].oldbottle.splice(index, 1);
+                                i++;
+                                if (i == 2) {
+                                    callfunc();
+                                }
+                            } else {
+                                i++;
+                                if (i == 2) {
+                                    callfunc();
+                                }
+                            }
+                            var histindex = sails._.findIndex(found[0].oldbottle, function(chr) {
+                                return chr.campnumber == data.campnumber;
+                            });
+                            if (histindex != -1) {
+                                found[0].oldbottle.splice(histindex, 1);
+                                i++;
+                                if (i == 2) {
+                                    callfunc();
+                                }
+                            } else {
+                                i++;
+                                if (i == 2) {
+                                    callfunc();
+                                }
+                            }
+
+                            function callfunc() {
+                                Donor.update(found[0], function(respon) {
+                                    if (respon != false) {
+                                        callback({
+                                            value: true,
+                                            comment: "History updated"
+                                        });
+                                        db.close();
+                                    } else {
+                                        callback({
+                                            value: false,
+                                            comment: "Error"
+                                        });
+                                        db.close();
+                                    }
+                                });
+                            }
+                        } else {
+                            callback({
+                                value: false,
+                                comment: "No data found"
+                            });
+                            db.close();
+                        }
+                    } else if (err) {
+                        console.log(err);
+                        callback({
+                            value: false
+                        });
+                        db.close();
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
     }
 };
