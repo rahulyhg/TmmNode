@@ -1213,6 +1213,13 @@ module.exports = {
                                     value: true
                                 });
                                 db.close();
+                                if (data.mobile && data.mobile != "") {
+                                    sails.request.get({
+                                        url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=vikasvira&to=" + data.mobile + "&from=TMMBLD&message=Thank you for donating Blood. Your gesture will go a long way in saving 5 Precious Lives. Regards, TMM."
+                                    }, function(err, httpResponse, body) {
+                                        console.log(body);
+                                    });
+                                }
                             } else {
                                 callback({
                                     value: false,
