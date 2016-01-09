@@ -845,6 +845,7 @@ module.exports = {
                             findrespo.reason = data.reason;
                         }
                         _.each(findrespo.oldbottle, function(a) {
+                            a.hospital = sails.ObjectID(a.hospital);
                             if (a.bottle == bottleNum && a.campnumber == data.campnumber) {
                                 delete a.bottle;
                             }
@@ -1184,6 +1185,7 @@ module.exports = {
                         }
                         data.oldbottle = userrespo.oldbottle;
                         _.each(data.oldbottle, function(z) {
+                            z.hospital = sails.ObjectID(z.hospital);
                             if (z.bottle == data.bottle && z.campnumber == data.campnumber) {
                                 z.ackdate = new Date();
                                 z.verified = true;
