@@ -408,6 +408,7 @@ module.exports = {
     },
     countlevels: function(data, callback) {
         var newreturns = {};
+        var donor = sails.ObjectID(data.donor);
         if (data.hospital && data.hospital != "") {
             data.hospital = sails.ObjectID(data.hospital);
         }
@@ -440,16 +441,22 @@ module.exports = {
                         }, {
                             $match: matchobj
                         }, {
-                            $project: {
-                                _id: 0,
-                                oldbottle: 1
+                            $group: {
+                                _id: donor,
+                                count: {
+                                    $sum: 1
+                                }
                             }
-                        }]).toArray(function(err, data1) {
+                        }, {
+                            $project: {
+                                count: 1
+                            }
+                        }]).toArray(function(err, result) {
                             if (err) {
                                 console.log(err);
                                 callback(err, null);
-                            } else if (data1 && data1[0]) {
-                                newreturns.entry = data1.length;
+                            } else if (result && result[0]) {
+                                newreturns.entry = result[0].count;
                                 callback(null, newreturns);
                             } else {
                                 newreturns.entry = 0;
@@ -480,16 +487,22 @@ module.exports = {
                         }, {
                             $match: matchobj
                         }, {
-                            $project: {
-                                _id: 0,
-                                oldbottle: 1
+                            $group: {
+                                _id: donor,
+                                count: {
+                                    $sum: 1
+                                }
                             }
-                        }]).toArray(function(err, data2) {
+                        }, {
+                            $project: {
+                                count: 1
+                            }
+                        }]).toArray(function(err, result) {
                             if (err) {
                                 console.log(err);
                                 callback(err, null);
-                            } else if (data2 && data2[0]) {
-                                newreturns.verify = data2.length;
+                            } else if (result && result[0]) {
+                                newreturns.verify = result[0].count;
                                 callback(null, newreturns);
                             } else {
                                 newreturns.verify = 0;
@@ -523,16 +536,22 @@ module.exports = {
                         }, {
                             $match: matchobj
                         }, {
-                            $project: {
-                                _id: 0,
-                                oldbottle: 1
+                            $group: {
+                                _id: donor,
+                                count: {
+                                    $sum: 1
+                                }
                             }
-                        }]).toArray(function(err, data3) {
+                        }, {
+                            $project: {
+                                count: 1
+                            }
+                        }]).toArray(function(err, result) {
                             if (err) {
                                 console.log(err);
                                 callback(err, null);
-                            } else if (data3 && data3[0]) {
-                                newreturns.gift = data3.length;
+                            } else if (result && result[0]) {
+                                newreturns.gift = result[0].count;
                                 callback(null, newreturns);
                             } else {
                                 newreturns.gift = 0;
@@ -563,19 +582,22 @@ module.exports = {
                         }, {
                             $match: matchobj
                         }, {
-                            $project: {
-                                _id: 0,
-                                oldbottle: 1
+                            $group: {
+                                _id: donor,
+                                count: {
+                                    $sum: 1
+                                }
                             }
-                        }]).toArray(function(err, data4) {
+                        }, {
+                            $project: {
+                                count: 1
+                            }
+                        }]).toArray(function(err, result) {
                             if (err) {
                                 console.log(err);
-                                callback({
-                                    value: false,
-                                    comment: "Error"
-                                });
-                            } else if (data4 && data4[0]) {
-                                newreturns.pendingV = data4.length;
+                                callback(err, null);
+                            } else if (result && result[0]) {
+                                newreturns.pendingV = result[0].count;
                                 callback(null, newreturns);
                             } else {
                                 newreturns.pendingV = 0;
@@ -609,65 +631,22 @@ module.exports = {
                         }, {
                             $match: matchobj
                         }, {
-                            $project: {
-                                _id: 0,
-                                oldbottle: 1
+                            $group: {
+                                _id: donor,
+                                count: {
+                                    $sum: 1
+                                }
                             }
-                        }]).toArray(function(err, data5) {
-                            if (err) {
-                                console.log(err);
-                                callback({
-                                    value: false,
-                                    comment: "Error"
-                                });
-                            } else if (data5 && data5[0]) {
-                                newreturns.pendingG = data5.length;
-                                callback(null, newreturns);
-                            } else {
-                                newreturns.pendingG = 0;
-                                callback(null, newreturns);
-                            }
-                        });
-                    },
-                    function(callback) {
-                        var matchobj = {
-                            "oldbottle.campnumber": data.campnumber,
-                            "oldbottle.camp": data.camp,
-                            "oldbottle.hospital": data.hospital,
-                            "oldbottle.bottle": {
-                                $exists: true
-                            },
-                            "oldbottle.verified": {
-                                $exists: true
-                            },
-                            "oldbottle.giftdone": {
-                                $exists: false
-                            }
-                        };
-                        if (data.camp == "All") {
-                            delete matchobj["oldbottle.camp"];
-                        }
-                        if (!data.hospital || data.hospital == "") {
-                            delete matchobj["oldbottle.hospital"];
-                        }
-                        db.collection('donor').aggregate([{
-                            $unwind: "$oldbottle"
-                        }, {
-                            $match: matchobj
                         }, {
                             $project: {
-                                _id: 0,
-                                oldbottle: 1
+                                count: 1
                             }
-                        }]).toArray(function(err, data6) {
+                        }]).toArray(function(err, result) {
                             if (err) {
                                 console.log(err);
-                                callback({
-                                    value: false,
-                                    comment: "Error"
-                                });
-                            } else if (data6 && data6[0]) {
-                                newreturns.pendingG = data6.length;
+                                callback(err, null);
+                            } else if (result && result[0]) {
+                                newreturns.pendingG = result[0].count;
                                 callback(null, newreturns);
                             } else {
                                 newreturns.pendingG = 0;
@@ -695,19 +674,22 @@ module.exports = {
                         }, {
                             $match: matchobj
                         }, {
-                            $project: {
-                                _id: 0,
-                                oldbottle: 1
+                            $group: {
+                                _id: donor,
+                                count: {
+                                    $sum: 1
+                                }
                             }
-                        }]).toArray(function(err, data6) {
+                        }, {
+                            $project: {
+                                count: 1
+                            }
+                        }]).toArray(function(err, result) {
                             if (err) {
                                 console.log(err);
-                                callback({
-                                    value: false,
-                                    comment: "Error"
-                                });
-                            } else if (data6 && data6[0]) {
-                                newreturns.rejected = data6.length;
+                                callback(err, null);
+                            } else if (result && result[0]) {
+                                newreturns.rejected = result[0].count;
                                 callback(null, newreturns);
                             } else {
                                 newreturns.rejected = 0;
@@ -740,6 +722,7 @@ module.exports = {
     countforHosp: function(data, callback) {
         var i = 0;
         var responseData = [];
+        var donor = sails.ObjectID(data.donor);
         Hospital.find(data, function(hospres) {
             if (hospres.value != false) {
                 _.each(hospres, function(z) {
@@ -770,9 +753,15 @@ module.exports = {
                             }, {
                                 $match: matchobj
                             }, {
+                                $group: {
+                                    _id: donor,
+                                    count: {
+                                        $sum: 1
+                                    }
+                                }
+                            }, {
                                 $project: {
-                                    _id: 0,
-                                    oldbottle: 1
+                                    count: 1
                                 }
                             }]).toArray(function(err, data2) {
                                 if (err) {
@@ -786,7 +775,7 @@ module.exports = {
                                     responseData.push({
                                         name: z.name,
                                         id: z._id,
-                                        count: data2.length
+                                        count: data2[0].count
                                     });
                                     i++;
                                     if (i == hospres.length) {
