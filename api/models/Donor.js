@@ -106,6 +106,7 @@ module.exports = {
                             }
 
                             function editdonor(data) {
+                                delete data.donationcount;
                                 db.collection('donor').update({
                                     _id: donor
                                 }, {
@@ -853,6 +854,7 @@ module.exports = {
                                 delete a.bottle;
                             }
                         });
+                        delete data.donationcount;
                         db.collection('donor').update({
                             _id: sails.ObjectID(findrespo._id)
                         }, {
@@ -1164,6 +1166,7 @@ module.exports = {
         if (data.bottle && data.bottle != "") {
             data.bottle = parseInt(data.bottle);
         }
+        delete data.donationcount;
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
@@ -1249,6 +1252,7 @@ module.exports = {
         if (data.bottle && data.bottle != "") {
             data.bottle = parseInt(data.bottle);
         }
+        delete data.donationcount;
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
@@ -1361,6 +1365,7 @@ module.exports = {
         });
     },
     update: function(data, callback) {
+        delete data.donationcount;
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
@@ -1452,7 +1457,6 @@ module.exports = {
         var letter = splitname;
         splitname = "^" + splitname + "[0-9]";
         var checkname = new RegExp(splitname, "i");
-        data.donationcount = 0;
 
         sails.query(function(err, db) {
             if (err) {
@@ -1525,6 +1529,7 @@ module.exports = {
                         });
                     }
                 } else {
+                    delete data.donationcount;
                     var donor = sails.ObjectID(data._id);
                     delete data._id;
                     db.collection('donor').update({
