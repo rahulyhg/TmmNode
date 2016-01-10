@@ -491,5 +491,221 @@ module.exports = {
                 });
             }
         });
-    }
+    },
+    excelDonor1: function(req, res) {
+        var camp = req.param('camp');
+        var campnumber = req.param('campnumber');
+        var accesslevel = req.param('accesslevel');
+        res.connection.setTimeout(20000000);
+        req.connection.setTimeout(20000000);
+        if (accesslevel == "entry") {
+            var matchobj = {
+                "oldbottle.campnumber": campnumber,
+                "oldbottle.camp": camp,
+                "oldbottle.bottle": {
+                    $exists: true
+                }
+            };
+        } else if (accesslevel == "verify") {
+            var matchobj = {
+                "oldbottle.campnumber": campnumber,
+                "oldbottle.camp": camp,
+                "oldbottle.bottle": {
+                    $exists: true
+                },
+                "oldbottle.verified": {
+                    $exists: true
+                }
+            };
+        } else if (accesslevel == "gift") {
+            var matchobj = {
+                "oldbottle.campnumber": campnumber,
+                "oldbottle.camp": camp,
+                "oldbottle.bottle": {
+                    $exists: true
+                },
+                "oldbottle.verified": {
+                    $exists: true
+                },
+                "oldbottle.giftdone": {
+                    $exists: true
+                }
+            };
+        } else if (accesslevel == "pendingV") {
+            var matchobj = {
+                "oldbottle.campnumber": campnumber,
+                "oldbottle.camp": camp,
+                "oldbottle.bottle": {
+                    $exists: true
+                },
+                "oldbottle.verified": {
+                    $exists: false
+                }
+            };
+        } else if (accesslevel == "pendingG") {
+            var matchobj = {
+                "oldbottle.campnumber": campnumber,
+                "oldbottle.camp": camp,
+                "oldbottle.bottle": {
+                    $exists: true
+                },
+                "oldbottle.verified": {
+                    $exists: true
+                },
+                "oldbottle.giftdone": {
+                    $exists: false
+                }
+            };
+        } else if (accesslevel == "rejected") {
+            var matchobj = {
+                "oldbottle.campnumber": campnumber,
+                "oldbottle.camp": camp,
+                "oldbottle.bottle": {
+                    $exists: false
+                }
+            };
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide accesslevel"
+            });
+        }
+        if (camp == "All" || camp == "") {
+            delete matchobj["oldbottle.camp"];
+        }
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: false
+                });
+            } else if (db) {
+                db.collection("donor").aggregate([{
+                    $unwind: "$oldbottle"
+                }, {
+                    $match: matchobj
+                }, {
+                    $project: {
+                        _id: 0,
+                        donorid: 1,
+                        name: 1,
+                        bloodgroup: 1,
+                        oldbottle: 1,
+                        age: 1,
+                        gender: 1
+                    }
+                }, {
+                    $sort: {
+                        ackdate: 1
+                    }
+                }]).toArray(function(err, data2) {
+                    if (err) {
+                        console.log(err);
+                        res.json({
+                            value: false
+                        });
+                        db.close();
+                    } else if (data2 && data2[0]) {
+                        var xls = sails.json2xls(data2);
+                        sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
+                        var excel = sails.fs.readFileSync('./data.xlsx');
+                        var mimetype = sails.mime.lookup('./data.xlsx');
+                        res.set('Content-Type', mimetype);
+                        res.send(excel);
+                        db.close();
+                    } else {
+                        res.json({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
+    },
+    hospitalDonor1: function(req, res) {
+        var camp = req.param('camp');
+        var campnumber = req.param('campnumber');
+        var hospital = req.param('hospital');
+        hospital = sails.ObjectID(hospital);
+        var data5 = {};
+        data5._id = hospital;
+        Hospital.findone(data5, function(respo) {
+            if (respo.value != false) {
+                var hospitalname = respo.name;
+                res.connection.setTimeout(20000000);
+                req.connection.setTimeout(20000000);
+                var matchobj = {
+                    "oldbottle.campnumber": campnumber,
+                    "oldbottle.camp": camp,
+                    "oldbottle.hospital": hospital,
+                    "oldbottle.bottle": {
+                        $exists: true
+                    },
+                    "oldbottle.verified": {
+                        $exists: true
+                    }
+                };
+                if (camp == "All" || camp == "") {
+                    delete matchobj["oldbottle.camp"];
+                }
+                sails.query(function(err, db) {
+                    if (err) {
+                        console.log(err);
+                        res.json({
+                            value: false
+                        });
+                    } else if (db) {
+                        db.collection("donor").aggregate([{
+                            $unwind: "$oldbottle"
+                        }, {
+                            $match: matchobj
+                        }, {
+                            $project: {
+                                _id: 0,
+                                donorid: 1,
+                                name: 1,
+                                bloodgroup: 1,
+                                oldbottle: 1,
+                                age: 1,
+                                gender: 1
+                            }
+                        }, {
+                            $sort: {
+                                "oldbottle.bottle": 1
+                            }
+                        }]).toArray(function(err, data2) {
+                            if (err) {
+                                console.log(err);
+                                res.json({
+                                    value: false
+                                });
+                                db.close();
+                            } else if (data2 && data2[0]) {
+                                var xls = sails.json2xls(data2);
+                                sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
+                                var excel = sails.fs.readFileSync('./data.xlsx');
+                                var mimetype = sails.mime.lookup('./data.xlsx');
+                                res.set('Content-Type', mimetype);
+                                res.send(excel);
+                                db.close();
+                            } else {
+                                res.json({
+                                    value: false,
+                                    comment: "No data found"
+                                });
+                                db.close();
+                            }
+                        });
+                    }
+                });
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Hospital id is incorrect"
+                });
+            }
+        });
+    },
 };
