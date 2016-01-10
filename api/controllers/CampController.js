@@ -597,7 +597,7 @@ module.exports = {
                     }
                 }, {
                     $sort: {
-                        ackdate: 1
+                        donorid: 1
                     }
                 }]).toArray(function(err, data2) {
                     if (err) {
@@ -675,7 +675,7 @@ module.exports = {
                             }
                         }, {
                             $sort: {
-                                "oldbottle.bottle": 1
+                                donorid: 1
                             }
                         }]).toArray(function(err, data2) {
                             if (err) {
