@@ -592,7 +592,8 @@ module.exports = {
                         bloodgroup: 1,
                         oldbottle: 1,
                         age: 1,
-                        gender: 1
+                        gender: 1,
+                        hospitalname: 1
                     }
                 }, {
                     $sort: {
@@ -669,7 +670,8 @@ module.exports = {
                                 bloodgroup: 1,
                                 oldbottle: 1,
                                 age: 1,
-                                gender: 1
+                                gender: 1,
+                                hospitalname: 1
                             }
                         }, {
                             $sort: {
