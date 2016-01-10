@@ -1,5 +1,8 @@
 module.exports = {
     save: function(data, callback) {
+        if (data.bottle && data.bottle != "") {
+            data.bottle = parseInt(data.bottle);
+        }
         data.name = data.lastname + " " + data.firstname + " " + data.middlename;
         if (data.hospital && data.hospital != "") {
             data.hospital = sails.ObjectID(data.hospital);

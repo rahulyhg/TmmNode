@@ -560,6 +560,67 @@ module.exports = {
             }
         });
     },
+    bottleInt: function(req, res) {
+        var i = 0;
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: false
+                });
+            } else if (db) {
+                Donor.find(req.body, function(respo) {
+                    _.each(respo, function(z) {
+                        if (z.bottle && z.bottle != "") {
+                            z.bottle = parseInt(z.bottle);
+                            var donor = sails.ObjectID(z._id);
+                            delete z._id;
+                            var obj = {};
+                            obj.bottle = z.bottle;
+                            db.collection('donor').update({
+                                _id: donor
+                            }, {
+                                $set: obj
+                            }, function(err, updated) {
+                                if (err) {
+                                    console.log(err);
+                                    res.json({
+                                        value: false,
+                                        comment: "Error"
+                                    });
+                                    db.close();
+                                } else if (updated) {
+                                    i++;
+                                    if (i == respo.length) {
+                                        res.json({
+                                            value: true,
+                                            comment: "Donor updated"
+                                        });
+                                        db.close();
+                                    }
+                                } else {
+                                    res.json({
+                                        value: false,
+                                        comment: "No data found"
+                                    });
+                                    db.close();
+                                }
+                            });
+                        } else {
+                            i++;
+                            if (i == respo.length) {
+                                res.json({
+                                    value: true,
+                                    comment: "Donor updated"
+                                });
+                                db.close();
+                            }
+                        }
+                    });
+                });
+            }
+        });
+    },
     updateHistory: function(req, res) {
         sails.query(function(err, db) {
             if (err) {
