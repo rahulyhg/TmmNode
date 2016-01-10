@@ -1161,6 +1161,9 @@ module.exports = {
         });
     },
     acksave: function(data, callback) {
+        if (data.bottle && data.bottle != "") {
+            data.bottle = parseInt(data.bottle);
+        }
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
@@ -1243,6 +1246,9 @@ module.exports = {
         });
     },
     giftsave: function(data, callback) {
+        if (data.bottle && data.bottle != "") {
+            data.bottle = parseInt(data.bottle);
+        }
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
