@@ -3,6 +3,11 @@ module.exports = {
         if (data.bottle && data.bottle != "") {
             data.bottle = parseInt(data.bottle);
         }
+        if (data.oldbottle && data.oldbottle.lenth > 0) {
+            _.each(data.oldbottle, function(y) {
+                y.hospital = sails.ObjectID(y.hospital);
+            });
+        }
         data.name = data.lastname + " " + data.firstname + " " + data.middlename;
         if (data.hospital && data.hospital != "") {
             data.hospital = sails.ObjectID(data.hospital);
@@ -107,6 +112,11 @@ module.exports = {
 
                             function editdonor(data) {
                                 delete data.donationcount;
+                                if (data.oldbottle && data.oldbottle.lenth > 0) {
+                                    _.each(data.oldbottle, function(y) {
+                                        y.hospital = sails.ObjectID(y.hospital);
+                                    });
+                                }
                                 db.collection('donor').update({
                                     _id: donor
                                 }, {
@@ -855,6 +865,11 @@ module.exports = {
                             }
                         });
                         delete data.donationcount;
+                        if (data.oldbottle && data.oldbottle.lenth > 0) {
+                            _.each(data.oldbottle, function(y) {
+                                y.hospital = sails.ObjectID(y.hospital);
+                            });
+                        }
                         db.collection('donor').update({
                             _id: sails.ObjectID(findrespo._id)
                         }, {
@@ -1366,6 +1381,11 @@ module.exports = {
     },
     update: function(data, callback) {
         delete data.donationcount;
+        if (data.oldbottle && data.oldbottle.lenth > 0) {
+            _.each(data.oldbottle, function(y) {
+                y.hospital = sails.ObjectID(y.hospital);
+            });
+        }
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
@@ -1457,7 +1477,6 @@ module.exports = {
         var letter = splitname;
         splitname = "^" + splitname + "[0-9]";
         var checkname = new RegExp(splitname, "i");
-
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
@@ -1530,6 +1549,11 @@ module.exports = {
                     }
                 } else {
                     delete data.donationcount;
+                    if (data.oldbottle && data.oldbottle.lenth > 0) {
+                        _.each(data.oldbottle, function(y) {
+                            y.hospital = sails.ObjectID(y.hospital);
+                        });
+                    }
                     var donor = sails.ObjectID(data._id);
                     delete data._id;
                     db.collection('donor').update({
