@@ -1029,5 +1029,147 @@ module.exports = {
                 });
             }
         });
-    }
+    },
+    newDonor: function(req, res) {
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+            }
+            if (db) {
+                db.open(function(err, db) {
+                    if (err) {
+                        console.log(err);
+                    }
+                    if (db) {
+                        res.connection.setTimeout(200000000);
+                        req.connection.setTimeout(200000000);
+                        var extension = "";
+                        var excelimages = [];
+                        req.file("file").upload(function(err, uploadedFiles) {
+                            if (err) {
+                                console.log(err);
+                            }
+                            _.each(uploadedFiles, function(n) {
+                                writedata = n.fd;
+                                excelcall(writedata);
+                            });
+                        });
+
+                        function excelcall(datapath) {
+                            var outputpath = "./.tmp/output.json";
+                            sails.xlsxj({
+                                input: datapath,
+                                output: outputpath
+                            }, function(err, result) {
+                                if (err) {
+                                    console.error(err);
+                                }
+                                if (result) {
+                                    sails.fs.unlink(datapath, function(data) {
+                                        if (data) {
+                                            sails.fs.unlink(outputpath, function(data2) {});
+                                        }
+                                    });
+
+                                    function createteam(num) {
+                                        m = result[num];
+                                        var splitname = m.lastname.substring(0, 1);
+                                        var letter = splitname;
+                                        splitname = "^" + splitname + "[0-9]";
+                                        var checkname = new RegExp(splitname, "i");
+                                        db.collection('donor').find({
+                                            donorid: {
+                                                $regex: checkname
+                                            }
+                                        }).sort({
+                                            donorid: -1
+                                        }).limit(1).toArray(function(err, data2) {
+                                            if (err) {
+                                                console.log(err);
+                                                callback({
+                                                    value: false,
+                                                    comment: "Error"
+                                                });
+                                            } else if (data2 && data2[0]) {
+                                                var regsplit = data2[0].donorid.split(letter);
+                                                regsplit[1] = parseInt(regsplit[1]);
+                                                m.donorid = regsplit[1] + 1;
+                                                m.donorid = m.donorid.toString();
+                                                if (m.donorid.length == 1) {
+                                                    m.donorid = letter + "0000" + m.donorid;
+                                                } else if (m.donorid.length == 2) {
+                                                    m.donorid = letter + "000" + m.donorid;
+                                                } else if (m.donorid.length == 3) {
+                                                    m.donorid = letter + "00" + m.donorid;
+                                                } else if (m.donorid.length == 4) {
+                                                    m.donorid = letter + "0" + m.donorid;
+                                                } else {
+                                                    m.donorid = letter + m.donorid;
+                                                }
+                                            } else {
+                                                m.donorid = letter + "00001";
+                                            }
+                                        });
+                                        m.history = [{
+                                            date: new Date(m.date),
+                                            cmapnumber: m.campnumber
+                                        }];
+                                        m.oldbottle = [{
+                                            date: new Date(m.date),
+                                            cmapnumber: m.campnumber,
+                                            bottle: "",
+                                            verified: true
+                                        }];
+                                        m.name = m.lastname + " " + m.firstname + " " + m.middlename;
+                                        if (m.birthdate == "") {
+                                            m.birthdate = new Date();
+                                        } else {
+                                            m.birthdate = new Date(m.birthdate);
+                                        }
+                                        if (m.email != "") {
+                                            m.email = m.email + m.domainName;
+                                        }
+                                        delete m.donorid1;
+                                        delete m.bottle;
+                                        delete m.campnumber;
+                                        delete m.date;
+                                        delete m.domainName;
+                                        delete m.address21;
+                                        delete m.address3;
+                                        if (m.village != "") {
+                                            Village.savevillage(m, function(villagerespo) {
+                                                m.village = [];
+                                                m.village.push(villagerespo);
+                                                savedonor();
+                                            });
+                                        } else {
+                                            m.village = [];
+                                            savedonor();
+                                        }
+
+                                        function savedonor() {
+                                            Donor.saveExcel(m, function(respo) {
+                                                if (respo.value && respo.value == true) {
+                                                    console.log(num);
+                                                    num++;
+                                                    if (num < result.length) {
+                                                        setTimeout(function() {
+                                                            createteam(num);
+                                                        }, 15);
+                                                    } else {
+                                                        res.json("Done");
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    }
+                                    createteam(0);
+                                }
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    },
 };
