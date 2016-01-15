@@ -1,6 +1,5 @@
 module.exports = {
     save: function(data, callback) {
-        data.timestamp = new Date();
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
@@ -10,6 +9,7 @@ module.exports = {
             }
             if (db) {
                 if (!data._id) {
+                    data.timestamp = new Date();
                     data._id = sails.ObjectID();
                     db.collection('notification').insert(data, function(err, created) {
                         if (err) {
@@ -37,7 +37,7 @@ module.exports = {
                     var user = data.user;
                     delete data.user;
                     var notification = sails.ObjectID(data._id);
-                    delete data._id
+                    delete data._id;
                     db.collection('notification').update({
                         _id: notification
                     }, {
@@ -102,105 +102,22 @@ module.exports = {
         newreturns.data = [];
         var pagesize = parseInt(data.pagesize);
         var pagenumber = parseInt(data.pagenumber);
-        if (data.user) {
-            var user = {};
-            user._id = sails.ObjectID(data.user);
-            sails.query(function(err, db) {
-                if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
-                }
-                if (db) {
-                    callbackfunc1();
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
+            }
+            if (db) {
+                callbackfunc1();
 
-                    function callbackfunc1() {
-                        db.collection("notification").count({}, function(err, number) {
-                            if (number && number != "") {
-                                newreturns.total = number;
-                                newreturns.totalpages = Math.ceil(number / data.pagesize);
-                                callbackfunc();
-                            } else if (err) {
-                                console.log(err);
-                                callback({
-                                    value: false
-                                });
-                                db.close();
-                            } else {
-                                callback({
-                                    value: false,
-                                    comment: "Count of null"
-                                });
-                                db.close();
-                            }
-                        });
-
-                        function callbackfunc() {
-                            db.collection("notification").find({}).sort({
-                                _id: -1
-                            }).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function(err, found) {
-                                if (err) {
-                                    callback({
-                                        value: false
-                                    });
-                                    console.log(err);
-                                    db.close();
-                                } else if (found && found[0]) {
-                                    User.findone(user, function(response) {
-                                        if (response.value != false) {
-                                            if (response.notification && response.notification[0]) {
-                                                var k = 0;
-                                                _.each(response.notification, function(m) {
-                                                    _.each(found, function(n) {
-                                                        var index = sails._.findIndex(newreturns.data, function(chr) {
-                                                            return chr._id == n._id;
-                                                        });
-                                                        if (index == -1) {
-                                                            newreturns.data.push(n);
-                                                        }
-                                                    });
-                                                    k++;
-                                                    if (k == response.notification.length) {
-                                                        callback(newreturns);
-                                                        db.close();
-                                                    }
-                                                });
-                                            }
-                                        } else {
-                                            callback({
-                                                value: false,
-                                                comment: "No user found"
-                                            });
-                                            db.close();
-                                        }
-                                    });
-                                    db.close();
-                                } else {
-                                    callback({
-                                        value: false,
-                                        comment: "No data found"
-                                    });
-                                    db.close();
-                                }
-                            });
-                        }
-                    }
-                }
-            });
-        } else {
-            sails.query(function(err, db) {
-                if (err) {
-                    console.log(err);
-                    callback({
-                        value: false
-                    });
-                } else if (db) {
+                function callbackfunc1() {
                     db.collection("notification").count({}, function(err, number) {
                         if (number && number != "") {
                             newreturns.total = number;
                             newreturns.totalpages = Math.ceil(number / data.pagesize);
-                            callbackfunc1();
+                            callbackfunc();
                         } else if (err) {
                             console.log(err);
                             callback({
@@ -216,7 +133,7 @@ module.exports = {
                         }
                     });
 
-                    function callbackfunc1() {
+                    function callbackfunc() {
                         db.collection("notification").find({}).sort({
                             _id: -1
                         }).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function(err, found) {
@@ -224,10 +141,10 @@ module.exports = {
                                 callback({
                                     value: false
                                 });
+                                console.log(err);
                                 db.close();
                             } else if (found && found[0]) {
-                                newreturns.data = found;
-                                callback(newreturns);
+                                callback(found);
                                 db.close();
                             } else {
                                 callback({
@@ -239,8 +156,8 @@ module.exports = {
                         });
                     }
                 }
-            });
-        }
+            }
+        });
     },
     //Findlimited
     findone: function(data, callback) {
@@ -262,7 +179,6 @@ module.exports = {
                         });
                         db.close();
                     } else if (data2 && data2[0]) {
-                        delete data2[0].password;
                         callback(data2[0]);
                         db.close();
                     } else {
