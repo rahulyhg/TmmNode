@@ -1112,11 +1112,11 @@ module.exports = {
                                         });
                                         m.history = [{
                                             date: new Date(m.date),
-                                            cmapnumber: m.campnumber
+                                            campnumber: m.campnumber
                                         }];
                                         m.oldbottle = [{
                                             date: new Date(m.date),
-                                            cmapnumber: m.campnumber,
+                                            campnumber: m.campnumber,
                                             bottle: "",
                                             verified: true
                                         }];
