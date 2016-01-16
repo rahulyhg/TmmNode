@@ -1073,43 +1073,7 @@ module.exports = {
 
                   function createteam(num) {
                     m = result[num];
-                    var splitname = m.lastname.substring(0, 1);
-                    var letter = splitname;
-                    splitname = "^" + splitname + "[0-9]";
-                    var checkname = new RegExp(splitname, "i");
-                    db.collection('donor').find({
-                      donorid: {
-                        $regex: checkname
-                      }
-                    }).sort({
-                      donorid: -1
-                    }).limit(1).toArray(function(err, data2) {
-                      if (err) {
-                        console.log(err);
-                        callback({
-                          value: false,
-                          comment: "Error"
-                        });
-                      } else if (data2 && data2[0]) {
-                        var regsplit = data2[0].donorid.split(letter);
-                        regsplit[1] = parseInt(regsplit[1]);
-                        m.donorid = regsplit[1] + 1;
-                        m.donorid = m.donorid.toString();
-                        if (m.donorid.length == 1) {
-                          m.donorid = letter + "0000" + m.donorid;
-                        } else if (m.donorid.length == 2) {
-                          m.donorid = letter + "000" + m.donorid;
-                        } else if (m.donorid.length == 3) {
-                          m.donorid = letter + "00" + m.donorid;
-                        } else if (m.donorid.length == 4) {
-                          m.donorid = letter + "0" + m.donorid;
-                        } else {
-                          m.donorid = letter + m.donorid;
-                        }
-                      } else {
-                        m.donorid = letter + "00001";
-                      }
-                    });
+
                     m.history = [{
                       date: new Date(m.date),
                       campnumber: m.campnumber
@@ -1140,29 +1104,67 @@ module.exports = {
                       Village.savevillage(m, function(villagerespo) {
                         m.village = [];
                         m.village.push(villagerespo);
-                        savedonor();
                       });
                     } else {
                       m.village = [];
-                      savedonor();
                     }
-
-                    function savedonor() {
-                      if (m.donorid && m.donorid != "") {
-                        Donor.saveExcel(m, function(respo) {
-                          if (respo.value && respo.value == true) {
-                            console.log(num);
-                            num++;
-                            if (num < result.length) {
-                              setTimeout(function() {
-                                createteam(num);
-                              }, 15);
-                            } else {
-                              res.json("Done");
-                            }
-                          }
-                        });
+                    var splitname = m.lastname.substring(0, 1);
+                    var letter = splitname;
+                    splitname = "^" + splitname + "[0-9]";
+                    var checkname = new RegExp(splitname, "i");
+                    db.collection('donor').find({
+                      donorid: {
+                        $regex: checkname
                       }
+                    }).sort({
+                      donorid: -1
+                    }).limit(1).toArray(function(err, data2) {
+                      if (err) {
+                        console.log(err);
+                        callback({
+                          value: false,
+                          comment: "Error"
+                        });
+                      } else if (data2 && data2[0]) {
+                        var regsplit = data2[0].donorid.split(letter);
+                        regsplit[1] = parseInt(regsplit[1]);
+                        m.donorid = regsplit[1] + 1;
+                        m.donorid = m.donorid.toString();
+                        if (m.donorid.length == 1) {
+                          m.donorid = letter + "0000" + m.donorid;
+                          savedonor();
+                        } else if (m.donorid.length == 2) {
+                          m.donorid = letter + "000" + m.donorid;
+                          savedonor();
+                        } else if (m.donorid.length == 3) {
+                          m.donorid = letter + "00" + m.donorid;
+                          savedonor();
+                        } else if (m.donorid.length == 4) {
+                          m.donorid = letter + "0" + m.donorid;
+                          savedonor();
+                        } else {
+                          m.donorid = letter + m.donorid;
+                          savedonor();
+                        }
+                      } else {
+                        m.donorid = letter + "00001";
+                        savedonor();
+                      }
+                    });
+                    function savedonor() {
+                      Donor.saveExcel(m, function(respo) {
+                        if (respo.value && respo.value == true) {
+                          console.log(num);
+                          num++;
+                          if (num < result.length) {
+                            setTimeout(function() {
+                              createteam(num);
+                            }, 15);
+                          } else {
+                            res.json("Done");
+                          }
+                        }
+                      });
                     }
                   }
                   createteam(0);
