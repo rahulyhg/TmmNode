@@ -1149,7 +1149,6 @@ module.exports = {
 
                     function savedonor() {
                       if (m.donorid && m.donorid != "") {
-                        console.log(m);
                         Donor.saveExcel(m, function(respo) {
                           if (respo.value && respo.value == true) {
                             console.log(num);
@@ -1163,8 +1162,6 @@ module.exports = {
                             }
                           }
                         });
-                      } else {
-                        createteam(num);
                       }
                     }
                   }
