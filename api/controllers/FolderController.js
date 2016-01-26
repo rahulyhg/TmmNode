@@ -5,7 +5,7 @@ module.exports = {
         folder();
       } else {
         res.json({
-          value: "false",
+          value: false,
           comment: "Folder-id is incorrect"
         });
       }
@@ -28,7 +28,7 @@ module.exports = {
       Folder.delete(req.body, print);
     } else {
       res.json({
-        value: "false",
+        value: false,
         comment: "Folder-id is incorrect"
       });
     }
@@ -47,7 +47,7 @@ module.exports = {
       Folder.findone(req.body, print);
     } else {
       res.json({
-        value: "false",
+        value: false,
         comment: "Folder-id is incorrect"
       });
     }

@@ -25,6 +25,29 @@ module.exports = {
             });
         });
     },
+    uploadmob: function(req, res) {
+        res.connection.setTimeout(20000000);
+        req.connection.setTimeout(20000000);
+        req.file("file").upload(function(err, uploadedFiles) {
+            if (err) return res.send(500, err);
+            _.each(uploadedFiles, function(n) {
+                var oldpath = n.fd;
+                var source = sails.fs.createReadStream(n.fd);
+                n.fd = n.fd.split('\\').pop().split('/').pop();
+                var dest = sails.fs.createWriteStream('./bloodimg/' + n.fd);
+                source.pipe(dest);
+                source.on('end', function() {
+                    sails.fs.unlink(oldpath, function(data) {
+                        console.log(data);
+                    });
+                });
+                source.on('error', function(err) {
+                    console.log(err);
+                });
+            });
+            return res.json(uploadedFiles[0].fd);
+        });
+    },
     resize: function(req, res) {
         function showimage(path) {
             var image = sails.fs.readFileSync(path);

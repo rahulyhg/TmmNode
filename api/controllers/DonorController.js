@@ -81,6 +81,18 @@ module.exports = {
       });
     }
   },
+  findforapp: function(req, res) {
+    if (req.body) {
+      Donor.findforapp(req.body, function(respo) {
+        res.json(respo);
+      });
+    } else {
+      res.json({
+        value: false,
+        comment: "Please provide parameters"
+      });
+    }
+  },
   find: function(req, res) {
     var print = function(data) {
       res.json(data);
@@ -894,7 +906,7 @@ module.exports = {
         if (err) {
           console.log(err);
           res.json({
-            value: "false"
+            value: false
           });
           db.close();
         } else if (db) {
@@ -912,7 +924,7 @@ module.exports = {
             if (err) {
               console.log(err);
               res.json({
-                value: "false"
+                value: false
               });
               db.close();
             } else if (data2 && data2[0]) {
@@ -925,7 +937,7 @@ module.exports = {
               db.close();
             } else {
               res.json({
-                value: "false",
+                value: false,
                 comment: "No data found"
               });
               db.close();
@@ -1151,6 +1163,7 @@ module.exports = {
                         savedonor();
                       }
                     });
+
                     function savedonor() {
                       Donor.saveExcel(m, function(respo) {
                         if (respo.value && respo.value == true) {

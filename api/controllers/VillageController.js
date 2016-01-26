@@ -13,7 +13,7 @@ module.exports = {
                     theme();
                 } else {
                     res.json({
-                        value: "false",
+                        value: false,
                         comment: "Village-id is incorrect"
                     });
                 }
@@ -43,7 +43,7 @@ module.exports = {
                 Village.delete(req.body, print);
             } else {
                 res.json({
-                    value: "false",
+                    value: false,
                     comment: "Village-id is incorrect"
                 });
             }
@@ -83,7 +83,7 @@ module.exports = {
                 Village.findone(req.body, print);
             } else {
                 res.json({
-                    value: "false",
+                    value: false,
                     comment: "Village-id is incorrect"
                 });
             }

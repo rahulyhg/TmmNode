@@ -5,7 +5,7 @@ module.exports = {
                 notification();
             } else {
                 res.json({
-                    value: "false",
+                    value: false,
                     comment: "Notification-id is incorrect"
                 });
             }
@@ -28,7 +28,7 @@ module.exports = {
             Notification.delete(req.body, print);
         } else {
             res.json({
-                value: "false",
+                value: false,
                 comment: "Notification-id is incorrect"
             });
         }
@@ -47,7 +47,7 @@ module.exports = {
             Notification.findone(req.body, print);
         } else {
             res.json({
-                value: "false",
+                value: false,
                 comment: "Notification-id is incorrect"
             });
         }
@@ -67,7 +67,7 @@ module.exports = {
             }
         } else {
             res.json({
-                value: "false",
+                value: false,
                 comment: "Please provide parameters"
             });
         }
@@ -78,7 +78,7 @@ module.exports = {
                 notification();
             } else {
                 res.json({
-                    value: "false",
+                    value: false,
                     comment: "Notification-id is incorrect"
                 });
             }

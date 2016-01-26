@@ -13,7 +13,7 @@ module.exports = {
           user();
         } else {
           res.json({
-            value: "false",
+            value: false,
             comment: "User-id is incorrect"
           });
         }
@@ -29,7 +29,7 @@ module.exports = {
       }
     } else {
       res.json({
-        value: "false",
+        value: false,
         comment: "Please provide parameters"
       });
     }
@@ -55,7 +55,7 @@ module.exports = {
       }
     } else {
       res.json({
-        value: "false",
+        value: false,
         comment: "Please provide parameters"
       });
     }
@@ -69,13 +69,33 @@ module.exports = {
         User.findone(req.body, print);
       } else {
         res.json({
-          value: "false",
+          value: false,
           comment: "User id incorrect"
         });
       }
     } else {
       res.json({
-        value: "false",
+        value: false,
+        comment: "Please provide parameters"
+      });
+    }
+  },
+  updateforapp: function(req, res) {
+    if (req.body) {
+      if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
+        var print = function(data) {
+          res.json(data);
+        }
+        User.updateforapp(req.body, print);
+      } else {
+        res.json({
+          value: false,
+          comment: "Donor id incorrect"
+        });
+      }
+    } else {
+      res.json({
+        value: false,
         comment: "Please provide parameters"
       });
     }
@@ -89,13 +109,13 @@ module.exports = {
         User.delete(req.body, print);
       } else {
         res.json({
-          value: "false",
+          value: false,
           comment: "User-id is incorrect"
         });
       }
     } else {
       res.json({
-        value: "false",
+        value: false,
         comment: "Please provide parameters"
       });
     }
@@ -108,7 +128,7 @@ module.exports = {
       User.countnotify(req.body, print);
     } else {
       res.json({
-        value: "false",
+        value: false,
         comment: "User-id is incorrect"
       });
     }
@@ -136,6 +156,19 @@ module.exports = {
       res.json({
         value: false,
         comment: "Invalid mobile no."
+      });
+    }
+  },
+  saveApp: function(req, res) {
+    if (req.body) {
+      var print = function(data) {
+        res.json(data);
+      }
+      User.saveApp(req.body, print);
+    } else {
+      res.json({
+        value: false,
+        comment: "Please provide parameters"
       });
     }
   }

@@ -1191,8 +1191,8 @@ module.exports = {
         });
       } else if (db) {
         Donor.findone(data, function(userrespo) {
-          if (!userrespo.value) {
-            if (userrespo.history && userrespo.history.length > 0) {
+          if (userrespo.value !=false) {
+            if (userrespo.history && userrespo.history.length > 0 && userrespo.donationcount && userrespo.donationcount > 0) {
               data.donationcount = userrespo.donationcount + 1;
               data.history = userrespo.history;
               var obj = {};
@@ -1720,6 +1720,74 @@ module.exports = {
             db.close();
           }
         });
+      }
+    });
+  },
+  findforapp: function(data, callback) {
+    var checklastname = "";
+    var checkmiddlename = "";
+    var checkfirstname = "";
+    data.firstname = "^" + data.firstname;
+    data.middlename = "^" + data.middlename;
+    data.lastname = "^" + data.lastname;
+    checkfirstname = new RegExp(data.firstname, "i");
+    checkmiddlename = new RegExp(data.middlename, "i");
+    checklastname = new RegExp(data.lastname, "i");
+    var check = new RegExp(data.donorid, "i");
+    sails.query(function(err, db) {
+      if (err) {
+        console.log(err);
+        callback({
+          value: false
+        });
+      } else if (db) {
+        var matchobj = {
+          donorid: check,
+          firstname: checkfirstname,
+          middlename: checkmiddlename,
+          lastname: checklastname,
+        };
+        if (data.donorid == "") {
+          delete matchobj.donorid;
+        }
+        if (data.firstname == "") {
+          delete matchobj.firstname;
+        }
+        if (data.middlename == "") {
+          delete matchobj.middlename;
+        }
+        if (data.lastname == "") {
+          delete matchobj.lastname;
+        }
+        callbackfunc()
+
+        function callbackfunc() {
+          db.collection("donor").find(matchobj, {
+            _id: 1,
+            name: 1,
+            mobile: 1,
+            image: 1
+          }).sort({
+            name: 1
+          }).toArray(function(err, found) {
+            if (err) {
+              callback({
+                value: false
+              });
+              console.log(err);
+              db.close();
+            } else if (found && found[0]) {
+              callback(found);
+              db.close();
+            } else {
+              callback({
+                value: false,
+                comment: "No data found"
+              });
+              db.close();
+            }
+          });
+        }
       }
     });
   }
