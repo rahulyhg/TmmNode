@@ -4,7 +4,6 @@
  * @description :: Server-side logic for managing themes
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
-
 module.exports = {
   save: function(req, res) {
     if (req.body) {
@@ -1189,4 +1188,116 @@ module.exports = {
       }
     });
   },
+  excelData: function(req, res) {
+    sails.query(function(err, db) {
+      if (err) {
+        console.log(err);
+      }
+      if (db) {
+        db.open(function(err, db) {
+          if (err) {
+            console.log(err);
+          }
+          if (db) {
+            res.connection.setTimeout(200000000);
+            req.connection.setTimeout(200000000);
+            var extension = "";
+            var excelimages = [];
+            req.file("file").upload(function(err, uploadedFiles) {
+              if (err) {
+                console.log(err);
+              }
+              _.each(uploadedFiles, function(n) {
+                writedata = n.fd;
+                excelcall(writedata);
+              });
+            });
+
+            function excelcall(datapath) {
+              var outputpath = "./.tmp/output.json";
+              sails.xlsxj({
+                input: datapath,
+                output: outputpath
+              }, function(err, result) {
+                if (err) {
+                  console.error(err);
+                }
+                if (result) {
+                  sails.fs.unlink(datapath, function(data) {
+                    if (data) {
+                      sails.fs.unlink(outputpath, function(data2) {});
+                    }
+                  });
+                  var abc = [];
+                  var i = 0;
+
+                  function createteam(num) {
+                    m = result[num];
+                    Donor.getbyid(m, function(respo) {
+                      if (respo.value != false) {
+                        var json = {};
+                        json.name = respo.name;
+                        json.address = respo.address1 + ", " + respo.address2;
+                        abc.push(json);
+                        num++;
+                        if (num < result.length) {
+                          setTimeout(function() {
+                            createteam(num);
+                          }, 15);
+                        } else {
+                          var xls = sails.json2xls(abc);
+                          sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
+                          res.json({
+                            value: true
+                          });
+                        }
+                      } else {
+                        console.log(m.donorid);
+                        num++;
+                        if (num < result.length) {
+                          setTimeout(function() {
+                            createteam(num);
+                          }, 15);
+                        } else {
+                          var xls = sails.json2xls(abc);
+                          sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
+                          res.json({
+                            value: true
+                          });
+                        }
+                      }
+                    });
+                  }
+                  createteam(0);
+                }
+              });
+            }
+          }
+        });
+      }
+    });
+  },
+  sendnoti: function(req, res) {
+    var message = new sails.gcm.Message();
+    var title = "Request";
+    var body = "Request for blood";
+    message.addNotification('title', title);
+    message.addNotification('body', body);
+    message.addNotification('sound', true);
+    var reg = ["f7LvgpS28lg:APA91bHA4V0aQxfL1KDq4KYcxUoN21Xj2Lg88ZciiY-HCSGmRiwfujUgVLoSLLqDemYD8RJrlR40zlSjKipkN9vQ4OEky8bjDF9cv5cG4Aqb8ZtuJXgys4wOvQxnbHYr9Uz7BYKmd5HL"];
+    var sender = new sails.gcm.Sender('AIzaSyDphhd4bathBzXJckCNZRvESUtnjdMuWxo');
+    sender.send(message, {
+      registrationTokens: reg
+    }, function(err, response) {
+      if (err) {
+        console.log(err);
+        res.json({
+          value: "false",
+          comment: err
+        });
+      } else {
+        res.json(response);
+      }
+    });
+  }
 };
