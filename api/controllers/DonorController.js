@@ -1236,9 +1236,9 @@ module.exports = {
                     Donor.getbyid(m, function(respo) {
                       if (respo.value != false) {
                         var json = {};
-                        json.donorid=respo.donnorid;
+                        json.donorid = respo.donorid;
                         json.name = respo.name;
-                        json.address = respo.address1 + ", " + respo.address2;
+                        json.address = respo.address1 + ", " + respo.address2 + ", " + respo.city + "- " + respo.pincode;
                         abc.push(json);
                         num++;
                         if (num < result.length) {
