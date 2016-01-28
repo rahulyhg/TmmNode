@@ -1790,5 +1790,117 @@ module.exports = {
         }
       }
     });
-  }
+  },
+  savenoti: function(data, callback) {
+    sails.query(function(err, db) {
+      if (err) {
+        console.log(err);
+        callback({
+          value: false
+        });
+      }
+      if (db) {
+        db.collection("donor").find({
+          _id: sails.ObjectID(data._id)
+        }).toArray(function(err, data2) {
+          if (err) {
+            console.log(err);
+            callback({
+              value: false
+            });
+            db.close();
+          } else if (data2 && data2[0]) {
+            if (data2[0].notification && data2[0].notification[0]) {
+              var i = 0;
+              var index = sails._.findIndex(data2[0].notification, function(chr) {
+                return chr.notification.toString() == data.notification.toString();
+              });
+              if (index == -1) {
+                var newdata = {};
+                var notidata = {};
+                notidata.click = 1;
+                notidata.notification = data.notification;
+                newdata.notification = [];
+                newdata.notification = data2[0].notification;
+                newdata.notification.push(notidata);
+                var donor = sails.ObjectID(data._id);
+                delete data._id;
+                db.collection('donor').update({
+                  _id: donor
+                }, {
+                  $set: newdata
+                }, function(err, updated) {
+                  if (err) {
+                    console.log(err);
+                    callback({
+                      value: false,
+                      comment: "Error"
+                    });
+                    db.close();
+                  } else if (updated.result.nModified != 0 && updated.result.n != 0) {
+                    callback({
+                      value: true
+                    });
+                    db.close();
+                  } else {
+                    callback({
+                      value: false,
+                      comment: "No data found"
+                    });
+                    db.close();
+                  }
+                });
+              } else {
+                callback({
+                  value: false,
+                  comment: "Data already updated"
+                });
+                db.close();
+              }
+            } else {
+              var newdata = {};
+              var notidata = {};
+              notidata.click = 1;
+              notidata.notification = data.notification;
+              newdata.notification = [];
+              newdata.notification.push(notidata);
+              var donor = sails.ObjectID(data._id);
+              delete data._id;
+              db.collection('donor').update({
+                _id: donor
+              }, {
+                $set: newdata
+              }, function(err, updated) {
+                if (err) {
+                  console.log(err);
+                  callback({
+                    value: false,
+                    comment: "Error"
+                  });
+                  db.close();
+                } else if (updated.result.nModified != 0 && updated.result.n != 0) {
+                  callback({
+                    value: true
+                  });
+                  db.close();
+                } else {
+                  callback({
+                    value: false,
+                    comment: "No data found"
+                  });
+                  db.close();
+                }
+              });
+            }
+          } else {
+            callback({
+              value: false,
+              comment: "No data found"
+            });
+            db.close();
+          }
+        });
+      }
+    });
+  },
 };

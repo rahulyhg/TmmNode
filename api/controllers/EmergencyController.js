@@ -1,5 +1,5 @@
 /**
- * RequestController
+ * EmergencyController
  *
  * @description :: Server-side logic for managing users
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
@@ -14,7 +14,7 @@ module.exports = {
         } else {
           res.json({
             value: false,
-            comment: "Request-id is incorrect"
+            comment: "Emergency-id is incorrect"
           });
         }
       } else {
@@ -25,7 +25,7 @@ module.exports = {
         var print = function(data) {
           res.json(data);
         }
-        Request.save(req.body, print);
+        Emergency.save(req.body, print);
       }
     } else {
       res.json({
@@ -40,11 +40,11 @@ module.exports = {
         var print = function(data) {
           res.json(data);
         }
-        Request.delete(req.body, print);
+        Emergency.delete(req.body, print);
       } else {
         res.json({
           value: false,
-          comment: "Request-id is incorrect"
+          comment: "Emergency-id is incorrect"
         });
       }
     } else {
@@ -58,19 +58,19 @@ module.exports = {
     function callback(data) {
       res.json(data);
     };
-    Request.find(req.body, callback);
+    Emergency.find(req.body, callback);
   },
-  findById: function(req, res) {
+  findone: function(req, res) {
     if (req.body) {
-      if (req.body.getid && req.body.getid != "" && sails.ObjectID.isValid(req.body.getid)) {
-        function callback(data) {
+      if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
+        var print = function(data) {
           res.json(data);
-        };
-        Request.findById(req.body, callback);
+        }
+        Emergency.findone(req.body, print);
       } else {
         res.json({
           value: false,
-          comment: "Request-id is incorrect"
+          comment: "Emergency-id is incorrect"
         });
       }
     } else {
@@ -80,17 +80,17 @@ module.exports = {
       });
     }
   },
-  findone: function(req, res) {
+  findByUser: function(req, res) {
     if (req.body) {
-      if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
+      if (req.body.user && req.body.user != "" && sails.ObjectID.isValid(req.body.user)) {
         var print = function(data) {
           res.json(data);
         }
-        Request.findone(req.body, print);
+        Emergency.findByUser(req.body, print);
       } else {
         res.json({
           value: false,
-          comment: "Request-id is incorrect"
+          comment: "User-id is incorrect"
         });
       }
     } else {
@@ -106,11 +106,31 @@ module.exports = {
         function callback(data) {
           res.json(data);
         };
-        Request.findlimited(req.body, callback);
+        Emergency.findlimited(req.body, callback);
       } else {
         res.json({
           value: false,
           comment: "Please provide parameters"
+        });
+      }
+    } else {
+      res.json({
+        value: false,
+        comment: "Please provide parameters"
+      });
+    }
+  },
+  count: function(req, res) {
+    if (req.body) {
+      if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
+        function callback(data) {
+          res.json(data);
+        };
+        Emergency.count(req.body, callback);
+      } else {
+        res.json({
+          value: false,
+          comment: "Emergency-id is incorrect"
         });
       }
     } else {
