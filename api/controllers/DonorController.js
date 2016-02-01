@@ -1238,7 +1238,10 @@ module.exports = {
                                                 var json = {};
                                                 json.donorid = respo.donorid;
                                                 json.name = respo.name;
-                                                json.address = respo.address1 + ", " + respo.address2 + ", " + respo.city + "- " + respo.pincode;
+                                                json.address1 = respo.address1;
+                                                json.address2 = respo.address2;
+                                                json.city = respo.city;
+                                                json.pincode = respo.pincode
                                                 abc.push(json);
                                                 num++;
                                                 if (num < result.length) {
