@@ -1304,6 +1304,8 @@ module.exports = {
             } else {
                 var arr = [];
                 Donor.find(req.body, function (respo) {
+                    console.log("in find");
+
                     function createteam(num) {
                         var more = respo[num];
                         if (more.donationcount == 10 || more.donationcount == 25 || more.donationcount == 50 || more.donationcount == 75) {
