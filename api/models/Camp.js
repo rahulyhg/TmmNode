@@ -1156,6 +1156,10 @@ module.exports = {
                                 name: 1,
                                 oldbottle: 1
                             }
+                        },{
+                             $sort: {
+                                "oldbottle.bottle": 1
+                            }
                         }]).toArray(function(err, data2) {
                             if (err) {
                                 console.log(err);

@@ -1229,7 +1229,7 @@ module.exports = {
                                                 json.address1 = respo.address1;
                                                 json.address2 = respo.address2;
                                                 json.city = respo.city;
-                                                json.pincode = respo.pincode
+                                                json.pincode = respo.pincode;
                                                 abc.push(json);
                                                 num++;
                                                 if (num < result.length) {
@@ -1289,6 +1289,102 @@ module.exports = {
                 });
             } else {
                 res.json(response);
+            }
+        });
+    },
+    giftList: function (req, res) {
+        res.connection.setTimeout(200000000);
+        req.connection.setTimeout(200000000);
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
+            } else {
+                var arr = [];
+                Donor.find(req.body, function (respo) {
+                    function createteam(num) {
+                        var more = respo[num];
+                        if (more.donationcount == 10 || more.donationcount == 25 || more.donationcount == 50 || more.donationcount == 75) {
+                            if (more.oldbottle && more.oldbottle.length > 0) {
+                                var i = 0;
+                                _.each(more.oldbottle, function (check) {
+                                    if (check.campnumber && check.campnumber == "C086" && check.bottle && check.bottle != "" && check.verified && check.verified == true) {
+                                        console.log(more.donorid);
+                                        arr.push({
+                                            donorid: more.donorid,
+                                            name: more.name,
+                                            address1: more.address1,
+                                            address2: more.address2,
+                                            city: more.city,
+                                            pincode: more.pincode,
+                                            donationcount: more.donationcount
+                                        });
+                                        i++;
+                                        if (i == more.oldbottle.length) {
+                                            num++;
+                                            if (num < respo.length) {
+                                                setTimeout(function () {
+                                                    createteam(num);
+                                                }, 15);
+                                            } else {
+                                                var xls = sails.json2xls(arr);
+                                                sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
+                                                res.json({
+                                                    value: true
+                                                });
+                                            }
+                                        }
+                                    } else {
+                                        i++;
+                                        if (i == more.oldbottle.length) {
+                                            num++;
+                                            if (num < respo.length) {
+                                                setTimeout(function () {
+                                                    createteam(num);
+                                                }, 15);
+                                            } else {
+                                                var xls = sails.json2xls(arr);
+                                                sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
+                                                res.json({
+                                                    value: true
+                                                });
+                                            }
+                                        }
+                                    }
+                                });
+                            } else {
+                                num++;
+                                if (num < respo.length) {
+                                    setTimeout(function () {
+                                        createteam(num);
+                                    }, 15);
+                                } else {
+                                    var xls = sails.json2xls(arr);
+                                    sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
+                                    res.json({
+                                        value: true
+                                    });
+                                }
+                            }
+                        } else {
+                            num++;
+                            if (num < respo.length) {
+                                setTimeout(function () {
+                                    createteam(num);
+                                }, 15);
+                            } else {
+                                var xls = sails.json2xls(arr);
+                                sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
+                                res.json({
+                                    value: true
+                                });
+                            }
+                        }
+                    }
+                    createteam(0);
+                });
             }
         });
     }
