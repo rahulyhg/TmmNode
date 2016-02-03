@@ -75,7 +75,7 @@ module.exports = {
                             db.close();
                         } else if (updated) {
                             if (data.status && data.status == "Accept") {
-                                Donor.getbyid(data, function (respo) {
+                                Donor.getforexcel(data, function (respo) {
                                     if (respo.value != false) {
                                         if (respo.pincode) {
                                             db.collection('donor').find({

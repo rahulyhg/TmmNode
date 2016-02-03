@@ -465,7 +465,7 @@ module.exports = {
                                         m = result[num];
                                         delete m.donorid1;
                                         m.donationcount = parseInt(m.donationcount);
-                                        Donor.getbyid(m, function (getresp) {
+                                        Donor.getforexcel(m, function (getresp) {
                                             Donor.update(m, function (respo) {
                                                 if (respo.value && respo.value == true) {
                                                     console.log(num);
@@ -666,7 +666,7 @@ module.exports = {
                                         m.donorid = m.donorid1.toUpperCase();
                                         m.date = new Date(m.date);
                                         delete m.donorid1;
-                                        Donor.getbyid(m, function (dorespo) {
+                                        Donor.getforexcel(m, function (dorespo) {
                                             if (dorespo.value != false) {
                                                 if (dorespo.history) {
                                                     var donated = {};

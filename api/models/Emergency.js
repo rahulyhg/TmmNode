@@ -79,7 +79,7 @@ module.exports = {
                                                 users: array
                                             }, function (reqRes) {
                                                 if (reqRes.value != false) {
-                                                    Donor.getbyid(respo, function (doRespo) {
+                                                    Donor.getforexcel(respo, function (doRespo) {
                                                         if (doRespo.value != false) {
                                                             var message = new sails.gcm.Message();
                                                             var title = "Blood Bank";
