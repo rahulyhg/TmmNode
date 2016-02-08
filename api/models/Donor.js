@@ -1362,52 +1362,60 @@ module.exports = {
     },
     update: function (data, callback) {
         delete data.donationcount;
+        var i = 0;
         if (data.oldbottle && data.oldbottle.length > 0) {
             _.each(data.oldbottle, function (y) {
                 y.hospital = sails.ObjectID(y.hospital);
+                i++;
+                if (i == data.oldbottle.length) {
+                    callme();
+                }
             });
         }
-        sails.query(function (err, db) {
-            if (err) {
-                console.log(err);
-                callback({
-                    value: false
-                });
-            } else if (db) {
-                db.collection('donor').update({
-                    donorid: data.donorid
-                }, {
-                    $set: data
-                }, function (err, updated) {
-                    if (err) {
-                        console.log(err);
-                        callback({
-                            value: false,
-                            comment: "Error"
-                        });
-                        db.close();
-                    } else if (updated.result.nModified != 0 && updated.result.n != 0) {
-                        callback({
-                            value: true,
-                            comment: "Donor updated"
-                        });
-                        db.close();
-                    } else if (updated.result.nModified == 0 && updated.result.n != 0) {
-                        callback({
-                            value: true,
-                            comment: "Donor updated"
-                        });
-                        db.close();
-                    } else {
-                        callback({
-                            value: false,
-                            comment: "No data found"
-                        });
-                        db.close();
-                    }
-                });
-            }
-        });
+
+        function callme() {
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
+                } else if (db) {
+                    db.collection('donor').update({
+                        donorid: data.donorid
+                    }, {
+                        $set: data
+                    }, function (err, updated) {
+                        if (err) {
+                            console.log(err);
+                            callback({
+                                value: false,
+                                comment: "Error"
+                            });
+                            db.close();
+                        } else if (updated.result.nModified != 0 && updated.result.n != 0) {
+                            callback({
+                                value: true,
+                                comment: "Donor updated"
+                            });
+                            db.close();
+                        } else if (updated.result.nModified == 0 && updated.result.n != 0) {
+                            callback({
+                                value: true,
+                                comment: "Donor updated"
+                            });
+                            db.close();
+                        } else {
+                            callback({
+                                value: false,
+                                comment: "No data found"
+                            });
+                            db.close();
+                        }
+                    });
+                }
+            });
+        }
     },
     getbyid: function (data, callback) {
         var check = new RegExp(data.donorid, "i");
@@ -1989,12 +1997,37 @@ module.exports = {
                                             i++;
                                         });
                                         if (i == fromRespo.history.length) {
-                                            callback({
+                                            Donor.update({
                                                 donorid: toRespo.donorid,
                                                 history: toRespo.history,
                                                 oldbottle: toRespo.oldbottle
+                                            }, function (doRespo) {
+                                                if (doRespo.value != false) {
+                                                    Donor.deleteDonor({
+                                                        _id: sails.ObjectID(fromRespo._id)
+                                                    }, function (delRespo) {
+                                                        if (delRespo.value != false) {
+                                                            callback({
+                                                                value: true,
+                                                                comment: "Merge Successful"
+                                                            });
+                                                            db.close();
+                                                        } else {
+                                                            callback({
+                                                                value: false,
+                                                                comment: "Some Error"
+                                                            });
+                                                            db.close();
+                                                        }
+                                                    });
+                                                } else {
+                                                    callback({
+                                                        value: false,
+                                                        comment: "Some Error"
+                                                    });
+                                                    db.close();
+                                                }
                                             });
-
                                         }
                                     } else {
                                         callback({
