@@ -3,7 +3,7 @@ module.exports = {
         if (data.bottle && data.bottle != "") {
             data.bottle = parseInt(data.bottle);
         }
-        if (data.oldbottle && data.oldbottle.lenth > 0) {
+        if (data.oldbottle && data.oldbottle.length > 0) {
             _.each(data.oldbottle, function (y) {
                 y.hospital = sails.ObjectID(y.hospital);
             });
@@ -112,7 +112,7 @@ module.exports = {
 
                             function editdonor(data) {
                                 delete data.donationcount;
-                                if (data.oldbottle && data.oldbottle.lenth > 0) {
+                                if (data.oldbottle && data.oldbottle.length > 0) {
                                     _.each(data.oldbottle, function (y) {
                                         y.hospital = sails.ObjectID(y.hospital);
                                     });
@@ -865,7 +865,7 @@ module.exports = {
                             }
                         });
                         delete data.donationcount;
-                        if (data.oldbottle && data.oldbottle.lenth > 0) {
+                        if (data.oldbottle && data.oldbottle.length > 0) {
                             _.each(data.oldbottle, function (y) {
                                 y.hospital = sails.ObjectID(y.hospital);
                             });
@@ -1352,7 +1352,7 @@ module.exports = {
     },
     update: function (data, callback) {
         delete data.donationcount;
-        if (data.oldbottle && data.oldbottle.lenth > 0) {
+        if (data.oldbottle && data.oldbottle.length > 0) {
             _.each(data.oldbottle, function (y) {
                 y.hospital = sails.ObjectID(y.hospital);
             });
@@ -1555,7 +1555,7 @@ module.exports = {
                     }
                 } else {
                     delete data.donationcount;
-                    if (data.oldbottle && data.oldbottle.lenth > 0) {
+                    if (data.oldbottle && data.oldbottle.length > 0) {
                         _.each(data.oldbottle, function (y) {
                             y.hospital = sails.ObjectID(y.hospital);
                         });
@@ -1938,4 +1938,75 @@ module.exports = {
             }
         });
     },
+    mergeDonors: function (data, callback) {
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false,
+                    comment: "Error"
+                });
+            } else {
+                Donor.getforexcel({
+                    donorid: data.from
+                }, function (fromRespo) {
+                    if (fromRespo.value != false) {
+                        if (fromRespo.history && fromRespo.history.length > 0) {
+                            Donor.getforexcel({
+                                donorid: data.to
+                            }, function (toRespo) {
+                                if (toRespo.value != false) {
+                                    if (toRespo.history && toRespo.history.length > 0) {
+                                        var i = 0;
+                                        _.each(fromRespo.oldbottle, function (f) {
+                                            f.hospital = sails.ObjectID(f.hospital);
+                                            f.date = new Date(f.date);
+                                            toRespo.oldbottle.push(f);
+                                        });
+                                        _.each(fromRespo.history, function (t) {
+                                            t.date = new Date(t.date);
+                                            toRespo.history.push(t);
+                                            i++;
+                                        });
+                                        if (i == fromRespo.history.length) {
+                                            callback({
+                                                donorid: toRespo.donorid,
+                                                history: toRespo.history,
+                                                oldbottle: toRespo.oldbottle
+                                            });
+
+                                        }
+                                    } else {
+                                        callback({
+                                            value: false,
+                                            comment: "To donor history not found"
+                                        });
+                                        db.close();
+                                    }
+                                } else {
+                                    callback({
+                                        value: false,
+                                        comment: "To donor not found"
+                                    });
+                                    db.close();
+                                }
+                            });
+                        } else {
+                            callback({
+                                value: false,
+                                comment: "From donor history not found"
+                            });
+                            db.close();
+                        }
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "From donor not found"
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
+    }
 };
