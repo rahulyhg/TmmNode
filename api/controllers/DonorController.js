@@ -5,7 +5,7 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 module.exports = {
-    save: function (req, res) {
+    save: function(req, res) {
         if (req.body) {
             if (req.body._id) {
                 if (req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
@@ -28,7 +28,7 @@ module.exports = {
             }
 
             function theme() {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Donor.save(req.body, print);
@@ -40,10 +40,10 @@ module.exports = {
             });
         }
     },
-    delete: function (req, res) {
+    delete: function(req, res) {
         if (req.body) {
             if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Donor.delete(req.body, print);
@@ -60,10 +60,10 @@ module.exports = {
             });
         }
     },
-    deletedata: function (req, res) {
+    deletedata: function(req, res) {
         if (req.body) {
             if (req.body.donorid && req.body.donorid != "" && req.body.campnumber && req.body.campnumber != "") {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Donor.deletedata(req.body, print);
@@ -80,9 +80,9 @@ module.exports = {
             });
         }
     },
-    findforapp: function (req, res) {
+    findforapp: function(req, res) {
         if (req.body) {
-            Donor.findforapp(req.body, function (respo) {
+            Donor.findforapp(req.body, function(respo) {
                 res.json(respo);
             });
         } else {
@@ -92,16 +92,16 @@ module.exports = {
             });
         }
     },
-    find: function (req, res) {
-        var print = function (data) {
+    find: function(req, res) {
+        var print = function(data) {
             res.json(data);
         }
         Donor.find(req.body, print);
     },
-    findone: function (req, res) {
+    findone: function(req, res) {
         if (req.body) {
             if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Donor.findone(req.body, print);
@@ -118,10 +118,10 @@ module.exports = {
             });
         }
     },
-    getbyid: function (req, res) {
+    getbyid: function(req, res) {
         if (req.body) {
             if (req.body.donorid && req.body.donorid != "") {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Donor.getbyid(req.body, print);
@@ -138,10 +138,10 @@ module.exports = {
             });
         }
     },
-    acksave: function (req, res) {
+    acksave: function(req, res) {
         if (req.body) {
             if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id) && req.body.verified && req.body.verified == true) {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Donor.acksave(req.body, print);
@@ -158,10 +158,10 @@ module.exports = {
             });
         }
     },
-    giftsave: function (req, res) {
+    giftsave: function(req, res) {
         if (req.body) {
             if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id) && req.body.giftdone && req.body.giftdone == true) {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Donor.giftsave(req.body, print);
@@ -178,10 +178,10 @@ module.exports = {
             });
         }
     },
-    findVerified: function (req, res) {
+    findVerified: function(req, res) {
         if (req.body) {
             if (req.body.pagesize && req.body.pagesize != "" && req.body.pagenumber && req.body.pagenumber != "") {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Donor.findVerified(req.body, print);
@@ -198,10 +198,10 @@ module.exports = {
             });
         }
     },
-    findGifted: function (req, res) {
+    findGifted: function(req, res) {
         if (req.body) {
             if (req.body.pagesize && req.body.pagesize != "" && req.body.pagenumber && req.body.pagenumber != "") {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Donor.findGifted(req.body, print);
@@ -218,10 +218,10 @@ module.exports = {
             });
         }
     },
-    getverified: function (req, res) {
+    getverified: function(req, res) {
         if (req.body) {
             if (req.body.search && req.body.search != "" && req.body.hospital && req.body.hospital != "" && sails.ObjectID.isValid(req.body.hospital)) {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Donor.getverified(req.body, print);
@@ -238,7 +238,7 @@ module.exports = {
             });
         }
     },
-    findlimited: function (req, res) {
+    findlimited: function(req, res) {
         if (req.body) {
             if (req.body.pagesize && req.body.pagesize != "" && req.body.pagenumber && req.body.pagenumber != "") {
                 function callback(data) {
@@ -258,7 +258,7 @@ module.exports = {
             });
         }
     },
-    findEntry: function (req, res) {
+    findEntry: function(req, res) {
         if (req.body) {
             if (req.body.pagesize && req.body.pagesize != "" && req.body.pagenumber && req.body.pagenumber != "") {
                 function callback(data) {
@@ -278,40 +278,40 @@ module.exports = {
             });
         }
     },
-    countdonor: function (req, res) {
+    countdonor: function(req, res) {
         function callback(data) {
             res.json(data);
         };
         Donor.countdonor(req.body, callback);
     },
-    countentry: function (req, res) {
+    countentry: function(req, res) {
         function callback(data) {
             res.json(data);
         };
         Donor.countentry(req.body, callback);
     },
-    countverified: function (req, res) {
+    countverified: function(req, res) {
         function callback(data) {
             res.json(data);
         };
         Donor.countverified(req.body, callback);
     },
-    countgifted: function (req, res) {
+    countgifted: function(req, res) {
         function callback(data) {
             res.json(data);
         };
         Donor.countgifted(req.body, callback);
     },
-    countdeleted: function (req, res) {
+    countdeleted: function(req, res) {
         function callback(data) {
             res.json(data);
         };
         Donor.countdeleted(req.body, callback);
     },
-    lastbottlenumber: function (req, res) {
+    lastbottlenumber: function(req, res) {
         if (req.body) {
             if (req.body.camp && req.body.camp != "" && req.body.campnumber && req.body.campnumber != "" && req.body.hospital && req.body.hospital != "" && sails.ObjectID.isValid(req.body.hospital)) {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Donor.lastbottlenumber(req.body, print);
@@ -328,13 +328,13 @@ module.exports = {
             });
         }
     },
-    excelobject: function (req, res) {
-        sails.query(function (err, db) {
+    excelobject: function(req, res) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
             }
             if (db) {
-                db.open(function (err, db) {
+                db.open(function(err, db) {
                     if (err) {
                         console.log(err);
                     }
@@ -343,11 +343,11 @@ module.exports = {
                         req.connection.setTimeout(200000000);
                         var extension = "";
                         var excelimages = [];
-                        req.file("file").upload(function (err, uploadedFiles) {
+                        req.file("file").upload(function(err, uploadedFiles) {
                             if (err) {
                                 console.log(err);
                             }
-                            _.each(uploadedFiles, function (n) {
+                            _.each(uploadedFiles, function(n) {
                                 writedata = n.fd;
                                 excelcall(writedata);
                             });
@@ -358,14 +358,14 @@ module.exports = {
                             sails.xlsxj({
                                 input: datapath,
                                 output: outputpath
-                            }, function (err, result) {
+                            }, function(err, result) {
                                 if (err) {
                                     console.error(err);
                                 }
                                 if (result) {
-                                    sails.fs.unlink(datapath, function (data) {
+                                    sails.fs.unlink(datapath, function(data) {
                                         if (data) {
-                                            sails.fs.unlink(outputpath, function (data2) {});
+                                            sails.fs.unlink(outputpath, function(data2) {});
                                         }
                                     });
 
@@ -385,7 +385,7 @@ module.exports = {
                                         delete m.address21;
                                         delete m.address3;
                                         if (m.village != "") {
-                                            Village.savevillage(m, function (villagerespo) {
+                                            Village.savevillage(m, function(villagerespo) {
                                                 m.village = [];
                                                 m.village.push(villagerespo);
                                                 savedonor();
@@ -396,12 +396,12 @@ module.exports = {
                                         }
 
                                         function savedonor() {
-                                            Donor.saveExcel(m, function (respo) {
+                                            Donor.saveExcel(m, function(respo) {
                                                 if (respo.value && respo.value == true) {
                                                     console.log(num);
                                                     num++;
                                                     if (num < result.length) {
-                                                        setTimeout(function () {
+                                                        setTimeout(function() {
                                                             createteam(num);
                                                         }, 15);
                                                     } else {
@@ -420,13 +420,13 @@ module.exports = {
             }
         });
     },
-    donorCount: function (req, res) {
-        sails.query(function (err, db) {
+    donorCount: function(req, res) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
             }
             if (db) {
-                db.open(function (err, db) {
+                db.open(function(err, db) {
                     if (err) {
                         console.log(err);
                     }
@@ -435,11 +435,11 @@ module.exports = {
                         req.connection.setTimeout(200000000);
                         var extension = "";
                         var excelimages = [];
-                        req.file("file").upload(function (err, uploadedFiles) {
+                        req.file("file").upload(function(err, uploadedFiles) {
                             if (err) {
                                 console.log(err);
                             }
-                            _.each(uploadedFiles, function (n) {
+                            _.each(uploadedFiles, function(n) {
                                 writedata = n.fd;
                                 excelcall(writedata);
                             });
@@ -450,14 +450,14 @@ module.exports = {
                             sails.xlsxj({
                                 input: datapath,
                                 output: outputpath
-                            }, function (err, result) {
+                            }, function(err, result) {
                                 if (err) {
                                     console.error(err);
                                 }
                                 if (result) {
-                                    sails.fs.unlink(datapath, function (data) {
+                                    sails.fs.unlink(datapath, function(data) {
                                         if (data) {
-                                            sails.fs.unlink(outputpath, function (data2) {});
+                                            sails.fs.unlink(outputpath, function(data2) {});
                                         }
                                     });
 
@@ -465,13 +465,13 @@ module.exports = {
                                         m = result[num];
                                         delete m.donorid1;
                                         m.donationcount = parseInt(m.donationcount);
-                                        Donor.getforexcel(m, function (getresp) {
-                                            Donor.update(m, function (respo) {
+                                        Donor.getforexcel(m, function(getresp) {
+                                            Donor.update(m, function(respo) {
                                                 if (respo.value && respo.value == true) {
                                                     console.log(num);
                                                     num++;
                                                     if (num < result.length) {
-                                                        setTimeout(function () {
+                                                        setTimeout(function() {
                                                             createteam(num);
                                                         }, 15);
                                                     } else {
@@ -481,7 +481,7 @@ module.exports = {
                                                     console.log(num);
                                                     num++;
                                                     if (num < result.length) {
-                                                        setTimeout(function () {
+                                                        setTimeout(function() {
                                                             createteam(num);
                                                         }, 15);
                                                     } else {
@@ -500,17 +500,17 @@ module.exports = {
             }
         });
     },
-    donationZero: function (req, res) {
+    donationZero: function(req, res) {
         var i = 0;
-        sails.query(function (err, db) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 res.json({
                     value: false
                 });
             } else if (db) {
-                Donor.find(req.body, function (respo) {
-                    _.each(respo, function (z) {
+                Donor.find(req.body, function(respo) {
+                    _.each(respo, function(z) {
                         if (!z.donationcount) {
                             z.donationcount = 0;
                             var donor = sails.ObjectID(z._id);
@@ -519,7 +519,7 @@ module.exports = {
                                 _id: donor
                             }, {
                                 $set: z
-                            }, function (err, updated) {
+                            }, function(err, updated) {
                                 if (err) {
                                     console.log(err);
                                     res.json({
@@ -559,17 +559,17 @@ module.exports = {
             }
         });
     },
-    bottleInt: function (req, res) {
+    bottleInt: function(req, res) {
         var i = 0;
-        sails.query(function (err, db) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 res.json({
                     value: false
                 });
             } else if (db) {
-                Donor.find(req.body, function (respo) {
-                    _.each(respo, function (z) {
+                Donor.find(req.body, function(respo) {
+                    _.each(respo, function(z) {
                         if (z.bottle && z.bottle != "") {
                             z.bottle = parseInt(z.bottle);
                             var donor = sails.ObjectID(z._id);
@@ -580,7 +580,7 @@ module.exports = {
                                 _id: donor
                             }, {
                                 $set: obj
-                            }, function (err, updated) {
+                            }, function(err, updated) {
                                 if (err) {
                                     console.log(err);
                                     res.json({
@@ -620,13 +620,13 @@ module.exports = {
             }
         });
     },
-    updateHistory: function (req, res) {
-        sails.query(function (err, db) {
+    updateHistory: function(req, res) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
             }
             if (db) {
-                db.open(function (err, db) {
+                db.open(function(err, db) {
                     if (err) {
                         console.log(err);
                     }
@@ -635,11 +635,11 @@ module.exports = {
                         req.connection.setTimeout(200000000);
                         var extension = "";
                         var excelimages = [];
-                        req.file("file").upload(function (err, uploadedFiles) {
+                        req.file("file").upload(function(err, uploadedFiles) {
                             if (err) {
                                 console.log(err);
                             }
-                            _.each(uploadedFiles, function (n) {
+                            _.each(uploadedFiles, function(n) {
                                 writedata = n.fd;
                                 excelcall(writedata);
                             });
@@ -650,14 +650,14 @@ module.exports = {
                             sails.xlsxj({
                                 input: datapath,
                                 output: outputpath
-                            }, function (err, result) {
+                            }, function(err, result) {
                                 if (err) {
                                     console.error(err);
                                 }
                                 if (result) {
-                                    sails.fs.unlink(datapath, function (data) {
+                                    sails.fs.unlink(datapath, function(data) {
                                         if (data) {
-                                            sails.fs.unlink(outputpath, function (data2) {});
+                                            sails.fs.unlink(outputpath, function(data2) {});
                                         }
                                     });
 
@@ -666,7 +666,7 @@ module.exports = {
                                         m.donorid = m.donorid1.toUpperCase();
                                         m.date = new Date(m.date);
                                         delete m.donorid1;
-                                        Donor.getforexcel(m, function (dorespo) {
+                                        Donor.getforexcel(m, function(dorespo) {
                                             if (dorespo.value != false) {
                                                 if (dorespo.history) {
                                                     var donated = {};
@@ -683,12 +683,12 @@ module.exports = {
                                                     newres.bottle = "";
                                                     newres.verified = true;
                                                     donated.oldbottle.push(newres);
-                                                    Donor.update(donated, function (respo) {
+                                                    Donor.update(donated, function(respo) {
                                                         if (respo.value && respo.value == true) {
                                                             console.log(num);
                                                             num++;
                                                             if (num < result.length) {
-                                                                setTimeout(function () {
+                                                                setTimeout(function() {
                                                                     createteam(num);
                                                                 }, 15);
                                                             } else {
@@ -711,12 +711,12 @@ module.exports = {
                                                     newres.bottle = "";
                                                     newres.verified = true;
                                                     donated.oldbottle.push(newres);
-                                                    Donor.update(donated, function (respo) {
+                                                    Donor.update(donated, function(respo) {
                                                         if (respo.value && respo.value == true) {
                                                             console.log(num);
                                                             num++;
                                                             if (num < result.length) {
-                                                                setTimeout(function () {
+                                                                setTimeout(function() {
                                                                     createteam(num);
                                                                 }, 15);
                                                             } else {
@@ -729,7 +729,7 @@ module.exports = {
                                                 console.log(num);
                                                 num++;
                                                 if (num < result.length) {
-                                                    setTimeout(function () {
+                                                    setTimeout(function() {
                                                         createteam(num);
                                                     }, 15);
                                                 } else {
@@ -747,7 +747,7 @@ module.exports = {
             }
         });
     },
-    saveforapp: function (req, res) {
+    saveforapp: function(req, res) {
         if (req.body) {
             if (req.body._id) {
                 if (req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
@@ -770,7 +770,7 @@ module.exports = {
             }
 
             function theme() {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Donor.saveforapp(req.body, print);
@@ -782,10 +782,10 @@ module.exports = {
             });
         }
     },
-    deleteDonor: function (req, res) {
+    deleteDonor: function(req, res) {
         if (req.body) {
             if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Donor.deleteDonor(req.body, print);
@@ -802,16 +802,16 @@ module.exports = {
             });
         }
     },
-    deletealluser: function (req, res) {
-        var print = function (data) {
+    deletealluser: function(req, res) {
+        var print = function(data) {
             res.json(data);
         }
         Donor.deletealluser(req.body, print);
     },
-    emptyHistory: function (req, res) {
+    emptyHistory: function(req, res) {
         res.connection.setTimeout(200000000);
         req.connection.setTimeout(200000000);
-        sails.query(function (err, db) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 res.json({
@@ -825,7 +825,7 @@ module.exports = {
                     }
                 }, {
                     multi: true
-                }, function (err, updated) {
+                }, function(err, updated) {
                     if (err) {
                         console.log(err);
                         res.json({
@@ -849,10 +849,10 @@ module.exports = {
             }
         });
     },
-    deletenew: function (req, res) {
+    deletenew: function(req, res) {
         res.connection.setTimeout(200000000);
         req.connection.setTimeout(200000000);
-        sails.query(function (err, db) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -863,7 +863,7 @@ module.exports = {
                     notexcel: {
                         $exists: true
                     }
-                }, function (err, deleted) {
+                }, function(err, deleted) {
                     if (deleted) {
                         callback({
                             value: true,
@@ -887,9 +887,9 @@ module.exports = {
             }
         });
     },
-    findForPrint: function (req, res) {
+    findForPrint: function(req, res) {
         if (req.param('_id') && req.param('_id') != "" && sails.ObjectID.isValid(req.param('_id')) && req.param('campnumber') && req.param('campnumber') != "" && req.param('campnumber') != "All") {
-            sails.query(function (err, db) {
+            sails.query(function(err, db) {
                 if (err) {
                     console.log(err);
                     res.json({
@@ -901,13 +901,13 @@ module.exports = {
                         $match: {
                             _id: sails.ObjectID(req.param('_id'))
                         }
-          }, {
+                    }, {
                         $unwind: "$oldbottle"
-          }, {
+                    }, {
                         $match: {
                             "oldbottle.campnumber": req.param('campnumber')
                         }
-          }]).toArray(function (err, data2) {
+                    }]).toArray(function(err, data2) {
                         if (err) {
                             console.log(err);
                             res.json({
@@ -939,13 +939,13 @@ module.exports = {
             });
         }
     },
-    updateMail: function (req, res) {
-        sails.query(function (err, db) {
+    updateMail: function(req, res) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
             }
             if (db) {
-                db.open(function (err, db) {
+                db.open(function(err, db) {
                     if (err) {
                         console.log(err);
                     }
@@ -954,11 +954,11 @@ module.exports = {
                         req.connection.setTimeout(200000000);
                         var extension = "";
                         var excelimages = [];
-                        req.file("file").upload(function (err, uploadedFiles) {
+                        req.file("file").upload(function(err, uploadedFiles) {
                             if (err) {
                                 console.log(err);
                             }
-                            _.each(uploadedFiles, function (n) {
+                            _.each(uploadedFiles, function(n) {
                                 writedata = n.fd;
                                 excelcall(writedata);
                             });
@@ -969,14 +969,14 @@ module.exports = {
                             sails.xlsxj({
                                 input: datapath,
                                 output: outputpath
-                            }, function (err, result) {
+                            }, function(err, result) {
                                 if (err) {
                                     console.error(err);
                                 }
                                 if (result) {
-                                    sails.fs.unlink(datapath, function (data) {
+                                    sails.fs.unlink(datapath, function(data) {
                                         if (data) {
-                                            sails.fs.unlink(outputpath, function (data2) {});
+                                            sails.fs.unlink(outputpath, function(data2) {});
                                         }
                                     });
 
@@ -985,12 +985,12 @@ module.exports = {
                                         delete m.donorid1;
                                         if (m.email != "") {
                                             m.email = m.email + "@" + m.domainName;
-                                            Donor.update(m, function (respo) {
+                                            Donor.update(m, function(respo) {
                                                 if (respo.value && respo.value == true) {
                                                     console.log(num);
                                                     num++;
                                                     if (num < result.length) {
-                                                        setTimeout(function () {
+                                                        setTimeout(function() {
                                                             createteam(num);
                                                         }, 15);
                                                     } else {
@@ -1000,7 +1000,7 @@ module.exports = {
                                                     console.log(num);
                                                     num++;
                                                     if (num < result.length) {
-                                                        setTimeout(function () {
+                                                        setTimeout(function() {
                                                             createteam(num);
                                                         }, 15);
                                                     } else {
@@ -1012,7 +1012,7 @@ module.exports = {
                                             console.log(num);
                                             num++;
                                             if (num < result.length) {
-                                                setTimeout(function () {
+                                                setTimeout(function() {
                                                     createteam(num);
                                                 }, 15);
                                             } else {
@@ -1029,13 +1029,13 @@ module.exports = {
             }
         });
     },
-    newDonor: function (req, res) {
-        sails.query(function (err, db) {
+    newDonor: function(req, res) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
             }
             if (db) {
-                db.open(function (err, db) {
+                db.open(function(err, db) {
                     if (err) {
                         console.log(err);
                     }
@@ -1044,11 +1044,11 @@ module.exports = {
                         req.connection.setTimeout(200000000);
                         var extension = "";
                         var excelimages = [];
-                        req.file("file").upload(function (err, uploadedFiles) {
+                        req.file("file").upload(function(err, uploadedFiles) {
                             if (err) {
                                 console.log(err);
                             }
-                            _.each(uploadedFiles, function (n) {
+                            _.each(uploadedFiles, function(n) {
                                 writedata = n.fd;
                                 excelcall(writedata);
                             });
@@ -1059,14 +1059,14 @@ module.exports = {
                             sails.xlsxj({
                                 input: datapath,
                                 output: outputpath
-                            }, function (err, result) {
+                            }, function(err, result) {
                                 if (err) {
                                     console.error(err);
                                 }
                                 if (result) {
-                                    sails.fs.unlink(datapath, function (data) {
+                                    sails.fs.unlink(datapath, function(data) {
                                         if (data) {
-                                            sails.fs.unlink(outputpath, function (data2) {});
+                                            sails.fs.unlink(outputpath, function(data2) {});
                                         }
                                     });
 
@@ -1076,13 +1076,13 @@ module.exports = {
                                         m.history = [{
                                             date: new Date(m.date),
                                             campnumber: m.campnumber
-                    }];
+                                        }];
                                         m.oldbottle = [{
                                             date: new Date(m.date),
                                             campnumber: m.campnumber,
                                             bottle: "",
                                             verified: true
-                    }];
+                                        }];
                                         m.name = m.lastname + " " + m.firstname + " " + m.middlename;
                                         if (m.birthdate == "") {
                                             m.birthdate = new Date();
@@ -1100,7 +1100,7 @@ module.exports = {
                                         delete m.address21;
                                         delete m.address3;
                                         if (m.village != "") {
-                                            Village.savevillage(m, function (villagerespo) {
+                                            Village.savevillage(m, function(villagerespo) {
                                                 m.village = [];
                                                 m.village.push(villagerespo);
                                             });
@@ -1117,7 +1117,7 @@ module.exports = {
                                             }
                                         }).sort({
                                             donorid: -1
-                                        }).limit(1).toArray(function (err, data2) {
+                                        }).limit(1).toArray(function(err, data2) {
                                             if (err) {
                                                 console.log(err);
                                                 callback({
@@ -1152,12 +1152,12 @@ module.exports = {
                                         });
 
                                         function savedonor() {
-                                            Donor.saveExcel(m, function (respo) {
+                                            Donor.saveExcel(m, function(respo) {
                                                 if (respo.value && respo.value == true) {
                                                     console.log(num);
                                                     num++;
                                                     if (num < result.length) {
-                                                        setTimeout(function () {
+                                                        setTimeout(function() {
                                                             createteam(num);
                                                         }, 15);
                                                     } else {
@@ -1176,13 +1176,13 @@ module.exports = {
             }
         });
     },
-    excelData: function (req, res) {
-        sails.query(function (err, db) {
+    excelData: function(req, res) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
             }
             if (db) {
-                db.open(function (err, db) {
+                db.open(function(err, db) {
                     if (err) {
                         console.log(err);
                     }
@@ -1191,11 +1191,11 @@ module.exports = {
                         req.connection.setTimeout(200000000);
                         var extension = "";
                         var excelimages = [];
-                        req.file("file").upload(function (err, uploadedFiles) {
+                        req.file("file").upload(function(err, uploadedFiles) {
                             if (err) {
                                 console.log(err);
                             }
-                            _.each(uploadedFiles, function (n) {
+                            _.each(uploadedFiles, function(n) {
                                 writedata = n.fd;
                                 excelcall(writedata);
                             });
@@ -1206,14 +1206,14 @@ module.exports = {
                             sails.xlsxj({
                                 input: datapath,
                                 output: outputpath
-                            }, function (err, result) {
+                            }, function(err, result) {
                                 if (err) {
                                     console.error(err);
                                 }
                                 if (result) {
-                                    sails.fs.unlink(datapath, function (data) {
+                                    sails.fs.unlink(datapath, function(data) {
                                         if (data) {
-                                            sails.fs.unlink(outputpath, function (data2) {});
+                                            sails.fs.unlink(outputpath, function(data2) {});
                                         }
                                     });
                                     var abc = [];
@@ -1221,7 +1221,7 @@ module.exports = {
 
                                     function createteam(num) {
                                         m = result[num];
-                                        Donor.getforexcel(m, function (respo) {
+                                        Donor.getforexcel(m, function(respo) {
                                             if (respo.value != false) {
                                                 var json = {};
                                                 json.donorid = respo.donorid;
@@ -1233,7 +1233,7 @@ module.exports = {
                                                 abc.push(json);
                                                 num++;
                                                 if (num < result.length) {
-                                                    setTimeout(function () {
+                                                    setTimeout(function() {
                                                         createteam(num);
                                                     }, 15);
                                                 } else {
@@ -1247,7 +1247,7 @@ module.exports = {
                                                 console.log(m.donorid);
                                                 num++;
                                                 if (num < result.length) {
-                                                    setTimeout(function () {
+                                                    setTimeout(function() {
                                                         createteam(num);
                                                     }, 15);
                                                 } else {
@@ -1269,7 +1269,7 @@ module.exports = {
             }
         });
     },
-    sendnoti: function (req, res) {
+    sendnoti: function(req, res) {
         var message = new sails.gcm.Message();
         var title = "Request";
         var body = "Request for blood";
@@ -1280,7 +1280,7 @@ module.exports = {
         var sender = new sails.gcm.Sender('AIzaSyDphhd4bathBzXJckCNZRvESUtnjdMuWxo');
         sender.send(message, {
             registrationTokens: reg
-        }, function (err, response) {
+        }, function(err, response) {
             if (err) {
                 console.log(err);
                 res.json({
@@ -1292,10 +1292,10 @@ module.exports = {
             }
         });
     },
-    giftList: function (req, res) {
+    giftList: function(req, res) {
         res.connection.setTimeout(200000000);
         req.connection.setTimeout(200000000);
-        sails.query(function (err, db) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -1303,7 +1303,7 @@ module.exports = {
                 });
             } else {
                 var arr = [];
-                Donor.find(req.body, function (respo) {
+                Donor.find(req.body, function(respo) {
                     console.log("in find");
 
                     function createteam(num) {
@@ -1311,7 +1311,7 @@ module.exports = {
                         if (more.donationcount == 10 || more.donationcount == 25 || more.donationcount == 50 || more.donationcount == 75) {
                             if (more.oldbottle && more.oldbottle.length > 0) {
                                 var i = 0;
-                                _.each(more.oldbottle, function (check) {
+                                _.each(more.oldbottle, function(check) {
                                     if (check.campnumber && check.campnumber == "C086" && check.bottle && check.bottle != "" && check.verified && check.verified == true) {
                                         console.log(more.donorid);
                                         arr.push({
@@ -1327,7 +1327,7 @@ module.exports = {
                                         if (i == more.oldbottle.length) {
                                             num++;
                                             if (num < respo.length) {
-                                                setTimeout(function () {
+                                                setTimeout(function() {
                                                     createteam(num);
                                                 }, 15);
                                             } else {
@@ -1343,7 +1343,7 @@ module.exports = {
                                         if (i == more.oldbottle.length) {
                                             num++;
                                             if (num < respo.length) {
-                                                setTimeout(function () {
+                                                setTimeout(function() {
                                                     createteam(num);
                                                 }, 15);
                                             } else {
@@ -1359,7 +1359,7 @@ module.exports = {
                             } else {
                                 num++;
                                 if (num < respo.length) {
-                                    setTimeout(function () {
+                                    setTimeout(function() {
                                         createteam(num);
                                     }, 15);
                                 } else {
@@ -1373,7 +1373,7 @@ module.exports = {
                         } else {
                             num++;
                             if (num < respo.length) {
-                                setTimeout(function () {
+                                setTimeout(function() {
                                     createteam(num);
                                 }, 15);
                             } else {

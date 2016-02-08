@@ -36,7 +36,7 @@ module.exports = {
                                     var olddata = {};
                                     olddata.bottle = data.bottle;
                                     olddata.camp = data.camp;
-                                    olddata.hospital = data.hospital;
+                                    olddata.hospital = sails.ObjectID(data.hospital);
                                     olddata.hospitalname = data.hospitalname;
                                     olddata.campnumber = data.campnumber;
                                     data.oldbottle.push(olddata);
@@ -192,7 +192,7 @@ module.exports = {
                                                 var olddata = {};
                                                 olddata.bottle = data.bottle;
                                                 olddata.camp = data.camp;
-                                                olddata.hospital = data.hospital;
+                                                olddata.hospital = sails.ObjectID(data.hospital);
                                                 olddata.hospitalname = data.hospitalname;
                                                 olddata.campnumber = data.campnumber;
                                                 data.oldbottle.push(olddata);
@@ -202,7 +202,7 @@ module.exports = {
                                                 var olddata = {};
                                                 olddata.bottle = data.bottle;
                                                 olddata.camp = data.camp;
-                                                olddata.hospital = data.hospital;
+                                                olddata.hospital = sails.ObjectID(data.hospital);
                                                 olddata.hospitalname = data.hospitalname;
                                                 olddata.campnumber = data.campnumber;
                                                 data.oldbottle.push(olddata);
@@ -865,11 +865,6 @@ module.exports = {
                             }
                         });
                         delete data.donationcount;
-                        if (data.oldbottle && data.oldbottle.length > 0) {
-                            _.each(data.oldbottle, function (y) {
-                                y.hospital = sails.ObjectID(y.hospital);
-                            });
-                        }
                         db.collection('donor').update({
                             _id: sails.ObjectID(findrespo._id)
                         }, {
@@ -1208,54 +1203,62 @@ module.exports = {
                             data.history.push(obj);
                         }
                         data.oldbottle = userrespo.oldbottle;
+                        var i = 0;
                         _.each(data.oldbottle, function (z) {
                             z.hospital = sails.ObjectID(z.hospital);
                             if (z.bottle == data.bottle && z.campnumber == data.campnumber) {
                                 z.ackdate = new Date();
                                 z.verified = true;
                             }
-                        });
-                        var donor = sails.ObjectID(data._id);
-                        delete data._id;
-                        db.collection('donor').update({
-                            _id: donor,
-                            verified: {
-                                $ne: true
+                            i++;
+                            if (i == data.oldbottle.length) {
+                                calledit();
                             }
-                        }, {
-                            $set: data
-                        }, function (err, updated) {
-                            if (err) {
-                                console.log(err);
-                                callback({
-                                    value: false,
-                                    comment: "Error"
-                                });
-                                db.close();
-                            } else if (updated.result.nModified != 0 && updated.result.n != 0) {
-                                callback({
-                                    value: true
-                                });
-                                db.close();
-                                if (data.mobile && data.mobile != "") {
-                                    sails.request.get({
-                                        url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=vikasvira&to=" + data.mobile + "&from=TMMBLD&message=Thank you for donating Blood. Your gesture will go a long way in saving 5 Precious Lives. Regards, TMM."
-                                    }, function (err, httpResponse, body) {
-                                        console.log(body);
-                                    });
+                        });
+
+                        function calledit() {
+                            var donor = sails.ObjectID(data._id);
+                            delete data._id;
+                            db.collection('donor').update({
+                                _id: donor,
+                                verified: {
+                                    $ne: true
                                 }
-                            } else {
-                                callback({
-                                    value: false,
-                                    comment: "No data found"
-                                });
-                                db.close();
-                            }
-                        });
+                            }, {
+                                $set: data
+                            }, function (err, updated) {
+                                if (err) {
+                                    console.log(err);
+                                    callback({
+                                        value: false,
+                                        comment: "Error"
+                                    });
+                                    db.close();
+                                } else if (updated.result.nModified != 0 && updated.result.n != 0) {
+                                    callback({
+                                        value: true
+                                    });
+                                    db.close();
+                                    if (data.mobile && data.mobile != "") {
+                                        sails.request.get({
+                                            url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=vikasvira&to=" + data.mobile + "&from=TMMBLD&message=Thank you for donating Blood. Your gesture will go a long way in saving 5 Precious Lives. Regards, TMM."
+                                        }, function (err, httpResponse, body) {
+                                            console.log(body);
+                                        });
+                                    }
+                                } else {
+                                    callback({
+                                        value: false,
+                                        comment: "No data found"
+                                    });
+                                    db.close();
+                                }
+                            });
+                        }
                     } else {
                         callback({
                             value: false,
-                            comment: "Error"
+                            comment: "No Donor found"
                         });
                         db.close();
                     }
@@ -1276,47 +1279,54 @@ module.exports = {
                     comment: "Error"
                 });
             } else if (db) {
+                var i = 0;
                 _.each(data.oldbottle, function (z) {
                     z.hospital = sails.ObjectID(z.hospital);
                     if (z.bottle == data.bottle && z.campnumber == data.campnumber && z.verified == true) {
                         z.giftdone = true;
                     }
-                });
-                var donor = sails.ObjectID(data._id);
-                delete data._id;
-                db.collection('donor').update({
-                    _id: donor,
-                    giftdone: {
-                        $ne: true
-                    }
-                }, {
-                    $set: data
-                }, function (err, updated) {
-                    if (err) {
-                        console.log(err);
-                        callback({
-                            value: false,
-                            comment: "Error"
-                        });
-                        db.close();
-                    } else if (updated.result.nModified != 0 && updated.result.n != 0) {
-                        callback({
-                            value: true
-                        });
-                        db.close();
-                    } else {
-                        callback({
-                            value: false,
-                            comment: "No data found"
-                        });
-                        db.close();
+                    i++;
+                    if (i == data.oldbottle.length) {
+                        callgift();
                     }
                 });
+
+                function callgift() {
+                    var donor = sails.ObjectID(data._id);
+                    delete data._id;
+                    db.collection('donor').update({
+                        _id: donor,
+                        giftdone: {
+                            $ne: true
+                        }
+                    }, {
+                        $set: data
+                    }, function (err, updated) {
+                        if (err) {
+                            console.log(err);
+                            callback({
+                                value: false,
+                                comment: "Error"
+                            });
+                            db.close();
+                        } else if (updated.result.nModified != 0 && updated.result.n != 0) {
+                            callback({
+                                value: true
+                            });
+                            db.close();
+                        } else {
+                            callback({
+                                value: false,
+                                comment: "No data found"
+                            });
+                            db.close();
+                        }
+                    });
+                }
             }
         });
     },
     saveExcel: function (data, callback) {
-        console.log(data);
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
@@ -1478,6 +1488,9 @@ module.exports = {
         delete data.camp;
         delete data.bottle;
         delete data.campnumber;
+        delete data.donationcount;
+        delete data.oldbottle;
+        delete data.history;
         data.name = data.lastname + " " + data.firstname + " " + data.middlename;
         var splitname = data.lastname.substring(0, 1);
         var letter = splitname;
@@ -1827,6 +1840,13 @@ module.exports = {
         });
     },
     savenoti: function (data, callback) {
+        delete data.hospital;
+        delete data.camp;
+        delete data.bottle;
+        delete data.campnumber;
+        delete data.donationcount;
+        delete data.oldbottle;
+        delete data.history;
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
