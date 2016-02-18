@@ -521,7 +521,11 @@ module.exports = {
                     $project: {
                         _id: 0,
                         donorid: 1,
-                        name: 1
+                        name: 1,
+                        bloodgroup: 1,
+                        oldbottle: 1,
+                        age: 1,
+                        gender: 1
                     }
                 }, {
                     $sort: {
@@ -537,9 +541,11 @@ module.exports = {
                     } else if (data2 && data2[0]) {
                         var xls = sails.json2xls(data2);
                         sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
+                        var path = './data.xlsx';
                         var excel = sails.fs.readFileSync('./data.xlsx');
                         var mimetype = sails.mime.lookup('./data.xlsx');
-                        res.set('Content-Type', mimetype);
+                        res.set('Content-Type', "application/octet-stream");
+                        res.set('Content-Disposition', "attachment;filename=" + path);
                         res.send(excel);
                         db.close();
                     } else {
@@ -620,9 +626,11 @@ module.exports = {
                             } else if (data2 && data2[0]) {
                                 var xls = sails.json2xls(data2);
                                 sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
+                                var path = './data.xlsx';
                                 var excel = sails.fs.readFileSync('./data.xlsx');
                                 var mimetype = sails.mime.lookup('./data.xlsx');
-                                res.set('Content-Type', mimetype);
+                                res.set('Content-Type', "application/octet-stream");
+                                res.set('Content-Disposition', "attachment;filename=" + path);
                                 res.send(excel);
                                 db.close();
                             } else {
