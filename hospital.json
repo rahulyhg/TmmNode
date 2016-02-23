@@ -1,0 +1,25 @@
+{ "_id" : { "$oid" : "5677aeeeef4d65ef26730f20" }, "name" : "KEM", "address" : "PAREL", "location" : "PAREL", "phone" : "9820011111", "lname" : "KEM HOSPITAL BLOOD BANK" }
+{ "_id" : { "$oid" : "568fac0053f9c0b90519c44d" }, "name" : "SADGURU", "location" : "THANE", "address" : "THANE", "lname" : "SADGURU BLOOD BANK", "image" : "" }
+{ "_id" : { "$oid" : "568fac1b53f9c0b90519c44e" }, "name" : "SION", "location" : "SION", "address" : "SION", "lname" : "LTMG HOSPITAL BLOOD BANK (SION)" }
+{ "_id" : { "$oid" : "568fac4853f9c0b90519c44f" }, "name" : "J. J. MAHANAGAR", "location" : "JJ HOSPITAL", "address" : "BYCULLA, MUMBAI", "lname" : "J. J. MAHANAGAR BLOOD BANK", "image" : "90c3bb0a-0714-4ecc-8eb7-516c6642263d.jpg" }
+{ "_id" : { "$oid" : "568fac5653f9c0b90519c450" }, "name" : "BLOODLINE", "location" : "THANE", "address" : "THANE", "lname" : "BLOODLINE BLOOD BANK", "image" : "" }
+{ "_id" : { "$oid" : "568fac7153f9c0b90519c451" }, "name" : "WADIA", "location" : "PAREL", "address" : "PAREL", "lname" : "WADIA HOSPITAL BLOOD BANK" }
+{ "_id" : { "$oid" : "568faca653f9c0b90519c452" }, "name" : "HINDUJA", "location" : "MAHIM", "address" : "MAHIM", "lname" : "HINDUJA HOSPITAL BLOOD BANK" }
+{ "_id" : { "$oid" : "568face453f9c0b90519c453" }, "name" : "HURKISONDAS", "location" : "PRATHNA SAMAJ", "address" : "PRATHNA SAMAJ", "lname" : "SIR H. N. RELIANCE FOUNDATION HOSPITAL BLOOD BANK" }
+{ "_id" : { "$oid" : "568fae0553f9c0b90519c454" }, "name" : "MGM BANDRA", "location" : "BANDRA", "address" : "BANDRA", "lname" : "MGM BLOOD BANK (BANDRA)" }
+{ "_id" : { "$oid" : "5690f0aa28fb0a0d7da8b4b5" }, "name" : "SAMARPAN", "lname" : "SAMARPAN BLOOD BANK", "address" : "GHATKOPAR" }
+{ "_id" : { "$oid" : "5690f46228fb0a0d7da8b4bf" }, "name" : "MGM KAMOTHE", "lname" : "MGM HOSPITAL BLOOD BANK (KAMOTHE)" }
+{ "_id" : { "$oid" : "5690f6c628fb0a0d7da8b4c0" }, "name" : "KIKABHAI", "lname" : "SIR KIKABHAI PREMCHAND TRUST HOSPITAL BLOOD BANK", "address" : "SION" }
+{ "_id" : { "$oid" : "5690f6e028fb0a0d7da8b4c1" }, "name" : "MASINA", "lname" : "MASINA HOSPITAL BLOOD BANK", "address" : "BYCULLA" }
+{ "_id" : { "$oid" : "5690f76728fb0a0d7da8b4c2" }, "name" : "PRINCE ALY KHAN", "lname" : "PRINCE ALY KHAN HOSPITAL BLOOD BANK", "address" : "MAZGAON" }
+{ "_id" : { "$oid" : "5690f78428fb0a0d7da8b4c3" }, "name" : "NAIR", "lname" : "NAIR HOSPITAL BLOOD BANK", "address" : "MUMBAI CENTRAL" }
+{ "_id" : { "$oid" : "569a98bba71e696b3e2787f3" }, "name" : "JASLOK", "lname" : "JASLOK HOSPITAL BLOOD BANK", "address" : "PEDDER ROAD" }
+{ "_id" : { "$oid" : "569a98eca71e696b3e2787f4" }, "name" : "J J HOSPITAL", "lname" : "J J HOSPITAL BLOOD BANK", "address" : "BYCULLA" }
+{ "_id" : { "$oid" : "569a990ba71e696b3e2787f5" }, "name" : "HI-TECH", "lname" : "HI-TECH BLOOD BANK", "address" : "MALAD" }
+{ "_id" : { "$oid" : "569a9936a71e696b3e2787f6" }, "name" : "SUSHRUSHA", "lname" : "SUSHRUSHA HOSPITAL BLOOD BANK", "address" : "DADAR WEST" }
+{ "_id" : { "$oid" : "569a9953a71e696b3e2787f7" }, "name" : "CHHEDA", "lname" : "CHHEDA BLOOD BANK", "address" : "DAHANU" }
+{ "_id" : { "$oid" : "569a9982a71e696b3e2787f8" }, "name" : "BOMBAY", "lname" : "BOMBAY HOSPITAL BLOOD BANK", "address" : "MARINE LINES" }
+{ "_id" : { "$oid" : "569a99bca71e696b3e2787f9" }, "name" : "ANVIKSHA", "lname" : "ANVIKSHA BLOOD BANK", "address" : "GHATKOPAR", "image" : "" }
+{ "_id" : { "$oid" : "569a99d5a71e696b3e2787fa" }, "name" : "TRIUMPH", "lname" : "TRIUMPH BLOOD BANK", "address" : "THANE" }
+{ "_id" : { "$oid" : "569a9ac0a71e696b3e2787fb" }, "name" : "PLASMA", "lname" : "PLASMA BLOOD BANK", "address" : "DOMBIVALI" }
+{ "_id" : { "$oid" : "56c1dcd537afb9e333c7cb60" }, "image" : "", "name" : "DIRECT", "lname" : "DIRECT DONOR", "address" : "CHINCHPOKLI", "phone" : "24922897" }
