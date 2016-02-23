@@ -1986,6 +1986,11 @@ module.exports = {
                                 if (toRespo.value != false) {
                                     if (toRespo.history && toRespo.history.length > 0) {
                                         var i = 0;
+                                        if (fromRespo.donationcount > 0) {
+                                            toRespo.donationcount = fromRespo.donationcount + toRespo.donationcount;
+                                        } else {
+                                            toRespo.donationcount = fromRespo.donationcount;
+                                        }
                                         _.each(fromRespo.oldbottle, function (f) {
                                             f.hospital = sails.ObjectID(f.hospital);
                                             f.date = new Date(f.date);

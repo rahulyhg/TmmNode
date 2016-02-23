@@ -1196,95 +1196,74 @@ module.exports = {
         });
     },
     excelData: function (req, res) {
-        sails.query(function (err, db) {
+        var datapath = './bloodimg/' + req.query.file;
+        var outputpath = "./.tmp/output.json";
+        sails.xlsxj({
+            input: datapath,
+            output: outputpath
+        }, function (err, result) {
             if (err) {
-                console.log(err);
-            }
-            if (db) {
-                db.open(function (err, db) {
-                    if (err) {
-                        console.log(err);
-                    }
-                    if (db) {
-                        res.connection.setTimeout(200000000);
-                        req.connection.setTimeout(200000000);
-                        var extension = "";
-                        var excelimages = [];
-                        req.file("file").upload(function (err, uploadedFiles) {
-                            if (err) {
-                                console.log(err);
-                            }
-                            _.each(uploadedFiles, function (n) {
-                                writedata = n.fd;
-                                excelcall(writedata);
-                            });
-                        });
-
-                        function excelcall(datapath) {
-                            var outputpath = "./.tmp/output.json";
-                            sails.xlsxj({
-                                input: datapath,
-                                output: outputpath
-                            }, function (err, result) {
-                                if (err) {
-                                    console.error(err);
-                                }
-                                if (result) {
-                                    sails.fs.unlink(datapath, function (data) {
-                                        if (data) {
-                                            sails.fs.unlink(outputpath, function (data2) {});
-                                        }
-                                    });
-                                    var abc = [];
-                                    var i = 0;
-
-                                    function createteam(num) {
-                                        m = result[num];
-                                        Donor.getforexcel(m, function (respo) {
-                                            if (respo.value != false) {
-                                                var json = {};
-                                                json.donorid = respo.donorid;
-                                                json.name = respo.name;
-                                                json.address1 = respo.address1;
-                                                json.address2 = respo.address2;
-                                                json.city = respo.city;
-                                                json.pincode = respo.pincode;
-                                                abc.push(json);
-                                                num++;
-                                                if (num < result.length) {
-                                                    setTimeout(function () {
-                                                        createteam(num);
-                                                    }, 15);
-                                                } else {
-                                                    var xls = sails.json2xls(abc);
-                                                    sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
-                                                    res.json({
-                                                        value: true
-                                                    });
-                                                }
-                                            } else {
-                                                console.log(m.donorid);
-                                                num++;
-                                                if (num < result.length) {
-                                                    setTimeout(function () {
-                                                        createteam(num);
-                                                    }, 15);
-                                                } else {
-                                                    var xls = sails.json2xls(abc);
-                                                    sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
-                                                    res.json({
-                                                        value: true
-                                                    });
-                                                }
-                                            }
-                                        });
-                                    }
-                                    createteam(0);
-                                }
-                            });
-                        }
+                console.error(err);
+            } else if (result) {
+                sails.fs.unlink(datapath, function (data) {
+                    if (data) {
+                        sails.fs.unlink(outputpath, function (data2) {});
                     }
                 });
+                var abc = [];
+                var i = 0;
+                if (result[0].donorid) {
+                    function createteam(num) {
+                        m = result[num];
+                        Donor.getforexcel(m, function (respo) {
+                            if (respo.value != false) {
+                                var json = {};
+                                json.donorid = respo.donorid;
+                                json.name = respo.name;
+                                json.address1 = respo.address1;
+                                json.address2 = respo.address2;
+                                json.city = respo.city;
+                                json.pincode = respo.pincode;
+                                abc.push(json);
+                                num++;
+                                if (num < result.length) {
+                                    setTimeout(function () {
+                                        createteam(num);
+                                    }, 15);
+                                } else {
+                                    var xls = sails.json2xls(abc);
+                                    var path = './data2.xlsx';
+                                    sails.fs.writeFileSync(path, xls, 'binary');
+                                    var excel = sails.fs.readFileSync(path);
+                                    res.set('Content-Type', "application/octet-stream");
+                                    res.set('Content-Disposition', "attachment;filename=" + path);
+                                    res.send(excel);
+                                }
+                            } else {
+                                console.log(m.donorid);
+                                num++;
+                                if (num < result.length) {
+                                    setTimeout(function () {
+                                        createteam(num);
+                                    }, 15);
+                                } else {
+                                    var xls = sails.json2xls(abc);
+                                    var path = './data2.xlsx';
+                                    sails.fs.writeFileSync(path, xls, 'binary');
+                                    var excel = sails.fs.readFileSync(path);
+                                    res.set('Content-Type', "application/octet-stream");
+                                    res.set('Content-Disposition', "attachment;filename=" + path);
+                                    res.send(excel);
+                                }
+                            }
+                        });
+                    }
+                    createteam(0);
+                } else {
+                    res.json({
+                        value: false
+                    });
+                }
             }
         });
     },
