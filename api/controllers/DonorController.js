@@ -1222,8 +1222,10 @@ module.exports = {
                                 json.name = respo.name;
                                 json.address1 = respo.address1;
                                 json.address2 = respo.address2;
+                                json.area = respo.area;
                                 json.city = respo.city;
                                 json.pincode = respo.pincode;
+                                json.mobile = respo.mobile;
                                 abc.push(json);
                                 num++;
                                 if (num < result.length) {
