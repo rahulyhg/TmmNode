@@ -409,9 +409,6 @@ module.exports = {
     countlevels: function (data, callback) {
         var newreturns = {};
         var donor = sails.ObjectID(data.donor);
-        if (data.hospital && data.hospital != "") {
-            data.hospital = sails.ObjectID(data.hospital);
-        }
         sails.query(function (err, db) {
             if (err) {
                 console.log(err);
@@ -424,14 +421,10 @@ module.exports = {
                     function (callback) {
                         var matchobj = {
                             "oldbottle.campnumber": data.campnumber,
-                            "oldbottle.camp": data.camp,
-                            "oldbottle.hospital": data.hospital
+                            "oldbottle.camp": data.camp
                         };
                         if (data.camp == "All" || data.camp == "") {
                             delete matchobj["oldbottle.camp"];
-                        }
-                        if (!data.hospital || data.hospital == "") {
-                            delete matchobj["oldbottle.hospital"];
                         }
                         db.collection('donor').aggregate([{
                             $unwind: "$oldbottle"
@@ -465,7 +458,6 @@ module.exports = {
                         var matchobj = {
                             "oldbottle.campnumber": data.campnumber,
                             "oldbottle.camp": data.camp,
-                            "oldbottle.hospital": data.hospital,
                             "oldbottle.bottle": {
                                 $exists: true
                             },
@@ -475,9 +467,6 @@ module.exports = {
                         };
                         if (data.camp == "All" || data.camp == "") {
                             delete matchobj["oldbottle.camp"];
-                        }
-                        if (!data.hospital || data.hospital == "") {
-                            delete matchobj["oldbottle.hospital"];
                         }
                         db.collection('donor').aggregate([{
                             $unwind: "$oldbottle"
@@ -511,7 +500,6 @@ module.exports = {
                         var matchobj = {
                             "oldbottle.campnumber": data.campnumber,
                             "oldbottle.camp": data.camp,
-                            "oldbottle.hospital": data.hospital,
                             "oldbottle.bottle": {
                                 $exists: true
                             },
@@ -524,9 +512,6 @@ module.exports = {
                         };
                         if (data.camp == "All" || data.camp == "") {
                             delete matchobj["oldbottle.camp"];
-                        }
-                        if (!data.hospital || data.hospital == "") {
-                            delete matchobj["oldbottle.hospital"];
                         }
                         db.collection('donor').aggregate([{
                             $unwind: "$oldbottle"
@@ -560,7 +545,6 @@ module.exports = {
                         var matchobj = {
                             "oldbottle.campnumber": data.campnumber,
                             "oldbottle.camp": data.camp,
-                            "oldbottle.hospital": data.hospital,
                             "oldbottle.bottle": {
                                 $exists: true
                             },
@@ -570,9 +554,6 @@ module.exports = {
                         };
                         if (data.camp == "All") {
                             delete matchobj["oldbottle.camp"];
-                        }
-                        if (!data.hospital || data.hospital == "") {
-                            delete matchobj["oldbottle.hospital"];
                         }
                         db.collection('donor').aggregate([{
                             $unwind: "$oldbottle"
@@ -606,7 +587,6 @@ module.exports = {
                         var matchobj = {
                             "oldbottle.campnumber": data.campnumber,
                             "oldbottle.camp": data.camp,
-                            "oldbottle.hospital": data.hospital,
                             "oldbottle.bottle": {
                                 $exists: true
                             },
@@ -619,9 +599,6 @@ module.exports = {
                         };
                         if (data.camp == "All") {
                             delete matchobj["oldbottle.camp"];
-                        }
-                        if (!data.hospital || data.hospital == "") {
-                            delete matchobj["oldbottle.hospital"];
                         }
                         db.collection('donor').aggregate([{
                             $unwind: "$oldbottle"
@@ -655,16 +632,12 @@ module.exports = {
                         var matchobj = {
                             "oldbottle.campnumber": data.campnumber,
                             "oldbottle.camp": data.camp,
-                            "oldbottle.hospital": data.hospital,
                             "oldbottle.bottle": {
                                 $exists: false
                             }
                         };
                         if (data.camp == "All") {
                             delete matchobj["oldbottle.camp"];
-                        }
-                        if (!data.hospital || data.hospital == "") {
-                            delete matchobj["oldbottle.hospital"];
                         }
                         db.collection('donor').aggregate([{
                             $unwind: "$oldbottle"
