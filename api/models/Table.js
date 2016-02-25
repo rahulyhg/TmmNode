@@ -228,7 +228,11 @@ module.exports = {
                         callback(found);
                         db.close()
                     } else {
-                        Camp.count
+                        callback({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
                     }
                 });
             }
