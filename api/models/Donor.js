@@ -150,19 +150,11 @@ module.exports = {
                                 bloodData.campnumber = data.campnumber;
                                 bloodData.hospital = data.hospitalname;
                                 Blood.deleteBottle(bloodData, function (bloodrespo) {
-                                    if (bloodrespo.value == true) {
-                                        callback({
-                                            value: true,
-                                            id: data._id
-                                        });
-                                        db.close();
-                                    } else {
-                                        callback({
-                                            value: true,
-                                            id: data._id
-                                        });
-                                        db.close();
-                                    }
+                                    callback({
+                                        value: true,
+                                        id: data._id
+                                    });
+                                    db.close();
                                 });
                             }
 
@@ -1995,17 +1987,22 @@ module.exports = {
                                             f.hospital = sails.ObjectID(f.hospital);
                                             f.date = new Date(f.date);
                                             toRespo.oldbottle.push(f);
+                                            i++;
                                         });
                                         _.each(fromRespo.history, function (t) {
                                             t.date = new Date(t.date);
                                             toRespo.history.push(t);
                                             i++;
                                         });
-                                        if (i == fromRespo.history.length) {
+                                        if (i == 2 * (fromRespo.history.length)) {
                                             Donor.update({
-                                                donorid: toRespo.donorid,
-                                                history: toRespo.history,
-                                                oldbottle: toRespo.oldbottle
+                                                donorid: toRespo.donorid
+                                            }, {
+                                                $set: {
+                                                    donationcount: toRespo.donationcount,
+                                                    history: toRespo.history,
+                                                    oldbottle: toRespo.oldbottle
+                                                }
                                             }, function (doRespo) {
                                                 if (doRespo.value != false) {
                                                     Donor.deleteDonor({
