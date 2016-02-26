@@ -2179,14 +2179,14 @@ module.exports = {
                                     } else {
                                         callback({
                                             value: false,
-                                            comment: "To donor history not found"
+                                            comment: "Old Donor history not found"
                                         });
                                         db.close();
                                     }
                                 } else {
                                     callback({
                                         value: false,
-                                        comment: "To donor not found"
+                                        comment: "Old Donor not found"
                                     });
                                     db.close();
                                 }
@@ -2194,14 +2194,14 @@ module.exports = {
                         } else {
                             callback({
                                 value: false,
-                                comment: "From donor history not found"
+                                comment: "New Donor history not found"
                             });
                             db.close();
                         }
                     } else {
                         callback({
                             value: false,
-                            comment: "From donor not found"
+                            comment: "New Donor not found"
                         });
                         db.close();
                     }
