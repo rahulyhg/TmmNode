@@ -90,6 +90,7 @@ module.exports = {
                                             });
                                             db.close();
                                         } else if (created) {
+                                            var donor = sails.ObjectID(data._id);
                                             blood();
                                         } else {
                                             callback({
@@ -104,7 +105,7 @@ module.exports = {
                                 var donor = sails.ObjectID(data._id);
                                 delete data._id;
                                 if (data.new) {
-                                    editdonor(data);
+                                    editOldDonor(data);
                                 } else {
                                     check(data);
                                 }
@@ -136,7 +137,45 @@ module.exports = {
                                     } else {
                                         callback({
                                             value: false,
-                                            comment: "No data found"
+                                            comment: "No data found or Some Error"
+                                        });
+                                        db.close();
+                                    }
+                                });
+                            }
+
+                            function editOldDonor(data) {
+                                delete data.donationcount;
+                                delete data.oldbottle;
+                                delete data.history;
+                                db.collection('donor').update({
+                                    _id: donor
+                                }, {
+                                    $set: data
+                                }, function (err, updated) {
+                                    if (err) {
+                                        console.log(err);
+                                        callback({
+                                            value: false,
+                                            comment: "Error"
+                                        });
+                                        db.close();
+                                    } else if (updated.result.nModified != 0 && updated.result.n != 0) {
+                                        callback({
+                                            value: true,
+                                            id: donor
+                                        });
+                                        db.close();
+                                    } else if (updated.result.nModified == 0 && updated.result.n != 0) {
+                                        callback({
+                                            value: true,
+                                            id: donor
+                                        });
+                                        db.close();
+                                    } else {
+                                        callback({
+                                            value: false,
+                                            comment: "No data found or Some Error"
                                         });
                                         db.close();
                                     }
@@ -150,11 +189,37 @@ module.exports = {
                                 bloodData.campnumber = data.campnumber;
                                 bloodData.hospital = data.hospitalname;
                                 Blood.deleteBottle(bloodData, function (bloodrespo) {
-                                    callback({
-                                        value: true,
-                                        id: data._id
+                                    db.collection('table').findAndModify({
+                                        hospitalname: data.hospitalname,
+                                        camp: data.camp,
+                                        campnumber: data.campnumber
+                                    }, {}, {
+                                        $inc: {
+                                            pendingV: 1
+                                        }
+                                    }, {
+                                        upsert: true
+                                    }, function (err, newTab) {
+                                        if (err) {
+                                            console.log(err);
+                                            callback({
+                                                value: false,
+                                                comment: "Error"
+                                            });
+                                        } else if (newTab) {
+                                            callback({
+                                                value: true,
+                                                id: donor
+                                            });
+                                            db.close();
+                                        } else {
+                                            callback({
+                                                value: false,
+                                                comment: "No data found"
+                                            });
+                                            db.close();
+                                        }
                                     });
-                                    db.close();
                                 });
                             }
 
@@ -874,11 +939,36 @@ module.exports = {
                                         newdata.campnumber = findrespo.campnumber;
                                         newdata.used = "Unused";
                                         Blood.save(newdata, function (respoblood) {
-                                            callback({
-                                                value: true,
-                                                comment: "Donor deleted"
+                                            db.collection('table').findAndModify({
+                                                hospitalname: findrespo.hospitalname,
+                                                camp: findrespo.camp,
+                                                campnumber: findrespo.campnumber
+                                            }, {}, {
+                                                $inc: {
+                                                    rejected: 1,
+                                                    pendingV: -1
+                                                }
+                                            }, function (err, newTab) {
+                                                if (err) {
+                                                    console.log(err);
+                                                    callback({
+                                                        value: false,
+                                                        comment: "Error"
+                                                    });
+                                                } else if (newTab) {
+                                                    callback({
+                                                        value: true,
+                                                        comment: "Donor deleted"
+                                                    });
+                                                    db.close();
+                                                } else {
+                                                    callback({
+                                                        value: false,
+                                                        comment: "No data found"
+                                                    });
+                                                    db.close();
+                                                }
                                             });
-                                            db.close();
                                         });
                                     } else {
                                         callback({
@@ -1227,17 +1317,41 @@ module.exports = {
                                     });
                                     db.close();
                                 } else if (updated.result.nModified != 0 && updated.result.n != 0) {
-                                    callback({
-                                        value: true
+                                    db.collection('table').findAndModify({
+                                        hospitalname: data.hospitalname,
+                                        camp: data.camp,
+                                        campnumber: data.campnumber
+                                    }, {}, {
+                                        $inc: {
+                                            verify: 1,
+                                            pendingG: 1,
+                                            pendingV: -1
+                                        }
+                                    }, function (err, newTab) {
+                                        if (err) {
+                                            console.log(err);
+                                            callback({
+                                                value: false,
+                                                comment: "Error"
+                                            });
+                                        } else if (newTab) {
+                                            callback({
+                                                value: true
+                                            });
+                                            db.close();
+                                            if (data.mobile && data.mobile != "") {
+                                                sails.request.get({
+                                                    url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=vikasvira&to=" + data.mobile + "&from=TMMBLD&message=Thank you for donating Blood. Your gesture will go a long way in saving 5 Precious Lives. Regards, TMM."
+                                                }, function (err, httpResponse, body) {});
+                                            }
+                                        } else {
+                                            callback({
+                                                value: false,
+                                                comment: "No data found"
+                                            });
+                                            db.close();
+                                        }
                                     });
-                                    db.close();
-                                    if (data.mobile && data.mobile != "") {
-                                        sails.request.get({
-                                            url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=vikasvira&to=" + data.mobile + "&from=TMMBLD&message=Thank you for donating Blood. Your gesture will go a long way in saving 5 Precious Lives. Regards, TMM."
-                                        }, function (err, httpResponse, body) {
-                                            console.log(body);
-                                        });
-                                    }
                                 } else {
                                     callback({
                                         value: false,
@@ -1302,10 +1416,35 @@ module.exports = {
                             });
                             db.close();
                         } else if (updated.result.nModified != 0 && updated.result.n != 0) {
-                            callback({
-                                value: true
+                            db.collection('table').findAndModify({
+                                hospitalname: data.hospitalname,
+                                camp: data.camp,
+                                campnumber: data.campnumber
+                            }, {}, {
+                                $inc: {
+                                    gift: 1,
+                                    pendingG: -1
+                                }
+                            }, function (err, newTab) {
+                                if (err) {
+                                    console.log(err);
+                                    callback({
+                                        value: false,
+                                        comment: "Error"
+                                    });
+                                } else if (newTab) {
+                                    callback({
+                                        value: true
+                                    });
+                                    db.close();
+                                } else {
+                                    callback({
+                                        value: false,
+                                        comment: "No data found"
+                                    });
+                                    db.close();
+                                }
                             });
-                            db.close();
                         } else {
                             callback({
                                 value: false,
@@ -1995,7 +2134,7 @@ module.exports = {
                                             i++;
                                         });
                                         if (i == 2 * (fromRespo.history.length)) {
-                                            Donor.update({
+                                            db.collection('donor').update({
                                                 donorid: toRespo.donorid
                                             }, {
                                                 $set: {
@@ -2003,8 +2142,14 @@ module.exports = {
                                                     history: toRespo.history,
                                                     oldbottle: toRespo.oldbottle
                                                 }
-                                            }, function (doRespo) {
-                                                if (doRespo.value != false) {
+                                            }, function (err, doRespo) {
+                                                if (err) {
+                                                    console.log(err);
+                                                    callback({
+                                                        value: false,
+                                                        comment: "Error"
+                                                    });
+                                                } else if (doRespo) {
                                                     Donor.deleteDonor({
                                                         _id: sails.ObjectID(fromRespo._id)
                                                     }, function (delRespo) {

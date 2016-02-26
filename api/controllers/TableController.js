@@ -82,7 +82,7 @@ module.exports = {
     },
     findCount: function (req, res) {
         if (req.body) {
-            if (req.body.campnumber && req.body.campnumber != "") {
+            if (req.body.campnumber && req.body.campnumber != "" && req.body.camp && req.body.camp != "") {
                 var print = function (data) {
                     res.json(data);
                 }

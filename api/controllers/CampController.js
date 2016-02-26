@@ -649,5 +649,25 @@ module.exports = {
                 });
             }
         });
-    }
+    },
+    findMe: function (req, res) {
+        if (req.body) {
+            if (req.body.campnumber && req.body.campnumber != "") {
+                function callback(data) {
+                    res.json(data);
+                };
+                Camp.findMe(req.body, callback);
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Please provide parameters"
+                });
+            }
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
+    },
 };

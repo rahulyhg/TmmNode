@@ -1201,5 +1201,58 @@ module.exports = {
                 });
             }
         });
+    },
+    findMe: function (data, callback) {
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false,
+                    comment: "Error"
+                });
+                db.close();
+            } else if (db) {
+                db.collection("camp").aggregate([{
+                    $match: {
+                        campnumber: data.campnumber
+                    }
+                }, {
+                    $project: {
+                        _id: 0,
+                        venues: 1
+                    }
+                }]).toArray(function (err, data2) {
+                    console.log(data2);
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false,
+                            comment: "Error"
+                        });
+                        db.close();
+                    } else if (data2 && data2.length > 0 && data2[0].venues && data2[0].venues[0]) {
+                        var hosp = [];
+                        var i = 0;
+                        _.each(data2[0].venues, function (mydata) {
+                            _.each(mydata.hospital, function (hospdata) {
+                                hospdata.camp = mydata.value;
+                                hosp.push(hospdata);
+                            });
+                            i++;
+                            if (i == data2[0].venues.length) {
+                                callback(hosp);
+                                db.close();
+                            }
+                        });
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
     }
 }

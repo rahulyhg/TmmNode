@@ -191,11 +191,7 @@ module.exports = {
                         callback(found[0]);
                         db.close()
                     } else {
-                        callback({
-                            value: false,
-                            comment: "No data found"
-                        });
-                        db.close();
+
                     }
                 });
             }
@@ -228,11 +224,267 @@ module.exports = {
                         callback(found);
                         db.close()
                     } else {
-                        callback({
-                            value: false,
-                            comment: "No data found"
+                        Camp.findMe(data, function (countme) {
+                            var responseData = [];
+                            if (countme.value != false) {
+                                var i = 0;
+
+                                function callme(abc) {
+                                    var z = {};
+                                    z = countme[abc];
+                                    var donor = sails.ObjectID(data.donor);
+                                    var newreturns = {};
+                                    sails.query(function (err, db) {
+                                        if (err) {
+                                            console.log(err);
+                                            callback({
+                                                value: false,
+                                                comment: "Error"
+                                            });
+
+                                        } else if (db) {
+                                            async.parallel([
+                                                function (callback) {
+                                                    var matchobj = {
+                                                        "oldbottle.campnumber": data.campnumber,
+                                                        "oldbottle.hospital": sails.ObjectID(z._id),
+                                                        "oldbottle.camp": data.camp,
+                                                        "oldbottle.bottle": {
+                                                            $exists: true
+                                                        },
+                                                        "oldbottle.verified": {
+                                                            $exists: true
+                                                        }
+                                                    };
+                                                    if (data.camp == "All" || data.camp == "") {
+                                                        delete matchobj["oldbottle.camp"];
+                                                    }
+                                                    db.collection('donor').aggregate([{
+                                                        $unwind: "$oldbottle"
+                                                    }, {
+                                                        $match: matchobj
+                                                    }, {
+                                                        $group: {
+                                                            _id: donor,
+                                                            count: {
+                                                                $sum: 1
+                                                            }
+                                                        }
+                                                    }, {
+                                                        $project: {
+                                                            count: 1
+                                                        }
+                                                    }]).toArray(function (err, result) {
+                                                        if (err) {
+                                                            console.log(err);
+                                                            callback(err, null);
+                                                        } else if (result && result[0]) {
+                                                            newreturns.verify = result[0].count;
+                                                            callback(null, newreturns);
+                                                        } else {
+                                                            newreturns.verify = 0;
+                                                            callback(null, newreturns);
+                                                        }
+                                                    });
+                                                },
+                                                function (callback) {
+                                                    var matchobj = {
+                                                        "oldbottle.campnumber": data.campnumber,
+                                                        "oldbottle.hospital": sails.ObjectID(z._id),
+                                                        "oldbottle.camp": data.camp,
+                                                        "oldbottle.bottle": {
+                                                            $exists: true
+                                                        },
+                                                        "oldbottle.verified": {
+                                                            $exists: true
+                                                        },
+                                                        "oldbottle.giftdone": {
+                                                            $exists: true
+                                                        }
+                                                    };
+                                                    if (data.camp == "All" || data.camp == "") {
+                                                        delete matchobj["oldbottle.camp"];
+                                                    }
+                                                    db.collection('donor').aggregate([{
+                                                        $unwind: "$oldbottle"
+                                                    }, {
+                                                        $match: matchobj
+                                                    }, {
+                                                        $group: {
+                                                            _id: donor,
+                                                            count: {
+                                                                $sum: 1
+                                                            }
+                                                        }
+                                                    }, {
+                                                        $project: {
+                                                            count: 1
+                                                        }
+                                                    }]).toArray(function (err, result) {
+                                                        if (err) {
+                                                            console.log(err);
+                                                            callback(err, null);
+                                                        } else if (result && result[0]) {
+                                                            newreturns.gift = result[0].count;
+                                                            callback(null, newreturns);
+                                                        } else {
+                                                            newreturns.gift = 0;
+                                                            callback(null, newreturns);
+                                                        }
+                                                    });
+                                                },
+                                                function (callback) {
+                                                    var matchobj = {
+                                                        "oldbottle.campnumber": data.campnumber,
+                                                        "oldbottle.hospital": sails.ObjectID(z._id),
+                                                        "oldbottle.camp": data.camp,
+                                                        "oldbottle.bottle": {
+                                                            $exists: true
+                                                        },
+                                                        "oldbottle.verified": {
+                                                            $exists: false
+                                                        }
+                                                    };
+                                                    if (data.camp == "All") {
+                                                        delete matchobj["oldbottle.camp"];
+                                                    }
+                                                    db.collection('donor').aggregate([{
+                                                        $unwind: "$oldbottle"
+                                                    }, {
+                                                        $match: matchobj
+                                                    }, {
+                                                        $group: {
+                                                            _id: donor,
+                                                            count: {
+                                                                $sum: 1
+                                                            }
+                                                        }
+                                                    }, {
+                                                        $project: {
+                                                            count: 1
+                                                        }
+                                                    }]).toArray(function (err, result) {
+                                                        if (err) {
+                                                            console.log(err);
+                                                            callback(err, null);
+                                                        } else if (result && result[0]) {
+                                                            newreturns.pendingV = result[0].count;
+                                                            callback(null, newreturns);
+                                                        } else {
+                                                            newreturns.pendingV = 0;
+                                                            callback(null, newreturns);
+                                                        }
+                                                    });
+                                                },
+                                                function (callback) {
+                                                    var matchobj = {
+                                                        "oldbottle.campnumber": data.campnumber,
+                                                        "oldbottle.hospital": sails.ObjectID(z._id),
+                                                        "oldbottle.camp": data.camp,
+                                                        "oldbottle.bottle": {
+                                                            $exists: false
+                                                        }
+                                                    };
+                                                    if (data.camp == "All") {
+                                                        delete matchobj["oldbottle.camp"];
+                                                    }
+                                                    db.collection('donor').aggregate([{
+                                                        $unwind: "$oldbottle"
+                                                    }, {
+                                                        $match: matchobj
+                                                    }, {
+                                                        $group: {
+                                                            _id: donor,
+                                                            count: {
+                                                                $sum: 1
+                                                            }
+                                                        }
+                                                    }, {
+                                                        $project: {
+                                                            count: 1
+                                                        }
+                                                    }]).toArray(function (err, result) {
+                                                        if (err) {
+                                                            console.log(err);
+                                                            callback(err, null);
+                                                        } else if (result && result[0]) {
+                                                            newreturns.rejected = result[0].count;
+                                                            callback(null, newreturns);
+                                                        } else {
+                                                            newreturns.rejected = 0;
+                                                            callback(null, newreturns);
+                                                        }
+                                                    });
+                                                }
+                                            ], function (err, data7) {
+                                                if (err) {
+                                                    console.log(err);
+                                                    callback({
+                                                        value: false,
+                                                        comment: "Error"
+                                                    });
+                                                    db.close();
+                                                } else if (data7) {
+                                                    newreturns.hospitalname = z.name;
+                                                    newreturns.id = z._id;
+                                                    newreturns.campnumber = data.campnumber;
+                                                    newreturns.camp = z.camp;
+                                                    Table.save(newreturns, function (respoTab) {
+                                                        if (respoTab.value != false) {
+                                                            responseData.push(newreturns);
+                                                            abc++;
+                                                            if (abc == countme.length) {
+                                                                callback(responseData);
+                                                                db.close();
+                                                            } else {
+                                                                callme(abc);
+                                                            }
+                                                        } else {
+                                                            callback({
+                                                                value: false,
+                                                                comment: "Error in save"
+                                                            });
+                                                            db.close();
+                                                        }
+                                                    });
+                                                } else {
+                                                    callback({
+                                                        value: false,
+                                                        comment: "No data found"
+                                                    });
+                                                    db.close();
+                                                }
+                                            });
+                                        }
+                                    });
+                                }
+                                callme(0);
+                            } else {
+                                Camp.countlevels(data, function (countResp) {
+                                    if (countResp.value != false) {
+                                        countResp.campnumber = data.campnumber;
+                                        Table.save(countResp, function (respoTab) {
+                                            if (respoTab.value != false) {
+                                                responseData.push(countResp);
+                                                callback(responseData);
+                                                db.close();
+                                            } else {
+                                                callback({
+                                                    value: false,
+                                                    comment: "Error in save"
+                                                });
+                                                db.close();
+                                            }
+                                        });
+                                    } else {
+                                        callback({
+                                            value: false,
+                                            comment: "No data found"
+                                        });
+                                    }
+                                });
+                            }
                         });
-                        db.close();
                     }
                 });
             }
