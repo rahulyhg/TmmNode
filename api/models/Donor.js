@@ -207,6 +207,14 @@ module.exports = {
                                                 comment: "Error"
                                             });
                                         } else if (newTab) {
+                                            Table.findCount(data, function (result) {
+                                                sails.sockets.blast(data.camp + "_" + data.campnumber, result);
+                                            });
+                                            var data2 = _.cloneDeep(data);
+                                            data2.camp = "All";
+                                            Table.findCount(data2, function (result) {
+                                                sails.sockets.blast(data2.camp + "_" + data2.campnumber, result);
+                                            });
                                             callback({
                                                 value: true,
                                                 id: donor
@@ -956,6 +964,14 @@ module.exports = {
                                                         comment: "Error"
                                                     });
                                                 } else if (newTab) {
+                                                    Table.findCount(findrespo, function (result) {
+                                                        sails.sockets.blast(findrespo.camp + "_" + findrespo.campnumber, result);
+                                                    });
+                                                    var data2 = _.cloneDeep(findrespo);
+                                                    data2.camp = "All";
+                                                    Table.findCount(data2, function (result) {
+                                                        sails.sockets.blast(data2.camp + "_" + data2.campnumber, result);
+                                                    });
                                                     callback({
                                                         value: true,
                                                         comment: "Donor deleted"
@@ -1335,6 +1351,14 @@ module.exports = {
                                                 comment: "Error"
                                             });
                                         } else if (newTab) {
+                                            Table.findCount(data, function (result) {
+                                                sails.sockets.blast(data.camp + "_" + data.campnumber, result);
+                                            });
+                                            var data2 = _.cloneDeep(data);
+                                            data2.camp = "All";
+                                            Table.findCount(data2, function (result) {
+                                                sails.sockets.blast(data2.camp + "_" + data2.campnumber, result);
+                                            });
                                             callback({
                                                 value: true
                                             });
@@ -1433,6 +1457,14 @@ module.exports = {
                                         comment: "Error"
                                     });
                                 } else if (newTab) {
+                                    Table.findCount(data, function (result) {
+                                        sails.sockets.blast(data.camp + "_" + data.campnumber, result);
+                                    });
+                                    var data2 = _.cloneDeep(data);
+                                    data2.camp = "All";
+                                    Table.findCount(data2, function (result) {
+                                        sails.sockets.blast(data2.camp + "_" + data2.campnumber, result);
+                                    });
                                     callback({
                                         value: true
                                     });
