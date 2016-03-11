@@ -1,6 +1,6 @@
 module.exports = {
-    save: function(data, callback) {
-        sails.query(function(err, db) {
+    save: function (data, callback) {
+        sails.query(function (err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -12,7 +12,7 @@ module.exports = {
                     data._id = sails.ObjectID();
                     db.collection("village").find({
                         "name": data.name
-                    }).toArray(function(err, data2) {
+                    }).toArray(function (err, data2) {
                         if (err) {
                             console.log(err);
                             callback({
@@ -23,7 +23,7 @@ module.exports = {
                             callback(data2);
                             db.close();
                         } else {
-                            db.collection('village').insert(data, function(err, created) {
+                            db.collection('village').insert(data, function (err, created) {
                                 if (err) {
                                     console.log(err);
                                     callback({
@@ -53,7 +53,7 @@ module.exports = {
                         _id: village
                     }, {
                         $set: data
-                    }, function(err, updated) {
+                    }, function (err, updated) {
                         if (err) {
                             console.log(err);
                             callback({
@@ -83,14 +83,14 @@ module.exports = {
             }
         });
     },
-    findlimited: function(data, callback) {
+    findlimited: function (data, callback) {
         var newcallback = 0;
         var newreturns = {};
         newreturns.data = [];
         var check = new RegExp(data.search, "i");
         var pagesize = data.pagesize;
         var pagenumber = data.pagenumber;
-        sails.query(function(err, db) {
+        sails.query(function (err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -103,7 +103,7 @@ module.exports = {
                     name: {
                         '$regex': check
                     }
-                }, function(err, number) {
+                }, function (err, number) {
                     if (number) {
                         newreturns.total = number;
                         newreturns.totalpages = Math.ceil(number / data.pagesize);
@@ -128,7 +128,7 @@ module.exports = {
                         name: {
                             '$regex': check
                         }
-                    }, {}).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function(err, found) {
+                    }, {}).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function (err, found) {
                         if (err) {
                             callback({
                                 value: false
@@ -151,7 +151,7 @@ module.exports = {
             }
         });
     },
-    find: function(data, callback) {
+    find: function (data, callback) {
         if (data.search && data.village) {
             var returns = [];
             var exit = 0;
@@ -163,7 +163,7 @@ module.exports = {
                     callback(data);
                 }
             }
-            sails.query(function(err, db) {
+            sails.query(function (err, db) {
                 if (err) {
                     console.log(err);
                     callback({
@@ -176,7 +176,7 @@ module.exports = {
                         name: {
                             '$regex': check
                         }
-                    }).limit(10).toArray(function(err, found) {
+                    }).limit(10).toArray(function (err, found) {
                         if (err) {
                             callback({
                                 value: false
@@ -187,9 +187,9 @@ module.exports = {
                             exit++;
                             if (data.village.length != 0) {
                                 var nedata;
-                                nedata = _.remove(found, function(n) {
+                                nedata = _.remove(found, function (n) {
                                     var flag = false;
-                                    _.each(data.village, function(n1) {
+                                    _.each(data.village, function (n1) {
                                         if (n1.name == n.name) {
                                             flag = true;
                                         }
@@ -216,8 +216,8 @@ module.exports = {
             });
         }
     },
-    findone: function(data, callback) {
-        sails.query(function(err, db) {
+    findone: function (data, callback) {
+        sails.query(function (err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -227,7 +227,7 @@ module.exports = {
             if (db) {
                 db.collection("village").find({
                     "_id": sails.ObjectID(data._id)
-                }, {}).toArray(function(err, data2) {
+                }, {}).toArray(function (err, data2) {
                     if (err) {
                         console.log(err);
                         callback({
@@ -248,8 +248,38 @@ module.exports = {
             }
         });
     },
-    delete: function(data, callback) {
-        sails.query(function(err, db) {
+    findDrop: function (data, callback) {
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
+            }
+            if (db) {
+                db.collection("village").find({}, {}).toArray(function (err, data2) {
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false
+                        });
+                        db.close();
+                    } else if (data2 && data2[0]) {
+                        callback(data2);
+                        db.close();
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
+    },
+    delete: function (data, callback) {
+        sails.query(function (err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -258,7 +288,7 @@ module.exports = {
             }
             var cvillage = db.collection('village').remove({
                 _id: sails.ObjectID(data._id)
-            }, function(err, deleted) {
+            }, function (err, deleted) {
                 if (deleted) {
                     callback({
                         value: true
@@ -280,11 +310,11 @@ module.exports = {
             });
         });
     },
-    savevillage: function(data, callback) {
+    savevillage: function (data, callback) {
         var newdata = {};
         newdata.name = data.village;
         newdata._id = sails.ObjectID();
-        sails.query(function(err, db) {
+        sails.query(function (err, db) {
             var exit = 0;
             var exitup = 0;
             if (err) {
@@ -297,7 +327,7 @@ module.exports = {
                 exit++;
                 db.collection("village").find({
                     name: data.village
-                }).each(function(err, data2) {
+                }).each(function (err, data2) {
                     if (err) {
                         console.log(err);
                         callback({
@@ -313,7 +343,7 @@ module.exports = {
                         db.close();
                     } else {
                         if (exit != exitup) {
-                            db.collection('village').insert(newdata, function(err, created) {
+                            db.collection('village').insert(newdata, function (err, created) {
                                 if (err) {
                                     console.log(err);
                                     callback({

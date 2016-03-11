@@ -6,7 +6,7 @@
  */
 
 module.exports = {
-    save: function(req, res) {
+    save: function (req, res) {
         if (req.body) {
             if (req.body._id) {
                 if (req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
@@ -22,7 +22,7 @@ module.exports = {
             }
 
             function theme() {
-                var print = function(data) {
+                var print = function (data) {
                     res.json(data);
                 }
                 Village.save(req.body, print);
@@ -34,10 +34,10 @@ module.exports = {
             });
         }
     },
-    delete: function(req, res) {
+    delete: function (req, res) {
         if (req.body) {
             if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
-                var print = function(data) {
+                var print = function (data) {
                     res.json(data);
                 }
                 Village.delete(req.body, print);
@@ -54,10 +54,10 @@ module.exports = {
             });
         }
     },
-    find: function(req, res) {
+    find: function (req, res) {
         if (req.body) {
             if (req.body.village && Array.isArray(req.body.village)) {
-                var print = function(data) {
+                var print = function (data) {
                     res.json(data);
                 }
                 Village.find(req.body, print);
@@ -74,10 +74,23 @@ module.exports = {
             });
         }
     },
-    findone: function(req, res) {
+    findDrop: function (req, res) {
+        if (req.body) {
+            var print = function (data) {
+                res.json(data);
+            }
+            Village.findDrop(req.body, print);
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
+    },
+    findone: function (req, res) {
         if (req.body) {
             if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
-                var print = function(data) {
+                var print = function (data) {
                     res.json(data);
                 }
                 Village.findone(req.body, print);
@@ -94,7 +107,7 @@ module.exports = {
             });
         }
     },
-    findlimited: function(req, res) {
+    findlimited: function (req, res) {
         if (req.body) {
             if (req.body.pagesize && req.body.pagesize != "" && req.body.pagenumber && req.body.pagenumber != "") {
                 function callback(data) {
