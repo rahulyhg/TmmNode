@@ -821,12 +821,12 @@ module.exports = {
             });
         }
     },
-    deletealluser: function (req, res) {
-        var print = function (data) {
-            res.json(data);
-        }
-        Donor.deletealluser(req.body, print);
-    },
+    // deletealluser: function (req, res) {
+    //     var print = function (data) {
+    //         res.json(data);
+    //     }
+    //     Donor.deletealluser(req.body, print);
+    // },
     emptyHistory: function (req, res) {
         res.connection.setTimeout(200000000);
         req.connection.setTimeout(200000000);
@@ -1197,77 +1197,246 @@ module.exports = {
     },
     excelData: function (req, res) {
         var datapath = './bloodimg/' + req.query.file;
-        var outputpath = "./.tmp/output.json";
-        sails.xlsxj({
-            input: datapath,
-            output: outputpath
-        }, function (err, result) {
-            if (err) {
-                console.error(err);
-            } else if (result) {
-                sails.fs.unlink(datapath, function (data) {
-                    if (data) {
-                        sails.fs.unlink(outputpath, function (data2) {});
-                    }
-                });
-                var abc = [];
-                var i = 0;
-                if (result[0].donorid) {
-                    function createteam(num) {
-                        m = result[num];
-                        Donor.getforexcel(m, function (respo) {
-                            if (respo.value != false) {
-                                var json = {};
-                                json.donorid = respo.donorid;
-                                json.name = respo.name;
-                                json.address1 = respo.address1;
-                                json.address2 = respo.address2;
-                                json.area = respo.area;
-                                json.city = respo.city;
-                                json.pincode = respo.pincode;
-                                json.mobile = respo.mobile;
-                                abc.push(json);
-                                num++;
-                                if (num < result.length) {
-                                    setTimeout(function () {
-                                        createteam(num);
-                                    }, 15);
+        var isfile = sails.fs.existsSync(datapath);
+        if (isfile != false) {
+            var outputpath = "./.tmp/output.json";
+            sails.xlsxj({
+                input: datapath,
+                output: outputpath
+            }, function (err, result) {
+                if (err) {
+                    console.error(err);
+                } else if (result) {
+                    sails.fs.unlink(datapath, function (data) {
+                        if (data) {
+                            sails.fs.unlink(outputpath, function (data2) {});
+                        }
+                    });
+                    var abc = [];
+                    var i = 0;
+                    if (result[0].donorid) {
+                        function createteam(num) {
+                            m = result[num];
+                            Donor.getforexcel(m, function (respo) {
+                                if (respo.value != false) {
+                                    var json = {};
+                                    json.donorid = respo.donorid;
+                                    json.name = respo.name;
+                                    json.address1 = respo.address1;
+                                    json.address2 = respo.address2;
+                                    json.area = respo.area;
+                                    json.city = respo.city;
+                                    json.pincode = respo.pincode;
+                                    json.mobile = respo.mobile;
+                                    abc.push(json);
+                                    num++;
+                                    if (num < result.length) {
+                                        setTimeout(function () {
+                                            createteam(num);
+                                        }, 15);
+                                    } else {
+                                        var xls = sails.json2xls(abc);
+                                        var path = './data2.xlsx';
+                                        sails.fs.writeFileSync(path, xls, 'binary');
+                                        var excel = sails.fs.readFileSync(path);
+                                        res.set('Content-Type', "application/octet-stream");
+                                        res.set('Content-Disposition', "attachment;filename=" + path);
+                                        res.send(excel);
+                                    }
                                 } else {
-                                    var xls = sails.json2xls(abc);
-                                    var path = './data2.xlsx';
-                                    sails.fs.writeFileSync(path, xls, 'binary');
-                                    var excel = sails.fs.readFileSync(path);
-                                    res.set('Content-Type', "application/octet-stream");
-                                    res.set('Content-Disposition', "attachment;filename=" + path);
-                                    res.send(excel);
+                                    console.log(m.donorid);
+                                    num++;
+                                    if (num < result.length) {
+                                        setTimeout(function () {
+                                            createteam(num);
+                                        }, 15);
+                                    } else {
+                                        var xls = sails.json2xls(abc);
+                                        var path = './data2.xlsx';
+                                        sails.fs.writeFileSync(path, xls, 'binary');
+                                        var excel = sails.fs.readFileSync(path);
+                                        res.set('Content-Type', "application/octet-stream");
+                                        res.set('Content-Disposition', "attachment;filename=" + path);
+                                        res.send(excel);
+                                    }
                                 }
-                            } else {
-                                console.log(m.donorid);
-                                num++;
-                                if (num < result.length) {
-                                    setTimeout(function () {
-                                        createteam(num);
-                                    }, 15);
-                                } else {
-                                    var xls = sails.json2xls(abc);
-                                    var path = './data2.xlsx';
-                                    sails.fs.writeFileSync(path, xls, 'binary');
-                                    var excel = sails.fs.readFileSync(path);
-                                    res.set('Content-Type', "application/octet-stream");
-                                    res.set('Content-Disposition', "attachment;filename=" + path);
-                                    res.send(excel);
-                                }
-                            }
+                            });
+                        }
+                        createteam(0);
+                    } else {
+                        res.json({
+                            value: false
                         });
                     }
-                    createteam(0);
-                } else {
-                    res.json({
-                        value: false
-                    });
                 }
+            });
+        }
+    },
+    downloadLabel: function (req, res) {
+        var matchobj = {
+            donationcount: parseInt(req.query.count),
+            $or: [{
+                discontinued: { $exists: false }
+            }, {
+                discontinued: "no"
+            }]
+        };
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: false,
+                    comment: "Error"
+                });
+            } else {
+                db.collection('donor').find({
+                    $or: [{
+                        discontinued: { $exists: false }
+                    }, {
+                        discontinued: "no"
+                    }]
+                }, {
+                    _id: 0,
+                    donorid: 1,
+                    name: 1,
+                    address1: 1,
+                    address2: 1,
+                    area: 1,
+                    city: 1,
+                    pincode: 1,
+                    mobile: 1
+                }).sort({ donorid: 1 }).toArray(function (err, data2) {
+                    if (err) {
+                        console.log(err);
+                        res.json({
+                            value: false,
+                            comment: "Error"
+                        });
+                        db.close();
+                    } else if (data2 && data2.length > 0) {
+                        var xls = sails.json2xls(data2);
+                        var path = './data3.xlsx';
+                        sails.fs.writeFileSync(path, xls, 'binary');
+                        var excel = sails.fs.readFileSync(path);
+                        res.set('Content-Type', "application/octet-stream");
+                        res.set('Content-Disposition', "attachment;filename=" + path);
+                        res.send(excel);
+                        setTimeout(function () {
+                            sails.fs.unlink(path, function (data) {
+                                console.log(data);
+                            });
+                        }, 10000);
+                        db.close();
+                    } else {
+                        res.json({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
+                });
             }
         });
+    },
+    check: function (req, res) {
+        if (req.query.campnumber && req.query.count) {
+            sails.query(function (err, db) {
+                if (err) {
+                    console.log(err);
+                    res.json({
+                        value: false,
+                        comment: "Error"
+                    });
+                } else {
+                    db.collection('donor').aggregate([{
+                        $match: {
+                            donationcount: parseInt(req.query.count)
+                        }
+                    }, {
+                        $unwind: "$oldbottle"
+                    }, {
+                        $match: {
+                            "oldbottle.campnumber": req.query.campnumber,
+                            "oldbottle.bottle": {
+                                $exists: true
+                            },
+                            "oldbottle.verified": true
+                        }
+                    }, {
+                        $project: {
+                            _id: 0,
+                            donorid: 1,
+                            name: 1,
+                            address1: 1,
+                            address2: 1,
+                            city: 1,
+                            area: 1,
+                            pincode: 1,
+                            village: {
+                                $cond: [{
+                                        $eq: ["$village", []]
+                                    },
+                                    [""], "$village"
+                                ]
+                            },
+                            mobile: 1,
+                            donationcount: 1
+                        }
+                    }, {
+                        $unwind: "$village"
+                    }, {
+                        $project: {
+                            _id: 0,
+                            donorid: 1,
+                            name: 1,
+                            address1: 1,
+                            address2: 1,
+                            city: 1,
+                            area: 1,
+                            pincode: 1,
+                            village: "$village.name",
+                            mobile: 1,
+                            donationcount: 1
+                        }
+                    }]).sort({ donorid: 1 }).toArray(function (err, data2) {
+                        if (err) {
+                            console.log(err);
+                            res.json({
+                                value: false,
+                                comment: "Error"
+                            });
+                            db.close();
+                        } else if (data2 && data2.length > 0) {
+                            // res.json(data2);
+                            var xls = sails.json2xls(data2);
+                            var path = './' + req.query.campnumber + '-' + req.query.count + '.xlsx';
+                            sails.fs.writeFileSync(path, xls, 'binary');
+                            var excel = sails.fs.readFileSync(path);
+                            res.set('Content-Type', "application/octet-stream");
+                            res.set('Content-Disposition', "attachment;filename=" + path);
+                            res.send(excel);
+                            setTimeout(function () {
+                                sails.fs.unlink(path, function (data) {
+                                    console.log(data);
+                                });
+                            }, 10000);
+                            db.close();
+                        } else {
+                            res.json({
+                                value: false,
+                                comment: "No data found"
+                            });
+                            db.close();
+                        }
+                    });
+                }
+            });
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide params"
+            });
+        }
     },
     sendnoti: function (req, res) {
         var message = new sails.gcm.Message();
@@ -1389,5 +1558,107 @@ module.exports = {
                 });
             }
         });
-    }
+    },
+    addHistory: function (req, res) {
+        if (req.body) {
+            if (req.body.date && req.body.date != "" && req.body.donorid && req.body.donorid != "" && req.body.campnumber && req.body.campnumber != "") {
+                var print = function (data) {
+                    res.json(data);
+                }
+                Donor.addHistory(req.body, print);
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Please provide parameters"
+                });
+            }
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
+    },
+    getforexcel: function (req, res) {
+        if (req.body) {
+            if (req.body.donorid && req.body.donorid != "") {
+                var print = function (data) {
+                    res.json(data);
+                }
+                Donor.getforexcel(req.body, print);
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Donor-id is incorrect"
+                });
+            }
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
+    },
+    downloadMobile: function (req, res) {
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: false,
+                    comment: "Error"
+                });
+            } else {
+                db.collection('donor').aggregate([{
+                    $match: {
+                        mobile: {
+                            $exists: true
+                        }
+                    }
+                }, {
+                    $project: {
+                        _id: 0,
+                        mobile: 1
+                    }
+                }]).sort({ donorid: 1 }).toArray(function (err, data2) {
+                    if (err) {
+                        console.log(err);
+                        res.json({
+                            value: false,
+                            comment: "Error"
+                        });
+                        db.close();
+                    } else if (data2 && data2.length > 0) {
+                        data2 = _.uniq(data2, "mobile");
+                        var mobArr = [];
+                        var i = 0;
+                        _.each(data2, function (mob) {
+                            if (mob.mobile != "0" || mob.mobile != "") {
+                                mobArr.push(mob);
+                            }
+                        });
+
+                        var xls = sails.json2xls(mobArr);
+                        var path = './data4.xlsx';
+                        sails.fs.writeFileSync(path, xls, 'binary');
+                        var excel = sails.fs.readFileSync(path);
+                        res.set('Content-Type', "application/octet-stream");
+                        res.set('Content-Disposition', "attachment;filename=" + path);
+                        res.send(excel);
+                        setTimeout(function () {
+                            sails.fs.unlink(path, function (data) {
+                                console.log(data);
+                            });
+                        }, 10000);
+                        db.close();
+                    } else {
+                        res.json({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
+    },
 };

@@ -930,6 +930,7 @@ module.exports = {
                             }
                         });
                         delete data.donationcount;
+                        delete findrespo.donationcount;
                         db.collection('donor').update({
                             _id: sails.ObjectID(findrespo._id)
                         }, {
@@ -1524,7 +1525,11 @@ module.exports = {
         });
     },
     update: function (data, callback) {
-        delete data.donationcount;
+        if (data.me) {
+            data.donationcount = parseInt(data.donationcount);
+        } else {
+            delete data.donationcount;
+        }
         var i = 0;
         if (data.oldbottle && data.oldbottle.length > 0) {
             _.each(data.oldbottle, function (y) {
@@ -2051,6 +2056,7 @@ module.exports = {
                                 newdata.notification.push(notidata);
                                 var donor = sails.ObjectID(data._id);
                                 delete data._id;
+                                delete newdata.donationcount;
                                 db.collection('donor').update({
                                     _id: donor
                                 }, {
@@ -2092,6 +2098,7 @@ module.exports = {
                             newdata.notification.push(notidata);
                             var donor = sails.ObjectID(data._id);
                             delete data._id;
+                            delete newdata.donationcount;
                             db.collection('donor').update({
                                 _id: donor
                             }, {
@@ -2234,6 +2241,87 @@ module.exports = {
                         callback({
                             value: false,
                             comment: "New Donor not found"
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
+    },
+    addHistory: function (data, callback) {
+        data.date = new Date(data.date);
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false,
+                    comment: "Error"
+                });
+            } else {
+                Donor.getforexcel(data, function (doRespo) {
+                    if (doRespo.value != false) {
+                        var index = sails._.findIndex(doRespo.history, function (chr) {
+                            return chr.campnumber == data.campnumber;
+                        });
+                        if (index == -1) {
+                            if (doRespo.donationcount && doRespo.donationcount > 0) {
+                                doRespo.donationcount = doRespo.donationcount + 1;
+                            } else {
+                                doRespo.donationcount = 1;
+                            }
+                            if (doRespo.history && doRespo.history.length > 0) {
+                                callMe(doRespo);
+                            } else {
+                                doRespo.history = [];
+                                doRespo.oldbottle = [];
+                                callMe(doRespo);
+                            }
+
+                            function callMe(doRespo) {
+                                doRespo.history.push({
+                                    date: data.date,
+                                    campnumber: data.campnumber
+                                });
+                                doRespo.oldbottle.push({
+                                    date: data.date,
+                                    campnumber: data.campnumber,
+                                    bottle: "",
+                                    verified: true,
+                                    hospital: sails.ObjectID()
+                                });
+                                Donor.update({
+                                    me: 1,
+                                    donorid: doRespo.donorid,
+                                    history: doRespo.history,
+                                    oldbottle: doRespo.oldbottle,
+                                    donationcount: doRespo.donationcount
+                                }, function (upRespo) {
+                                    if (upRespo.value != false) {
+                                        callback({
+                                            value: true,
+                                            comment: "History Added Successfully"
+                                        });
+                                        db.close();
+                                    } else {
+                                        callback({
+                                            value: false,
+                                            comment: "Some Error"
+                                        });
+                                        db.close();
+                                    }
+                                });
+                            }
+                        } else {
+                            callback({
+                                value: false,
+                                comment: "Entry of this camp number alreay exists"
+                            });
+                            db.close();
+                        }
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "Donor not found"
                         });
                         db.close();
                     }

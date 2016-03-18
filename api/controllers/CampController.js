@@ -523,7 +523,7 @@ module.exports = {
                         donorid: 1,
                         name: 1,
                         bloodgroup: 1,
-                        oldbottle: 1,
+                        bottle_no: "$oldbottle.bottle",
                         age: 1,
                         gender: 1
                     }
@@ -598,7 +598,7 @@ module.exports = {
                         }, {
                             $project: {
                                 _id: 0,
-                                "oldbottle.bottle": 1,
+                                bottle_no: "$oldbottle.bottle",
                                 firstname: 1,
                                 middlename: 1,
                                 lastname: 1,
@@ -613,7 +613,7 @@ module.exports = {
                             }
                         }, {
                             $sort: {
-                                donorid: 1
+                                "oldbottle.bottle": 1
                             }
                         }]).toArray(function (err, data2) {
                             if (err) {
