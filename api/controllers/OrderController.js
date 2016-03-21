@@ -75,23 +75,23 @@ module.exports = {
             if (ccavResponse.order_status == "success" || ccavResponse.order_status == "Success") {
                 Order.save({
                     orderid: ccavResponse.order_id,
-                    donorid: ccavResponse.merchant_param1,
                     name: ccavResponse.billing_name,
+                    mobile: ccavResponse.billing_tel,
                     status: "Success",
                     amount: ccavResponse.amount
                 }, function (respo) {
                     res.redirect("http://wohlig.co.in/paisoapk/success.html");
                     if (ccavResponse.merchant_param2 != "" || ccavResponse.merchant_param2 != "0") {
                         sails.request.get({
-                            url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=vikasvira&to=" + ccavResponse.merchant_param2 + "&from=TMMBLD&message=Thank you for donation. Your transaction was Successful."
+                            url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=vikasvira&to=" + ccavResponse.billing_tel + "&from=TMMBLD&message=Thank you for donation. Your transaction was Successful."
                         }, function (err, httpResponse, body) {});
                     }
                 });
             } else {
                 Order.save({
                     orderid: ccavResponse.order_id,
-                    donorid: ccavResponse.merchant_param1,
                     name: ccavResponse.billing_name,
+                    mobile: ccavResponse.billing_tel,
                     status: "Failed",
                     amount: ccavResponse.amount
                 }, function (respo) {
