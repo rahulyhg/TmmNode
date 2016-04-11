@@ -401,7 +401,7 @@ module.exports = {
                         lastname: checklastname,
                         campnumber: data.campnumber,
                         camp: data.camp,
-                        pincode: data.pincode,
+                        mobile: data.pincode,
                         new: {
                             $exists: false
                         },
@@ -417,7 +417,7 @@ module.exports = {
                         lastname: checklastname,
                         campnumber: data.campnumber,
                         camp: data.camp,
-                        pincode: data.pincode
+                        mobile: data.pincode
                     };
                 }
                 if (data.donorid == "") {
@@ -439,7 +439,7 @@ module.exports = {
                     delete matchobj.camp;
                 }
                 if (data.pincode == "") {
-                    delete matchobj.pincode;
+                    delete matchobj.mobile;
                 }
                 callbackfunc1();
 
@@ -537,7 +537,7 @@ module.exports = {
                         lastname: checklastname,
                         campnumber: data.campnumber,
                         camp: data.camp,
-                        pincode: data.pincode,
+                        mobile: data.pincode,
                         hospital: sails.ObjectID(data.hospital),
                         new: {
                             $exists: true
@@ -557,7 +557,7 @@ module.exports = {
                         lastname: checklastname,
                         campnumber: data.campnumber,
                         camp: data.camp,
-                        pincode: data.pincode,
+                        mobile: data.pincode,
                         hospital: sails.ObjectID(data.hospital),
                         new: {
                             $exists: true
@@ -589,7 +589,7 @@ module.exports = {
                     delete matchobj.camp;
                 }
                 if (data.pincode == "") {
-                    delete matchobj.pincode;
+                    delete matchobj.mobile;
                 }
                 callbackfunc1();
 
@@ -687,7 +687,7 @@ module.exports = {
                         lastname: checklastname,
                         campnumber: data.campnumber,
                         camp: data.camp,
-                        pincode: data.pincode,
+                        mobile: data.pincode,
                         verified: {
                             $eq: true
                         },
@@ -703,7 +703,7 @@ module.exports = {
                         lastname: checklastname,
                         campnumber: data.campnumber,
                         camp: data.camp,
-                        pincode: data.pincode,
+                        mobile: data.pincode,
                         hospital: sails.ObjectID(data.hospital),
                         verified: {
                             $eq: true
@@ -729,7 +729,7 @@ module.exports = {
                     delete matchobj.camp;
                 }
                 if (data.pincode == "") {
-                    delete matchobj.pincode;
+                    delete matchobj.mobile;
                 }
                 callbackfunc1();
 
@@ -826,7 +826,7 @@ module.exports = {
                     lastname: checklastname,
                     campnumber: data.campnumber,
                     camp: data.camp,
-                    pincode: data.pincode,
+                    mobile: data.pincode,
                     giftdone: {
                         $eq: true
                     }
@@ -850,7 +850,7 @@ module.exports = {
                     delete matchobj.camp;
                 }
                 if (data.pincode == "") {
-                    delete matchobj.pincode;
+                    delete matchobj.mobile;
                 }
                 callbackfunc1();
 
@@ -1414,7 +1414,7 @@ module.exports = {
                 _.each(data.oldbottle, function (z) {
                     z.hospital = sails.ObjectID(z.hospital);
                     if (z.bottle == data.bottle && z.campnumber == data.campnumber && z.verified == true) {
-                        z.giftdone = true;
+                        z.giftdone = data.giftdone;
                     }
                     i++;
                     if (i == data.oldbottle.length) {
@@ -1428,7 +1428,7 @@ module.exports = {
                     db.collection('donor').update({
                         _id: donor,
                         giftdone: {
-                            $ne: true
+                            $exists: false
                         }
                     }, {
                         $set: data
@@ -1441,15 +1441,24 @@ module.exports = {
                             });
                             db.close();
                         } else if (updated.result.nModified != 0 && updated.result.n != 0) {
+                            var incobj = {};
+                            if (data.giftdone == true) {
+                                incobj = {
+                                    gift: 1,
+                                    pendingG: -1
+                                }
+                            } else {
+                                incobj = {
+                                    giftRejected: 1,
+                                    pendingG: -1
+                                }
+                            }
                             db.collection('table').findAndModify({
                                 hospitalname: data.hospitalname,
                                 camp: data.camp,
                                 campnumber: data.campnumber
                             }, {}, {
-                                $inc: {
-                                    gift: 1,
-                                    pendingG: -1
-                                }
+                                $inc: incobj
                             }, function (err, newTab) {
                                 if (err) {
                                     console.log(err);
@@ -1457,6 +1466,7 @@ module.exports = {
                                         value: false,
                                         comment: "Error"
                                     });
+                                    db.close();
                                 } else if (newTab) {
                                     Table.findCount(data, function (result) {
                                         sails.sockets.blast(data.camp + "_" + data.campnumber, result);
@@ -2322,6 +2332,118 @@ module.exports = {
                         callback({
                             value: false,
                             comment: "Donor not found"
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
+    },
+    bottleCount: function (data, callback) {
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false,
+                    comment: "Error"
+                });
+            } else {
+                db.collection('donor').aggregate([{
+                    $match: {
+                        history: {
+                            $exists: true
+                        }
+                    }
+                }, {
+                    $group: {
+                        _id: null,
+                        total: {
+                            $sum: {
+                                $size: "$history"
+                            }
+                        }
+                    }
+                }]).toArray(function (err, data2) {
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false,
+                            comment: "Error"
+                        });
+                        db.close();
+                    } else if (data2) {
+                        callback(data2[0]);
+                        db.close();
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
+    },
+    sms: function (data, callback) {
+        var matchobj = {};
+        if (data.type == "All") {
+            matchobj = {
+                mobile: {
+                    $nin: ["0", ""]
+                }
+            };
+        } else {
+            matchobj = {
+                mobile: {
+                    $nin: ["0", ""]
+                },
+                pincode: {
+                    $gte: data.from,
+                    $lte: data.to
+                }
+            };
+        }
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false,
+                    comment: "Error"
+                });
+            } else {
+                db.collection('donor').find(matchobj, {
+                    _id: 0,
+                    mobile: 1
+                }).toArray(function (err, found) {
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false,
+                            comment: "Error"
+                        });
+                        db.close();
+                    } else if (found && found.length > 0) {
+                        var abc = sails._.chunk(found, 100);
+                        var i = 0;
+                        _.each(abc, function (arr) {
+                            var mob = "";
+                            i++;
+                            _.each(arr, function (res) {
+                                mob += res.mobile + ",";
+                            });
+                            sails.request.get({
+                                url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=vikasvira&to=" + mob + "&from=TMMBLD&message=" + data.message
+                            }, function (err, httpResponse, body) {});
+                            if (i == abc.length) {
+                                callback({ value: true, comment: "Sent" });
+                                db.close();
+                            }
+                        });
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No data found"
                         });
                         db.close();
                     }

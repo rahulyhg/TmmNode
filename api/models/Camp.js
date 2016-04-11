@@ -1,9 +1,9 @@
 module.exports = {
-    save: function (data, callback) {
+    save: function(data, callback) {
         if (data.date) {
             data.date = new Date(data.date);
         }
-        sails.query(function (err, db) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -14,7 +14,7 @@ module.exports = {
                 if (!data._id) {
                     data._id = sails.ObjectID();
                     data.status = "no";
-                    db.collection('camp').insert(data, function (err, created) {
+                    db.collection('camp').insert(data, function(err, created) {
                         if (err) {
                             console.log(err);
                             callback({
@@ -44,7 +44,7 @@ module.exports = {
                             _id: camp
                         }, {
                             $set: data
-                        }, function (err, updated) {
+                        }, function(err, updated) {
                             if (err) {
                                 console.log(err);
                                 callback({
@@ -76,7 +76,7 @@ module.exports = {
                             _id: camp
                         }, {
                             $set: data
-                        }, function (err, updated) {
+                        }, function(err, updated) {
                             if (err) {
                                 console.log(err);
                                 callback({
@@ -93,9 +93,9 @@ module.exports = {
                                     $set: newdata
                                 }, {
                                     multi: true
-                                }, function (err, deleted) {
+                                }, function(err, deleted) {
                                     if (deleted) {
-                                        Blood.deleteAll(data, function (blrespo) {
+                                        Blood.deleteAll(data, function(blrespo) {
                                             db.collection('donor').update({}, {
                                                 $unset: {
                                                     bottle: "",
@@ -111,7 +111,7 @@ module.exports = {
                                                 }
                                             }, {
                                                 multi: true
-                                            }, function (err, updated) {
+                                            }, function(err, updated) {
                                                 if (err) {
                                                     console.log(err);
                                                     callback({
@@ -166,8 +166,8 @@ module.exports = {
             }
         });
     },
-    saveExcel: function (data, callback) {
-        sails.query(function (err, db) {
+    saveExcel: function(data, callback) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -176,7 +176,7 @@ module.exports = {
             } else if (db) {
                 if (!data._id) {
                     data._id = sails.ObjectID();
-                    db.collection('camp').insert(data, function (err, created) {
+                    db.collection('camp').insert(data, function(err, created) {
                         if (err) {
                             console.log(err);
                             callback({
@@ -205,7 +205,7 @@ module.exports = {
                         _id: camp
                     }, {
                         $set: data
-                    }, function (err, updated) {
+                    }, function(err, updated) {
                         if (err) {
                             console.log(err);
                             callback({
@@ -236,8 +236,8 @@ module.exports = {
             }
         });
     },
-    find: function (data, callback) {
-        sails.query(function (err, db) {
+    find: function(data, callback) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -247,7 +247,7 @@ module.exports = {
             if (db) {
                 db.collection("camp").find().sort({
                     date: -1
-                }).toArray(function (err, found) {
+                }).toArray(function(err, found) {
                     if (err) {
                         callback({
                             value: false
@@ -268,13 +268,13 @@ module.exports = {
         });
     },
     //Findlimited
-    findlimited: function (data, callback) {
+    findlimited: function(data, callback) {
         var newreturns = {};
         newreturns.data = [];
         var check = new RegExp(data.search, "i");
         var pagesize = parseInt(data.pagesize);
         var pagenumber = parseInt(data.pagenumber);
-        sails.query(function (err, db) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -289,7 +289,7 @@ module.exports = {
                         campnumber: {
                             '$regex': check
                         }
-                    }, function (err, number) {
+                    }, function(err, number) {
                         if (number && number != "") {
                             newreturns.total = number;
                             newreturns.totalpages = Math.ceil(number / data.pagesize);
@@ -316,7 +316,7 @@ module.exports = {
                             }
                         }).sort({
                             date: -1
-                        }).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function (err, found) {
+                        }).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function(err, found) {
                             if (err) {
                                 callback({
                                     value: false
@@ -341,8 +341,8 @@ module.exports = {
         });
     },
     //Findlimited
-    findone: function (data, callback) {
-        sails.query(function (err, db) {
+    findone: function(data, callback) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -352,7 +352,7 @@ module.exports = {
             if (db) {
                 db.collection("camp").find({
                     _id: sails.ObjectID(data._id)
-                }).toArray(function (err, data2) {
+                }).toArray(function(err, data2) {
                     if (err) {
                         console.log(err);
                         callback({
@@ -374,8 +374,8 @@ module.exports = {
             }
         });
     },
-    delete: function (data, callback) {
-        sails.query(function (err, db) {
+    delete: function(data, callback) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -384,7 +384,7 @@ module.exports = {
             }
             db.collection('camp').remove({
                 _id: sails.ObjectID(data._id)
-            }, function (err, deleted) {
+            }, function(err, deleted) {
                 if (deleted) {
                     callback({
                         value: true
@@ -406,10 +406,10 @@ module.exports = {
             });
         });
     },
-    countlevels: function (data, callback) {
+    countlevels: function(data, callback) {
         var newreturns = {};
         var donor = sails.ObjectID(data.donor);
-        sails.query(function (err, db) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -418,7 +418,7 @@ module.exports = {
                 });
             } else if (db) {
                 async.parallel([
-                    function (callback) {
+                    function(callback) {
                         var matchobj = {
                             "oldbottle.campnumber": data.campnumber,
                             "oldbottle.camp": data.camp
@@ -441,7 +441,7 @@ module.exports = {
                             $project: {
                                 count: 1
                             }
-                        }]).toArray(function (err, result) {
+                        }]).toArray(function(err, result) {
                             if (err) {
                                 console.log(err);
                                 callback(err, null);
@@ -454,7 +454,7 @@ module.exports = {
                             }
                         });
                     },
-                    function (callback) {
+                    function(callback) {
                         var matchobj = {
                             "oldbottle.campnumber": data.campnumber,
                             "oldbottle.camp": data.camp,
@@ -483,7 +483,7 @@ module.exports = {
                             $project: {
                                 count: 1
                             }
-                        }]).toArray(function (err, result) {
+                        }]).toArray(function(err, result) {
                             if (err) {
                                 console.log(err);
                                 callback(err, null);
@@ -496,7 +496,7 @@ module.exports = {
                             }
                         });
                     },
-                    function (callback) {
+                    function(callback) {
                         var matchobj = {
                             "oldbottle.campnumber": data.campnumber,
                             "oldbottle.camp": data.camp,
@@ -507,7 +507,7 @@ module.exports = {
                                 $exists: true
                             },
                             "oldbottle.giftdone": {
-                                $exists: true
+                                $eq: true
                             }
                         };
                         if (data.camp == "All" || data.camp == "") {
@@ -528,7 +528,7 @@ module.exports = {
                             $project: {
                                 count: 1
                             }
-                        }]).toArray(function (err, result) {
+                        }]).toArray(function(err, result) {
                             if (err) {
                                 console.log(err);
                                 callback(err, null);
@@ -541,7 +541,7 @@ module.exports = {
                             }
                         });
                     },
-                    function (callback) {
+                    function(callback) {
                         var matchobj = {
                             "oldbottle.campnumber": data.campnumber,
                             "oldbottle.camp": data.camp,
@@ -570,7 +570,7 @@ module.exports = {
                             $project: {
                                 count: 1
                             }
-                        }]).toArray(function (err, result) {
+                        }]).toArray(function(err, result) {
                             if (err) {
                                 console.log(err);
                                 callback(err, null);
@@ -583,7 +583,7 @@ module.exports = {
                             }
                         });
                     },
-                    function (callback) {
+                    function(callback) {
                         var matchobj = {
                             "oldbottle.campnumber": data.campnumber,
                             "oldbottle.camp": data.camp,
@@ -615,7 +615,7 @@ module.exports = {
                             $project: {
                                 count: 1
                             }
-                        }]).toArray(function (err, result) {
+                        }]).toArray(function(err, result) {
                             if (err) {
                                 console.log(err);
                                 callback(err, null);
@@ -628,7 +628,7 @@ module.exports = {
                             }
                         });
                     },
-                    function (callback) {
+                    function(callback) {
                         var matchobj = {
                             "oldbottle.campnumber": data.campnumber,
                             "oldbottle.camp": data.camp,
@@ -654,7 +654,7 @@ module.exports = {
                             $project: {
                                 count: 1
                             }
-                        }]).toArray(function (err, result) {
+                        }]).toArray(function(err, result) {
                             if (err) {
                                 console.log(err);
                                 callback(err, null);
@@ -666,8 +666,53 @@ module.exports = {
                                 callback(null, newreturns);
                             }
                         });
-                    }
-                ], function (err, data7) {
+                    },
+                    function(callback) {
+                        var matchobj = {
+                            "oldbottle.campnumber": data.campnumber,
+                            "oldbottle.camp": data.camp,
+                            "oldbottle.bottle": {
+                                $exists: true
+                            },
+                            "oldbottle.verified": {
+                                $exists: true
+                            },
+                            "oldbottle.giftdone": {
+                                $eq: false
+                            }
+                        };
+                        if (data.camp == "All" || data.camp == "") {
+                            delete matchobj["oldbottle.camp"];
+                        }
+                        db.collection('donor').aggregate([{
+                            $unwind: "$oldbottle"
+                        }, {
+                            $match: matchobj
+                        }, {
+                            $group: {
+                                _id: donor,
+                                count: {
+                                    $sum: 1
+                                }
+                            }
+                        }, {
+                            $project: {
+                                count: 1
+                            }
+                        }]).toArray(function(err, result) {
+                            if (err) {
+                                console.log(err);
+                                callback(err, null);
+                            } else if (result && result[0]) {
+                                newreturns.giftRejected = result[0].count;
+                                callback(null, newreturns);
+                            } else {
+                                newreturns.giftRejected = 0;
+                                callback(null, newreturns);
+                            }
+                        });
+                    },
+                ], function(err, data7) {
                     if (err) {
                         console.log(err);
                         callback({
@@ -689,14 +734,14 @@ module.exports = {
             }
         });
     },
-    countforHosp: function (data, callback) {
+    countforHosp: function(data, callback) {
         var i = 0;
         var responseData = [];
         var donor = sails.ObjectID(data.donor);
-        Hospital.find(data, function (hospres) {
+        Hospital.find(data, function(hospres) {
             if (hospres.value != false) {
-                _.each(hospres, function (z) {
-                    sails.query(function (err, db) {
+                _.each(hospres, function(z) {
+                    sails.query(function(err, db) {
                         if (err) {
                             console.log(err);
                             callback({
@@ -733,7 +778,7 @@ module.exports = {
                                 $project: {
                                     count: 1
                                 }
-                            }]).toArray(function (err, data2) {
+                            }]).toArray(function(err, data2) {
                                 if (err) {
                                     console.log(err);
                                     callback({
@@ -769,7 +814,7 @@ module.exports = {
             }
         });
     },
-    donorlevels: function (data, callback) {
+    donorlevels: function(data, callback) {
         var newreturns = {};
         newreturns.data = [];
         var checklastname = "";
@@ -799,7 +844,7 @@ module.exports = {
         var pagesize = parseInt(data.pagesize);
         var pagenumber = parseInt(data.pagenumber);
         var donor = sails.ObjectID(data.donor);
-        sails.query(function (err, db) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -813,7 +858,7 @@ module.exports = {
                         firstname: checkfirstname,
                         middlename: checkmiddlename,
                         lastname: checklastname,
-                        pincode: data.pincode,
+                        mobile: data.pincode,
                         "oldbottle.campnumber": data.campnumber,
                         "oldbottle.camp": data.camp,
                         "oldbottle.bottle": {
@@ -826,7 +871,7 @@ module.exports = {
                         firstname: checkfirstname,
                         middlename: checkmiddlename,
                         lastname: checklastname,
-                        pincode: data.pincode,
+                        mobile: data.pincode,
                         "oldbottle.campnumber": data.campnumber,
                         "oldbottle.camp": data.camp,
                         "oldbottle.bottle": {
@@ -842,7 +887,7 @@ module.exports = {
                         firstname: checkfirstname,
                         middlename: checkmiddlename,
                         lastname: checklastname,
-                        pincode: data.pincode,
+                        mobile: data.pincode,
                         "oldbottle.campnumber": data.campnumber,
                         "oldbottle.camp": data.camp,
                         "oldbottle.bottle": {
@@ -852,7 +897,7 @@ module.exports = {
                             $exists: true
                         },
                         "oldbottle.giftdone": {
-                            $exists: true
+                            $eq: true
                         }
                     };
                 } else if (data.accesslevel == "pendingV") {
@@ -861,7 +906,7 @@ module.exports = {
                         firstname: checkfirstname,
                         middlename: checkmiddlename,
                         lastname: checklastname,
-                        pincode: data.pincode,
+                        mobile: data.pincode,
                         "oldbottle.campnumber": data.campnumber,
                         "oldbottle.camp": data.camp,
                         "oldbottle.bottle": {
@@ -877,7 +922,7 @@ module.exports = {
                         firstname: checkfirstname,
                         middlename: checkmiddlename,
                         lastname: checklastname,
-                        pincode: data.pincode,
+                        mobile: data.pincode,
                         "oldbottle.campnumber": data.campnumber,
                         "oldbottle.camp": data.camp,
                         "oldbottle.bottle": {
@@ -896,7 +941,7 @@ module.exports = {
                         firstname: checkfirstname,
                         middlename: checkmiddlename,
                         lastname: checklastname,
-                        pincode: data.pincode,
+                        mobile: data.pincode,
                         "oldbottle.campnumber": data.campnumber,
                         "oldbottle.camp": data.camp,
                         "oldbottle.bottle": {
@@ -925,7 +970,7 @@ module.exports = {
                     delete matchobj.lastname;
                 }
                 if (data.pincode == "") {
-                    delete matchobj.pincode;
+                    delete matchobj.mobile;
                 }
                 callbackfunc1();
 
@@ -945,7 +990,7 @@ module.exports = {
                         $project: {
                             count: 1
                         }
-                    }]).toArray(function (err, result) {
+                    }]).toArray(function(err, result) {
                         if (result && result[0]) {
                             newreturns.total = result[0].count;
                             newreturns.totalpages = Math.ceil(result[0].count / data.pagesize);
@@ -982,7 +1027,7 @@ module.exports = {
                             $sort: {
                                 name: 1
                             }
-                        }]).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function (err, found) {
+                        }]).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function(err, found) {
                             if (err) {
                                 console.log(err);
                                 callback({
@@ -1007,7 +1052,7 @@ module.exports = {
             }
         });
     },
-    hospDonors: function (data, callback) {
+    hospDonors: function(data, callback) {
         var newreturns = {};
         newreturns.data = [];
         var checklastname = "";
@@ -1037,7 +1082,7 @@ module.exports = {
         var pagesize = parseInt(data.pagesize);
         var pagenumber = parseInt(data.pagenumber);
         var donor = sails.ObjectID(data.donor);
-        sails.query(function (err, db) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -1074,9 +1119,6 @@ module.exports = {
                 if (data.lastname == "" || data.lastname.indexOf("undefined") != -1) {
                     delete matchobj.lastname;
                 }
-                if (data.pincode == "") {
-                    delete matchobj.pincode;
-                }
                 callbackfunc1();
 
                 function callbackfunc1() {
@@ -1095,7 +1137,7 @@ module.exports = {
                         $project: {
                             count: 1
                         }
-                    }]).toArray(function (err, result) {
+                    }]).toArray(function(err, result) {
                         if (result && result[0]) {
                             newreturns.total = result[0].count;
                             newreturns.totalpages = Math.ceil(result[0].count / data.pagesize);
@@ -1130,7 +1172,7 @@ module.exports = {
                             $sort: {
                                 "oldbottle.bottle": 1
                             }
-                        }]).toArray(function (err, data2) {
+                        }]).toArray(function(err, data2) {
                             if (err) {
                                 console.log(err);
                                 callback({
@@ -1155,8 +1197,8 @@ module.exports = {
             }
         });
     },
-    findCampHospital: function (data, callback) {
-        sails.query(function (err, db) {
+    findCampHospital: function(data, callback) {
+        sails.query(function(err, db) {
             if (err) {
 
                 console.log(err);
@@ -1180,7 +1222,7 @@ module.exports = {
                         _id: 0,
                         "venues.hospital": 1
                     }
-                }]).toArray(function (err, data2) {
+                }]).toArray(function(err, data2) {
                     if (err) {
                         console.log(err);
                         callback({
@@ -1202,8 +1244,8 @@ module.exports = {
             }
         });
     },
-    findMe: function (data, callback) {
-        sails.query(function (err, db) {
+    findMe: function(data, callback) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 callback({
@@ -1221,8 +1263,7 @@ module.exports = {
                         _id: 0,
                         venues: 1
                     }
-                }]).toArray(function (err, data2) {
-                    console.log(data2);
+                }]).toArray(function(err, data2) {
                     if (err) {
                         console.log(err);
                         callback({
@@ -1233,8 +1274,8 @@ module.exports = {
                     } else if (data2 && data2.length > 0 && data2[0].venues && data2[0].venues[0]) {
                         var hosp = [];
                         var i = 0;
-                        _.each(data2[0].venues, function (mydata) {
-                            _.each(mydata.hospital, function (hospdata) {
+                        _.each(data2[0].venues, function(mydata) {
+                            _.each(mydata.hospital, function(hospdata) {
                                 hospdata.camp = mydata.value;
                                 hosp.push(hospdata);
                             });
@@ -1254,5 +1295,80 @@ module.exports = {
                 });
             }
         });
-    }
+    },
+    closeLogin: function(data, callback) {
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false,
+                    comment: "Error"
+                });
+            } else {
+                db.collection('admin').update({
+                    campnumber: data.campnumber,
+                    camp: data.camp
+                }, {
+                    $set: {
+                        status: data.status
+                    }
+                }, {
+                    multi: true
+                }, function(err, updated) {
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false,
+                            comment: "Error"
+                        });
+                        db.close();
+                    } else if (updated) {
+                        callback({
+                            value: true,
+                            comment: "Updated"
+                        });
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
+    },
+    countcamp: function(data, callback) {
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: "false"
+                });
+            }
+            if (db) {
+                db.collection("camp").count({}, function(err, number) {
+                    if (number != null) {
+                        callback(number);
+                        db.close();
+                    } else if (number == null) {
+                        callback(0);
+                        db.close();
+                    } else if (err) {
+                        callback({
+                            value: "false",
+                            comment: "Error"
+                        });
+                        db.close();
+                    } else {
+                        callback({
+                            value: "false",
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
+    },
 }

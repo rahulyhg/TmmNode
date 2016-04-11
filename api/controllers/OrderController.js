@@ -8,8 +8,10 @@ var http = require('http'),
     fs = require('fs'),
     qs = require('querystring'),
     crypto = require('crypto');
+var redirect = "http://192.168.1.120:8080/#/";
+var redirect = "http://wohlig.co.in/tmmweb/#/";
 module.exports = {
-    save: function (req, res) {
+    save: function(req, res) {
         if (req.body) {
             if (req.body._id) {
                 if (req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
@@ -25,7 +27,7 @@ module.exports = {
             }
 
             function admin() {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Order.save(req.body, print);
@@ -37,7 +39,7 @@ module.exports = {
             });
         }
     },
-    postReq: function (req, res) {
+    postReq: function(req, res) {
         var body = '',
             workingKey = '05E578D41CD1CFA7965DD1084F485F88', //Put in the 32-Bit key shared by CCAvenues.
             accessCode = 'AVIU64DC50BL27UILB', //Put in the access code shared by CCAvenues.
@@ -57,7 +59,7 @@ module.exports = {
             res.end();
         }
     },
-    postRes: function (req, res) {
+    postRes: function(req, res) {
         var ccavEncResponse = '',
             ccavResponse = '',
             workingKey = '05E578D41CD1CFA7965DD1084F485F88', //Put in the 32-Bit key provided by CCAvenues.
@@ -79,13 +81,15 @@ module.exports = {
                     mobile: ccavResponse.billing_tel,
                     status: "Success",
                     amount: ccavResponse.amount
-                }, function (respo) {
-                    res.redirect("http://wohlig.co.in/paisoapk/success.html");
-                    if (ccavResponse.merchant_param2 != "" || ccavResponse.merchant_param2 != "0") {
-                        sails.request.get({
-                            url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=vikasvira&to=" + ccavResponse.billing_tel + "&from=TMMBLD&message=Thank you for donation. Your transaction was Successful."
-                        }, function (err, httpResponse, body) {});
+                }, function(respo) {
+                    if (ccavResponse.merchant_param1 && ccavResponse.merchant_param1 != "") {
+                        res.redirect(redirect + "success/");
+                    } else {
+                        res.redirect("http://wohlig.co.in/paisoapk/success.html");
                     }
+                    sails.request.get({
+                        url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=vikasvira&to=" + ccavResponse.billing_tel + "&from=TMMBLD&message=Thank you for donation. Your transaction was Successful."
+                    }, function(err, httpResponse, body) {});
                 });
             } else {
                 Order.save({
@@ -94,8 +98,12 @@ module.exports = {
                     mobile: ccavResponse.billing_tel,
                     status: "Failed",
                     amount: ccavResponse.amount
-                }, function (respo) {
-                    res.redirect("http://wohlig.co.in/paisoapk/fail.html");
+                }, function(respo) {
+                    if (ccavResponse.merchant_param1 && ccavResponse.merchant_param1 != "") {
+                        res.redirect(redirect + "failure/" + ccavResponse.order_id);
+                    } else {
+                        res.redirect("http://wohlig.co.in/paisoapk/fail.html");
+                    }
                 });
             }
         }

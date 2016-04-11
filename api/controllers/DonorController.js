@@ -160,7 +160,7 @@ module.exports = {
     },
     giftsave: function (req, res) {
         if (req.body) {
-            if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id) && req.body.giftdone && req.body.giftdone == true) {
+            if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
                 var print = function (data) {
                     res.json(data);
                 }
@@ -326,6 +326,12 @@ module.exports = {
             res.json(data);
         };
         Donor.countdeleted(req.body, callback);
+    },
+    bottleCount: function (req, res) {
+        function callback(data) {
+            res.json(data);
+        };
+        Donor.bottleCount(req.body, callback);
     },
     lastbottlenumber: function (req, res) {
         if (req.body) {
@@ -1438,6 +1444,80 @@ module.exports = {
             });
         }
     },
+    singleCheck: function (req, res) {
+        sails.query(function (err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: false,
+                    comment: "Error"
+                });
+            } else {
+                if (req.query.count) {
+                    db.collection("donor").find({
+                        donationcount: parseInt(req.query.count),
+                        oldbottle: {
+                            $exists: true
+                        }
+                    }, {
+                        _id: 0,
+                        donorid: 1,
+                        name: 1,
+                        address1: 1,
+                        address2: 1,
+                        city: 1,
+                        area: 1,
+                        pincode: 1,
+                        mobile: 1,
+                        donationcount: 1,
+                        oldbottle: {
+                            $slice: -1
+                        },
+                    }).toArray(function (err, data2) {
+                        if (err) {
+                            console.log(err);
+                            res.json({
+                                value: false,
+                                comment: "Error"
+                            });
+                            db.close();
+                        } else if (data2 && data2.length > 0) {
+                            _.each(data2, function (respo) {
+                                respo.last_donated_date = sails.moment(respo.oldbottle[0].date).format("DD-MM-YYYY");
+                                delete respo.oldbottle;
+                            });
+                            // res.json(data2);
+                            var xls = sails.json2xls(data2);
+                            var path = './Donation-Count' + req.query.count + '.xlsx';
+                            sails.fs.writeFileSync(path, xls, 'binary');
+                            var excel = sails.fs.readFileSync(path);
+                            res.set('Content-Type', "application/octet-stream");
+                            res.set('Content-Disposition', "attachment;filename=" + path);
+                            res.send(excel);
+                            setTimeout(function () {
+                                sails.fs.unlink(path, function (data) {
+                                    console.log(data);
+                                });
+                            }, 10000);
+                            db.close();
+                        } else {
+                            res.json({
+                                value: false,
+                                comment: "No data found"
+                            });
+                            db.close();
+                        }
+                    });
+                } else {
+                    res.json({
+                        value: false,
+                        comment: "Please provide parameters"
+                    });
+                    db.close();
+                }
+            }
+        });
+    },
     sendnoti: function (req, res) {
         var message = new sails.gcm.Message();
         var title = "Request";
@@ -1661,4 +1741,24 @@ module.exports = {
             }
         });
     },
+    sms: function (req, res) {
+        if (req.body) {
+            if (req.body.type && req.body.type != "") {
+                var print = function (data) {
+                    res.json(data);
+                }
+                Donor.sms(req.body, print);
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Please provide parameters"
+                });
+            }
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
+    }
 };

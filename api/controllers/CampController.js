@@ -5,7 +5,7 @@
  * @help                :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 module.exports = {
-    save: function (req, res) {
+    save: function(req, res) {
         res.connection.setTimeout(200000000);
         req.connection.setTimeout(200000000);
         if (req.body) {
@@ -23,7 +23,7 @@ module.exports = {
             }
 
             function user() {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Camp.save(req.body, print);
@@ -35,10 +35,10 @@ module.exports = {
             });
         }
     },
-    delete: function (req, res) {
+    delete: function(req, res) {
         if (req.body) {
             if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Camp.delete(req.body, print);
@@ -55,16 +55,22 @@ module.exports = {
             });
         }
     },
-    find: function (req, res) {
+    find: function(req, res) {
         function callback(data) {
             res.json(data);
         };
         Camp.find(req.body, callback);
     },
-    findone: function (req, res) {
+    countcamp: function(req, res) {
+        function callback(data) {
+            res.json(data);
+        };
+        Camp.countcamp(req.body, callback);
+    },
+    findone: function(req, res) {
         if (req.body) {
             if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Camp.findone(req.body, print);
@@ -81,10 +87,10 @@ module.exports = {
             });
         }
     },
-    findCampHospital: function (req, res) {
+    findCampHospital: function(req, res) {
         if (req.body) {
             if (req.body.camp && req.body.camp != "" && req.body.campnumber && req.body.campnumber != "") {
-                var print = function (data) {
+                var print = function(data) {
                     res.json(data);
                 }
                 Camp.findCampHospital(req.body, print);
@@ -101,7 +107,7 @@ module.exports = {
             });
         }
     },
-    findlimited: function (req, res) {
+    findlimited: function(req, res) {
         if (req.body) {
             if (req.body.pagesize && req.body.pagesize != "" && req.body.pagenumber && req.body.pagenumber != "") {
                 function callback(data) {
@@ -121,7 +127,7 @@ module.exports = {
             });
         }
     },
-    countlevels: function (req, res) {
+    countlevels: function(req, res) {
         res.connection.setTimeout(200000000);
         req.connection.setTimeout(200000000);
         if (req.body) {
@@ -143,7 +149,7 @@ module.exports = {
             });
         }
     },
-    countforHosp: function (req, res) {
+    countforHosp: function(req, res) {
         if (req.body) {
             if (req.body.campnumber && req.body.campnumber != "") {
                 function callback(data) {
@@ -163,7 +169,7 @@ module.exports = {
             });
         }
     },
-    donorlevels: function (req, res) {
+    donorlevels: function(req, res) {
         if (req.body) {
             if (req.body.accesslevel && req.body.accesslevel != "") {
                 function callback(data) {
@@ -183,7 +189,7 @@ module.exports = {
             });
         }
     },
-    hospDonors: function (req, res) {
+    hospDonors: function(req, res) {
         if (req.body) {
             if (req.body.campnumber && req.body.campnumber != "" && req.body.hospital && req.body.hospital != "" && sails.ObjectID.isValid(req.body.hospital)) {
                 function callback(data) {
@@ -203,7 +209,7 @@ module.exports = {
             });
         }
     },
-    excelDonor: function (req, res) {
+    excelDonor: function(req, res) {
         var camp = req.param('camp');
         var campnumber = req.param('campnumber');
         var accesslevel = req.param('accesslevel');
@@ -284,7 +290,7 @@ module.exports = {
         if (camp == "All" || camp == "") {
             delete matchobj["oldbottle.camp"];
         }
-        sails.query(function (err, db) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 res.json({
@@ -309,7 +315,7 @@ module.exports = {
                     $sort: {
                         ackdate: 1
                     }
-                }]).toArray(function (err, data2) {
+                }]).toArray(function(err, data2) {
                     if (err) {
                         console.log(err);
                         res.json({
@@ -337,14 +343,14 @@ module.exports = {
             }
         });
     },
-    hospitalDonor: function (req, res) {
+    hospitalDonor: function(req, res) {
         var camp = req.param('camp');
         var campnumber = req.param('campnumber');
         var hospital = req.param('hospital');
         hospital = sails.ObjectID(hospital);
         var data5 = {};
         data5._id = hospital;
-        Hospital.findone(data5, function (respo) {
+        Hospital.findone(data5, function(respo) {
             if (respo.value != false) {
                 var hospitalname = respo.name;
                 res.connection.setTimeout(20000000);
@@ -363,7 +369,7 @@ module.exports = {
                 if (camp == "All" || camp == "") {
                     delete matchobj["oldbottle.camp"];
                 }
-                sails.query(function (err, db) {
+                sails.query(function(err, db) {
                     if (err) {
                         console.log(err);
                         res.json({
@@ -388,7 +394,7 @@ module.exports = {
                             $sort: {
                                 "oldbottle.bottle": 1
                             }
-                        }]).toArray(function (err, data2) {
+                        }]).toArray(function(err, data2) {
                             if (err) {
                                 console.log(err);
                                 res.json({
@@ -424,8 +430,7 @@ module.exports = {
             }
         });
     },
-
-    excelDonor1: function (req, res) {
+    excelDonor1: function(req, res) {
         var camp = req.param('camp');
         var campnumber = req.param('campnumber');
         var accesslevel = req.param('accesslevel');
@@ -506,7 +511,7 @@ module.exports = {
         if (camp == "All" || camp == "") {
             delete matchobj["oldbottle.camp"];
         }
-        sails.query(function (err, db) {
+        sails.query(function(err, db) {
             if (err) {
                 console.log(err);
                 res.json({
@@ -531,7 +536,7 @@ module.exports = {
                     $sort: {
                         name: 1
                     }
-                }]).toArray(function (err, data2) {
+                }]).toArray(function(err, data2) {
                     if (err) {
                         console.log(err);
                         res.json({
@@ -558,14 +563,14 @@ module.exports = {
             }
         });
     },
-    hospitalDonor1: function (req, res) {
+    hospitalDonor1: function(req, res) {
         var camp = req.param('camp');
         var campnumber = req.param('campnumber');
         var hospital = req.param('hospital');
         hospital = sails.ObjectID(hospital);
         var data5 = {};
         data5._id = hospital;
-        Hospital.findone(data5, function (respo) {
+        Hospital.findone(data5, function(respo) {
             if (respo.value != false) {
                 var hospitalname = respo.name;
                 res.connection.setTimeout(20000000);
@@ -584,7 +589,7 @@ module.exports = {
                 if (camp == "All" || camp == "") {
                     delete matchobj["oldbottle.camp"];
                 }
-                sails.query(function (err, db) {
+                sails.query(function(err, db) {
                     if (err) {
                         console.log(err);
                         res.json({
@@ -615,7 +620,7 @@ module.exports = {
                             $sort: {
                                 "oldbottle.bottle": 1
                             }
-                        }]).toArray(function (err, data2) {
+                        }]).toArray(function(err, data2) {
                             if (err) {
                                 console.log(err);
                                 res.json({
@@ -650,7 +655,7 @@ module.exports = {
             }
         });
     },
-    findMe: function (req, res) {
+    findMe: function(req, res) {
         if (req.body) {
             if (req.body.campnumber && req.body.campnumber != "") {
                 function callback(data) {
@@ -670,4 +675,24 @@ module.exports = {
             });
         }
     },
+    closeLogin: function(req, res) {
+        if (req.body) {
+            if (req.body.campnumber && req.body.campnumber != "" && req.body.camp && req.body.camp != "") {
+                function callback(data) {
+                    res.json(data);
+                };
+                Camp.closeLogin(req.body, callback);
+            } else {
+                res.json({
+                    value: false,
+                    comment: "Please provide parameters"
+                });
+            }
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
+    }
 };
