@@ -87,7 +87,8 @@ module.exports = {
                             _id: 1,
                             number: 1,
                             used: 1,
-                            hospital: 1
+                            hospital: 1,
+                            reason: 1
                         }).limit(10).toArray(function(err, found) {
                             if (err) {
                                 callback({

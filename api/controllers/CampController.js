@@ -603,22 +603,22 @@ module.exports = {
                         }, {
                             $project: {
                                 _id: 0,
-                                bottle_no: "$oldbottle.bottle",
                                 firstname: 1,
                                 middlename: 1,
                                 lastname: 1,
-                                weight: 1,
                                 age: 1,
                                 gender: 1,
                                 address1: 1,
                                 address2: 1,
                                 area: 1,
                                 city: 1,
-                                pincode: 1
+                                pincode: 1,
+                                weight: 1,
+                                bottle_no: "$oldbottle.bottle",
                             }
                         }, {
                             $sort: {
-                                "oldbottle.bottle": 1
+                                bottle_no: 1
                             }
                         }]).toArray(function(err, data2) {
                             if (err) {
@@ -628,6 +628,14 @@ module.exports = {
                                 });
                                 db.close();
                             } else if (data2 && data2[0]) {
+                                // var arr = [];
+                                // _.each(data2, function(n) {
+                                //     var obj = {};
+                                //     obj.First_Name = n.firstname
+                                //     obj.Weight = n.weight;
+                                //     arr.push(obj);
+                                // });
+
                                 var xls = sails.json2xls(data2);
                                 sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
                                 var path = './data.xlsx';
