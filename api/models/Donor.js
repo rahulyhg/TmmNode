@@ -2476,11 +2476,10 @@ module.exports = {
                             });
                             db.close();
                         } else if (found && found.length > 0) {
-                            var abc = sails._.chunk(found, 100);
+                            var abc = sails._.chunk(found, 90);
                             var i = 0;
 
-                            function callSend(num) {
-                                var arr = abc[num];
+                            function callSend(arr) {
                                 var mob = "";
                                 _.each(arr, function(res) {
                                     mob += res.mobile + ",";
@@ -2491,18 +2490,17 @@ module.exports = {
                                     }, function(err, httpResponse, body) {
                                         if (body && body != "") {
                                             i++;
-                                            num++;
                                             if (i == abc.length) {
                                                 callback({ value: true, comment: "Sent", count: abc });
                                                 db.close();
-                                            } else {
-                                                callSend(num);
                                             }
                                         }
                                     });
                                 }
                             }
-                            callSend(0);
+                            _.each(abc, function(n) {
+                                callSend(n);
+                            });
                         } else {
                             callback({
                                 value: false,
