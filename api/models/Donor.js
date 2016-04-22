@@ -1549,6 +1549,8 @@ module.exports = {
                     callme();
                 }
             });
+        } else {
+            callme();
         }
 
         function callme() {
@@ -2165,7 +2167,6 @@ module.exports = {
                             }, function(toRespo) {
                                 if (toRespo.value != false) {
                                     if (toRespo.history && toRespo.history.length > 0) {
-                                        var i = 0;
                                         if (fromRespo.donationcount > 0) {
                                             toRespo.donationcount = fromRespo.donationcount + toRespo.donationcount;
                                         } else {
@@ -2175,56 +2176,52 @@ module.exports = {
                                             f.hospital = sails.ObjectID(f.hospital);
                                             f.date = new Date(f.date);
                                             toRespo.oldbottle.push(f);
-                                            i++;
                                         });
                                         _.each(fromRespo.history, function(t) {
                                             t.date = new Date(t.date);
                                             toRespo.history.push(t);
-                                            i++;
                                         });
-                                        if (i == 2 * (fromRespo.history.length)) {
-                                            db.collection('donor').update({
-                                                donorid: toRespo.donorid
-                                            }, {
-                                                $set: {
-                                                    donationcount: toRespo.donationcount,
-                                                    history: toRespo.history,
-                                                    oldbottle: toRespo.oldbottle
-                                                }
-                                            }, function(err, doRespo) {
-                                                if (err) {
-                                                    console.log(err);
-                                                    callback({
-                                                        value: false,
-                                                        comment: "Error"
-                                                    });
-                                                } else if (doRespo) {
-                                                    Donor.deleteDonor({
-                                                        _id: sails.ObjectID(fromRespo._id)
-                                                    }, function(delRespo) {
-                                                        if (delRespo.value != false) {
-                                                            callback({
-                                                                value: true,
-                                                                comment: "Merge Successful"
-                                                            });
-                                                            db.close();
-                                                        } else {
-                                                            callback({
-                                                                value: false,
-                                                                comment: "Some Error"
-                                                            });
-                                                            db.close();
-                                                        }
-                                                    });
-                                                } else {
-                                                    callback({
-                                                        value: false,
-                                                        comment: "Some Error"
-                                                    });
-                                                    db.close();
-                                                }
-                                            });
-                                        }
+                                        db.collection('donor').update({
+                                            donorid: toRespo.donorid
+                                        }, {
+                                            $set: {
+                                                donationcount: toRespo.donationcount,
+                                                history: toRespo.history,
+                                                oldbottle: toRespo.oldbottle
+                                            }
+                                        }, function(err, doRespo) {
+                                            if (err) {
+                                                console.log(err);
+                                                callback({
+                                                    value: false,
+                                                    comment: "Error"
+                                                });
+                                            } else if (doRespo) {
+                                                Donor.deleteDonor({
+                                                    _id: sails.ObjectID(fromRespo._id)
+                                                }, function(delRespo) {
+                                                    if (delRespo.value != false) {
+                                                        callback({
+                                                            value: true,
+                                                            comment: "Merge Successful"
+                                                        });
+                                                        db.close();
+                                                    } else {
+                                                        callback({
+                                                            value: false,
+                                                            comment: "Some Error"
+                                                        });
+                                                        db.close();
+                                                    }
+                                                });
+                                            } else {
+                                                callback({
+                                                    value: false,
+                                                    comment: "Some Error"
+                                                });
+                                                db.close();
+                                            }
+                                        });
                                     } else {
                                         callback({
                                             value: false,
