@@ -1392,65 +1392,39 @@ module.exports = {
             data.bottle = parseInt(data.bottle);
         }
         delete data.donationcount;
-        sails.query(function(err, db) {
-            if (err) {
-                console.log(err);
-                callback({
-                    value: false,
-                    comment: "Error"
-                });
-            } else if (db) {
-                var i = 0;
-                _.each(data.oldbottle, function(z) {
-                    z.hospital = sails.ObjectID(z.hospital);
-                    if (z.bottle == data.bottle && z.campnumber == data.campnumber && z.verified == true) {
-                        z.giftdone = data.giftdone;
-                    }
-                    i++;
-                    if (i == data.oldbottle.length) {
-                        callgift();
-                    }
-                });
-
-                function callgift() {
-                    var donor = sails.ObjectID(data._id);
-                    delete data._id;
-                    db.collection('donor').update({
-                        _id: donor,
-                        giftdone: {
-                            $exists: false
-                        }
-                    }, {
-                        $set: data
-                    }, function(err, updated) {
-                        if (err) {
-                            console.log(err);
-                            callback({
-                                value: false,
-                                comment: "Error"
-                            });
-                            db.close();
-                        } else if (updated.result.nModified != 0 && updated.result.n != 0) {
-                            var incobj = {};
-                            if (data.giftdone == true) {
-                                incobj = {
-                                    gift: 1,
-                                    pendingG: -1
-                                }
-                            } else {
-                                incobj = {
-                                    giftRejected: 1,
-                                    pendingG: -1
-                                }
+        Donor.findone(data, function(userrespo) {
+            if (userrespo.value != false) {
+                sails.query(function(err, db) {
+                    if (err) {
+                        console.log(err);
+                        callback({
+                            value: false,
+                            comment: "Error"
+                        });
+                    } else if (db) {
+                        var i = 0;
+                        _.each(data.oldbottle, function(z) {
+                            z.hospital = sails.ObjectID(z.hospital);
+                            if (z.bottle == data.bottle && z.campnumber == data.campnumber && z.verified == true) {
+                                z.giftdone = data.giftdone;
                             }
-                            db.collection('table').findAndModify({
-                                id: data.hospital,
-                                hospitalname: data.hospitalname,
-                                camp: data.camp,
-                                campnumber: data.campnumber
-                            }, {}, {
-                                $inc: incobj
-                            }, function(err, newTab) {
+                            i++;
+                            if (i == data.oldbottle.length) {
+                                callgift();
+                            }
+                        });
+
+                        function callgift() {
+                            var donor = sails.ObjectID(data._id);
+                            delete data._id;
+                            db.collection('donor').update({
+                                _id: donor,
+                                giftdone: {
+                                    $exists: false
+                                }
+                            }, {
+                                $set: data
+                            }, function(err, updated) {
                                 if (err) {
                                     console.log(err);
                                     callback({
@@ -1458,19 +1432,55 @@ module.exports = {
                                         comment: "Error"
                                     });
                                     db.close();
-                                } else if (newTab) {
-                                    Table.findCount(data, function(result) {
-                                        sails.sockets.blast(data.camp + "_" + data.campnumber, result);
+                                } else if (updated.result.nModified != 0 && updated.result.n != 0) {
+                                    var incobj = {};
+                                    if (data.giftdone == true) {
+                                        incobj = {
+                                            gift: 1,
+                                            pendingG: -1
+                                        }
+                                    } else {
+                                        incobj = {
+                                            giftRejected: 1,
+                                            pendingG: -1
+                                        }
+                                    }
+                                    db.collection('table').findAndModify({
+                                        id: userrespo.hospital,
+                                        hospitalname: data.hospitalname,
+                                        camp: data.camp,
+                                        campnumber: data.campnumber
+                                    }, {}, {
+                                        $inc: incobj
+                                    }, function(err, newTab) {
+                                        if (err) {
+                                            console.log(err);
+                                            callback({
+                                                value: false,
+                                                comment: "Error"
+                                            });
+                                            db.close();
+                                        } else if (newTab) {
+                                            Table.findCount(data, function(result) {
+                                                sails.sockets.blast(data.camp + "_" + data.campnumber, result);
+                                            });
+                                            var data2 = _.cloneDeep(data);
+                                            data2.camp = "All";
+                                            Table.findCount(data2, function(result) {
+                                                sails.sockets.blast(data2.camp + "_" + data2.campnumber, result);
+                                            });
+                                            callback({
+                                                value: true
+                                            });
+                                            db.close();
+                                        } else {
+                                            callback({
+                                                value: false,
+                                                comment: "No data found"
+                                            });
+                                            db.close();
+                                        }
                                     });
-                                    var data2 = _.cloneDeep(data);
-                                    data2.camp = "All";
-                                    Table.findCount(data2, function(result) {
-                                        sails.sockets.blast(data2.camp + "_" + data2.campnumber, result);
-                                    });
-                                    callback({
-                                        value: true
-                                    });
-                                    db.close();
                                 } else {
                                     callback({
                                         value: false,
@@ -1479,15 +1489,14 @@ module.exports = {
                                     db.close();
                                 }
                             });
-                        } else {
-                            callback({
-                                value: false,
-                                comment: "No data found"
-                            });
-                            db.close();
                         }
-                    });
-                }
+                    }
+                });
+            } else {
+                callback({
+                    value: false,
+                    comment: "No data found"
+                });
             }
         });
     },
