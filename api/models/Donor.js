@@ -945,7 +945,7 @@ module.exports = {
                                 newdata.reason = findrespo.deletereason;
                                 Blood.save(newdata, function(respoblood) {
                                     db.collection('table').findAndModify({
-                                        id: data.hospital,
+                                        id: findrespo.hospital,
                                         hospitalname: findrespo.hospitalname,
                                         camp: findrespo.camp,
                                         campnumber: findrespo.campnumber
@@ -1324,7 +1324,7 @@ module.exports = {
                                     db.close();
                                 } else if (updated.result.nModified != 0 && updated.result.n != 0) {
                                     db.collection('table').findAndModify({
-                                        id: data.hospital,
+                                        id: userrespo.hospital,
                                         hospitalname: data.hospitalname,
                                         camp: data.camp,
                                         campnumber: data.campnumber
