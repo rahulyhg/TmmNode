@@ -920,12 +920,12 @@ module.exports = {
                         if (data.reason) {
                             findrespo.reason = data.reason;
                         }
+                        var index = sails._.findIndex(findrespo.oldbottle, { "campnumber": data.campnumber });
+                        findrespo.oldbottle.slice(index);
                         _.each(findrespo.oldbottle, function(a) {
                             a.hospital = sails.ObjectID(a.hospital);
-                            if (a.bottle == bottleNum && a.campnumber == data.campnumber) {
-                                delete a.bottle;
-                            }
                         });
+
                         findrespo.new = 0;
                         delete data.donationcount;
                         delete findrespo.donationcount;

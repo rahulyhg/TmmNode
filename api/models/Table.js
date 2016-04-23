@@ -227,6 +227,7 @@ module.exports = {
                         Camp.findMe(data, function(countme) {
                             var responseData = [];
                             if (countme.value != false) {
+                                console.log("in if");
                                 var i = 0;
 
                                 function callme(abc) {
@@ -506,6 +507,7 @@ module.exports = {
                                 }
                                 callme(0);
                             } else {
+                                console.log("in else");
                                 Camp.countlevels(data, function(countResp) {
                                     if (countResp.value != false) {
                                         countResp.campnumber = data.campnumber;
