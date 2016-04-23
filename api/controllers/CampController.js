@@ -245,7 +245,7 @@ module.exports = {
                     $exists: true
                 },
                 "oldbottle.giftdone": {
-                    $exists: true
+                    $eq: true
                 }
             };
         } else if (accesslevel == "pendingV") {
@@ -281,6 +281,20 @@ module.exports = {
                     $exists: false
                 }
             };
+        } else if (accesslevel == "giftRejected") {
+            var matchobj = {
+                "oldbottle.campnumber": campnumber,
+                "oldbottle.camp": camp,
+                "oldbottle.bottle": {
+                    $exists: true
+                },
+                "oldbottle.verified": {
+                    $exists: true
+                },
+                "oldbottle.giftdone": {
+                    $eq: false
+                }
+            };
         } else {
             res.json({
                 value: false,
@@ -308,6 +322,7 @@ module.exports = {
                         name: 1,
                         bloodgroup: 1,
                         oldbottle: 1,
+                        deletereason: 1,
                         age: 1,
                         gender: 1
                     }
@@ -330,7 +345,11 @@ module.exports = {
                         locals.date = sails.moment().format("DD-MM-YYYY");
                         locals.camp = camp;
                         locals.campnumber = campnumber;
-                        res.view("donors", locals);
+                        if (accesslevel != "rejected") {
+                            res.view("donors", locals);
+                        } else {
+                            res.view("rejected", locals);
+                        }
                         db.close();
                     } else {
                         res.json({
@@ -466,7 +485,7 @@ module.exports = {
                     $exists: true
                 },
                 "oldbottle.giftdone": {
-                    $exists: true
+                    $eq: true
                 }
             };
         } else if (accesslevel == "pendingV") {
@@ -500,6 +519,20 @@ module.exports = {
                 "oldbottle.camp": camp,
                 "oldbottle.bottle": {
                     $exists: false
+                }
+            };
+        } else if (accesslevel == "giftRejected") {
+            var matchobj = {
+                "oldbottle.campnumber": campnumber,
+                "oldbottle.camp": camp,
+                "oldbottle.bottle": {
+                    $exists: true
+                },
+                "oldbottle.verified": {
+                    $exists: true
+                },
+                "oldbottle.giftdone": {
+                    $eq: false
                 }
             };
         } else {
@@ -628,14 +661,6 @@ module.exports = {
                                 });
                                 db.close();
                             } else if (data2 && data2[0]) {
-                                // var arr = [];
-                                // _.each(data2, function(n) {
-                                //     var obj = {};
-                                //     obj.First_Name = n.firstname
-                                //     obj.Weight = n.weight;
-                                //     arr.push(obj);
-                                // });
-
                                 var xls = sails.json2xls(data2);
                                 sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
                                 var path = './data.xlsx';

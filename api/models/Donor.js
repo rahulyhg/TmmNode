@@ -91,7 +91,7 @@ module.exports = {
                                             db.close();
                                         } else if (created) {
                                             var donor = sails.ObjectID(data._id);
-                                            blood();
+                                            blood(donor);
                                         } else {
                                             callback({
                                                 value: false,
@@ -131,9 +131,9 @@ module.exports = {
                                         });
                                         db.close();
                                     } else if (updated.result.nModified != 0 && updated.result.n != 0) {
-                                        blood();
+                                        blood(donor);
                                     } else if (updated.result.nModified == 0 && updated.result.n != 0) {
-                                        blood();
+                                        blood(donor);
                                     } else {
                                         callback({
                                             value: false,
@@ -182,7 +182,7 @@ module.exports = {
                                 });
                             }
 
-                            function blood() {
+                            function blood(donor) {
                                 var bloodData = {};
                                 bloodData.camp = data.camp;
                                 bloodData.number = data.bottle;
@@ -929,71 +929,58 @@ module.exports = {
                         findrespo.new = 0;
                         delete data.donationcount;
                         delete findrespo.donationcount;
-                        console.log(findrespo);
                         db.collection('donor').update({
                             _id: sails.ObjectID(findrespo._id)
                         }, {
                             $set: findrespo
                         }, function(err, updated) {
                             if (updated) {
-                                var hospdata = {};
-                                hospdata._id = sails.ObjectID(findrespo.hospital);
-                                Hospital.findone(hospdata, function(hosprespo) {
-                                    if (hosprespo.value != false) {
-                                        var newdata = {};
-                                        newdata.number = bottleNum;
-                                        newdata.hospital = hosprespo.name;
-                                        newdata.camp = findrespo.camp;
-                                        newdata.campnumber = findrespo.campnumber;
-                                        newdata.used = "Unused";
-                                        newdata.reason = findrespo.deletereason;
-                                        Blood.save(newdata, function(respoblood) {
-                                            db.collection('table').findAndModify({
-                                                hospitalname: findrespo.hospitalname,
-                                                camp: findrespo.camp,
-                                                campnumber: findrespo.campnumber
-                                            }, {}, {
-                                                $inc: {
-                                                    rejected: 1,
-                                                    pendingV: -1
-                                                }
-                                            }, function(err, newTab) {
-                                                if (err) {
-                                                    console.log(err);
-                                                    callback({
-                                                        value: false,
-                                                        comment: "Error"
-                                                    });
-                                                } else if (newTab) {
-                                                    Table.findCount(findrespo, function(result) {
-                                                        sails.sockets.blast(findrespo.camp + "_" + findrespo.campnumber, result);
-                                                    });
-                                                    var data2 = _.cloneDeep(findrespo);
-                                                    data2.camp = "All";
-                                                    Table.findCount(data2, function(result) {
-                                                        sails.sockets.blast(data2.camp + "_" + data2.campnumber, result);
-                                                    });
-                                                    callback({
-                                                        value: true,
-                                                        comment: "Donor deleted"
-                                                    });
-                                                    db.close();
-                                                } else {
-                                                    callback({
-                                                        value: false,
-                                                        comment: "No data found"
-                                                    });
-                                                    db.close();
-                                                }
+                                var newdata = {};
+                                newdata.number = bottleNum;
+                                newdata.hospital = findrespo.hospitalname;
+                                newdata.camp = findrespo.camp;
+                                newdata.campnumber = findrespo.campnumber;
+                                newdata.used = "Unused";
+                                newdata.reason = findrespo.deletereason;
+                                Blood.save(newdata, function(respoblood) {
+                                    db.collection('table').findAndModify({
+                                        hospitalname: findrespo.hospitalname,
+                                        camp: findrespo.camp,
+                                        campnumber: findrespo.campnumber
+                                    }, {}, {
+                                        $inc: {
+                                            rejected: 1,
+                                            pendingV: -1
+                                        }
+                                    }, function(err, newTab) {
+                                        if (err) {
+                                            console.log(err);
+                                            callback({
+                                                value: false,
+                                                comment: "Error"
                                             });
-                                        });
-                                    } else {
-                                        callback({
-                                            value: false,
-                                            comment: "No data found"
-                                        });
-                                        db.close();
-                                    }
+                                        } else if (newTab) {
+                                            Table.findCount(findrespo, function(result) {
+                                                sails.sockets.blast(findrespo.camp + "_" + findrespo.campnumber, result);
+                                            });
+                                            var data2 = _.cloneDeep(findrespo);
+                                            data2.camp = "All";
+                                            Table.findCount(data2, function(result) {
+                                                sails.sockets.blast(data2.camp + "_" + data2.campnumber, result);
+                                            });
+                                            callback({
+                                                value: true,
+                                                comment: "Donor deleted"
+                                            });
+                                            db.close();
+                                        } else {
+                                            callback({
+                                                value: false,
+                                                comment: "No data found"
+                                            });
+                                            db.close();
+                                        }
+                                    });
                                 });
                             } else if (err) {
                                 console.log(err);

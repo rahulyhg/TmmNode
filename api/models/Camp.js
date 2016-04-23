@@ -948,6 +948,25 @@ module.exports = {
                             $exists: false
                         }
                     };
+                } else if (data.accesslevel == "giftRejected") {
+                    var matchobj = {
+                        donorid: check,
+                        firstname: checkfirstname,
+                        middlename: checkmiddlename,
+                        lastname: checklastname,
+                        mobile: data.pincode,
+                        "oldbottle.campnumber": data.campnumber,
+                        "oldbottle.camp": data.camp,
+                        "oldbottle.bottle": {
+                            $exists: true
+                        },
+                        "oldbottle.verified": {
+                            $exists: true
+                        },
+                        "oldbottle.giftdone": {
+                            $eq: false
+                        }
+                    };
                 } else {
                     callback({
                         value: false,
@@ -1021,7 +1040,8 @@ module.exports = {
                                 oldbottle: 1,
                                 name: 1,
                                 donorid: 1,
-                                pincode: 1
+                                pincode: 1,
+                                deletereason: 1
                             }
                         }, {
                             $sort: {

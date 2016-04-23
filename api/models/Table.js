@@ -567,5 +567,35 @@ module.exports = {
                 }
             });
         });
+    },
+    deleteAll: function(data, callback) {
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                callback({
+                    value: false
+                });
+            }
+            db.collection('table').remove({}, function(err, deleted) {
+                if (deleted) {
+                    callback({
+                        value: true
+                    });
+                    db.close();
+                } else if (err) {
+                    console.log(err);
+                    callback({
+                        value: false
+                    });
+                    db.close();
+                } else {
+                    callback({
+                        value: false,
+                        comment: "No data found"
+                    });
+                    db.close();
+                }
+            });
+        });
     }
 };
