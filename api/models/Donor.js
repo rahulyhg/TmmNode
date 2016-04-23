@@ -190,6 +190,7 @@ module.exports = {
                                 bloodData.hospital = data.hospitalname;
                                 Blood.deleteBottle(bloodData, function(bloodrespo) {
                                     db.collection('table').findAndModify({
+                                        id: data.hospital,
                                         hospitalname: data.hospitalname,
                                         camp: data.camp,
                                         campnumber: data.campnumber
@@ -944,6 +945,7 @@ module.exports = {
                                 newdata.reason = findrespo.deletereason;
                                 Blood.save(newdata, function(respoblood) {
                                     db.collection('table').findAndModify({
+                                        id: data.hospital,
                                         hospitalname: findrespo.hospitalname,
                                         camp: findrespo.camp,
                                         campnumber: findrespo.campnumber
@@ -1322,6 +1324,7 @@ module.exports = {
                                     db.close();
                                 } else if (updated.result.nModified != 0 && updated.result.n != 0) {
                                     db.collection('table').findAndModify({
+                                        id: data.hospital,
                                         hospitalname: data.hospitalname,
                                         camp: data.camp,
                                         campnumber: data.campnumber
@@ -1441,6 +1444,7 @@ module.exports = {
                                 }
                             }
                             db.collection('table').findAndModify({
+                                id: data.hospital,
                                 hospitalname: data.hospitalname,
                                 camp: data.camp,
                                 campnumber: data.campnumber
