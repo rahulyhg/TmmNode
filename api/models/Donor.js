@@ -8,6 +8,7 @@ module.exports = {
                 y.hospital = sails.ObjectID(y.hospital);
             });
         }
+        var checknew = data.new;
         data.name = data.lastname + " " + data.firstname + " " + data.middlename;
         if (data.hospital && data.hospital != "") {
             data.hospital = sails.ObjectID(data.hospital);
@@ -104,7 +105,7 @@ module.exports = {
                             } else {
                                 var donor = sails.ObjectID(data._id);
                                 delete data._id;
-                                if (data.new) {
+                                if (data.new == 1) {
                                     editOldDonor(data);
                                 } else {
                                     check(data);
@@ -189,15 +190,24 @@ module.exports = {
                                 bloodData.campnumber = data.campnumber;
                                 bloodData.hospital = data.hospitalname;
                                 Blood.deleteBottle(bloodData, function(bloodrespo) {
+                                    var incobj = {};
+                                    if (checknew == 0) {
+                                        incobj = {
+                                            rejected: -1,
+                                            pendingV: 1
+                                        }
+                                    } else {
+                                        incobj = {
+                                            pendingV: 1
+                                        }
+                                    }
                                     db.collection('table').findAndModify({
                                         id: data.hospital,
                                         hospitalname: data.hospitalname,
                                         camp: data.camp,
                                         campnumber: data.campnumber
                                     }, {}, {
-                                        $inc: {
-                                            pendingV: 1
-                                        }
+                                        $inc: incobj
                                     }, {
                                         upsert: true
                                     }, function(err, newTab) {
