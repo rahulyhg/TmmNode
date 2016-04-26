@@ -10,6 +10,7 @@ module.exports = {
         }
         var checknew = data.new;
         data.name = data.lastname + " " + data.firstname + " " + data.middlename;
+        var hospitalID = data.hospital;
         if (data.hospital && data.hospital != "") {
             data.hospital = sails.ObjectID(data.hospital);
             var insert = {};
@@ -202,7 +203,7 @@ module.exports = {
                                         }
                                     }
                                     db.collection('table').findAndModify({
-                                        id: data.hospital,
+                                        id: hospitalID.toString(),
                                         hospitalname: data.hospitalname,
                                         camp: data.camp,
                                         campnumber: data.campnumber
@@ -932,11 +933,12 @@ module.exports = {
                             findrespo.reason = data.reason;
                         }
                         var index = sails._.findIndex(findrespo.oldbottle, { "campnumber": data.campnumber });
+                        console.log(index);
                         findrespo.oldbottle.slice(index);
                         _.each(findrespo.oldbottle, function(a) {
                             a.hospital = sails.ObjectID(a.hospital);
                         });
-
+                        var hospitalID = findrespo.hospital;
                         findrespo.new = 0;
                         delete data.donationcount;
                         delete findrespo.donationcount;
@@ -955,7 +957,7 @@ module.exports = {
                                 newdata.reason = findrespo.deletereason;
                                 Blood.save(newdata, function(respoblood) {
                                     db.collection('table').findAndModify({
-                                        id: findrespo.hospital,
+                                        id: hospitalID.toString(),
                                         hospitalname: findrespo.hospitalname,
                                         camp: findrespo.camp,
                                         campnumber: findrespo.campnumber
@@ -1313,6 +1315,7 @@ module.exports = {
                                 calledit();
                             }
                         });
+                        var hospitalID = userrespo.hospital;
 
                         function calledit() {
                             var donor = sails.ObjectID(data._id);
@@ -1334,7 +1337,7 @@ module.exports = {
                                     db.close();
                                 } else if (updated.result.nModified != 0 && updated.result.n != 0) {
                                     db.collection('table').findAndModify({
-                                        id: userrespo.hospital,
+                                        id: hospitalID.toString(),
                                         hospitalname: data.hospitalname,
                                         camp: data.camp,
                                         campnumber: data.campnumber
@@ -1455,8 +1458,9 @@ module.exports = {
                                             pendingG: -1
                                         }
                                     }
+                                    var hospitalID = userrespo.hospital;
                                     db.collection('table').findAndModify({
-                                        id: userrespo.hospital,
+                                        id: hospitalID.toString(),
                                         hospitalname: data.hospitalname,
                                         camp: data.camp,
                                         campnumber: data.campnumber

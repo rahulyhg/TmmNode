@@ -533,7 +533,6 @@ module.exports = {
                 function callUpdate(num) {
                     var tobe = respo[num];
                     if (tobe.history && tobe.donationcount && tobe.history.length != tobe.donationcount) {
-                        // console.log(tobe);
                         tobe.donationcount = tobe.history.length;
                         Donor.update({
                             donorid: tobe.donorid,
@@ -542,7 +541,6 @@ module.exports = {
                         }, function(updated) {
                             if (updated) {
                                 num++;
-                                console.log(num);
                                 if (num == respo.length) {
                                     res.json({
                                         value: true,
@@ -555,7 +553,6 @@ module.exports = {
                         });
                     } else {
                         num++;
-                        console.log(num);
                         if (num == respo.length) {
                             res.json({
                                 value: true,
