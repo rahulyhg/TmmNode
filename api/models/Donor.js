@@ -934,7 +934,7 @@ module.exports = {
                         }
                         var index = sails._.findIndex(findrespo.oldbottle, { "campnumber": data.campnumber });
                         console.log(index);
-                        findrespo.oldbottle.slice(index);
+                        findrespo.oldbottle.splice(index, 1);
                         _.each(findrespo.oldbottle, function(a) {
                             a.hospital = sails.ObjectID(a.hospital);
                         });
