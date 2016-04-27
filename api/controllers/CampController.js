@@ -275,11 +275,7 @@ module.exports = {
             };
         } else if (accesslevel == "rejected") {
             var matchobj = {
-                "oldbottle.campnumber": campnumber,
-                "oldbottle.camp": camp,
-                "oldbottle.bottle": {
-                    $exists: false
-                }
+                "oldbottle.deletedcamp": campnumber
             };
         } else if (accesslevel == "giftRejected") {
             var matchobj = {
@@ -515,11 +511,7 @@ module.exports = {
             };
         } else if (accesslevel == "rejected") {
             var matchobj = {
-                "oldbottle.campnumber": campnumber,
-                "oldbottle.camp": camp,
-                "oldbottle.bottle": {
-                    $exists: false
-                }
+                "oldbottle.deletedcamp": campnumber
             };
         } else if (accesslevel == "giftRejected") {
             var matchobj = {

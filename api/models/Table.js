@@ -378,16 +378,8 @@ module.exports = {
                                                 },
                                                 function(callback) {
                                                     var matchobj = {
-                                                        "oldbottle.campnumber": data.campnumber,
-                                                        "oldbottle.hospital": sails.ObjectID(z._id),
-                                                        "oldbottle.camp": data.camp,
-                                                        "oldbottle.bottle": {
-                                                            $exists: false
-                                                        }
+                                                        "oldbottle.deletedcamp": data.campnumber
                                                     };
-                                                    if (data.camp == "All") {
-                                                        delete matchobj["oldbottle.camp"];
-                                                    }
                                                     db.collection('donor').aggregate([{
                                                         $unwind: "$oldbottle"
                                                     }, {

@@ -117,6 +117,9 @@ module.exports = {
                                 delete data.donationcount;
                                 if (data.oldbottle && data.oldbottle.length > 0) {
                                     _.each(data.oldbottle, function(y) {
+                                        if (y.deletedcamp && y.deletedcamp != "" && y.deletedcamp == data.campnumber) {
+                                            delete y.deletedcamp;
+                                        }
                                         y.hospital = sails.ObjectID(y.hospital);
                                     });
                                 }
@@ -267,6 +270,10 @@ module.exports = {
                                         if (data.donorid) {
                                             if (data.oldbottle && data.oldbottle.length > 0) {
                                                 var olddata = {};
+                                                var index = sails._.findIndex(data.oldbottle, { 'campnumber': data.campnumber });
+                                                if (index != -1) {
+                                                    data.oldbottle.splice(index, 1);
+                                                }
                                                 olddata.bottle = data.bottle;
                                                 olddata.camp = data.camp;
                                                 olddata.hospital = sails.ObjectID(data.hospital);
@@ -932,12 +939,15 @@ module.exports = {
                         if (data.reason) {
                             findrespo.reason = data.reason;
                         }
-                        var index = sails._.findIndex(findrespo.oldbottle, { "campnumber": data.campnumber });
-                        console.log(index);
-                        findrespo.oldbottle.splice(index, 1);
-                        _.each(findrespo.oldbottle, function(a) {
-                            a.hospital = sails.ObjectID(a.hospital);
-                        });
+                        if (findrespo.oldbottle && findrespo.oldbottle.length > 0) {
+                            _.each(findrespo.oldbottle, function(y) {
+                                if (y.campnumber == data.campnumber) {
+                                    delete y.bottle;
+                                    y.deletedcamp = data.campnumber;
+                                }
+                                y.hospital = sails.ObjectID(y.hospital);
+                            });
+                        }
                         var hospitalID = findrespo.hospital;
                         findrespo.new = 0;
                         delete data.donationcount;

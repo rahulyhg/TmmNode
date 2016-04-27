@@ -942,11 +942,7 @@ module.exports = {
                         middlename: checkmiddlename,
                         lastname: checklastname,
                         mobile: data.pincode,
-                        "oldbottle.campnumber": data.campnumber,
-                        "oldbottle.camp": data.camp,
-                        "oldbottle.bottle": {
-                            $exists: false
-                        }
+                        "oldbottle.deletedcamp": data.campnumber
                     };
                 } else if (data.accesslevel == "giftRejected") {
                     var matchobj = {
