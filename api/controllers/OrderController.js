@@ -8,7 +8,6 @@ var http = require('http'),
     fs = require('fs'),
     qs = require('querystring'),
     crypto = require('crypto');
-var redirect = "http://192.168.1.120:8080/#/";
 var redirect = "http://wohlig.co.in/tmmweb/#/";
 module.exports = {
     save: function(req, res) {
