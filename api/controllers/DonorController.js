@@ -525,49 +525,36 @@ module.exports = {
             }
         });
     },
-    donationUpdate: function(req, res) {
-        res.connection.setTimeout(200000000);
-        req.connection.setTimeout(200000000);
-        Donor.find(req.body, function(respo) {
-            if (!respo.value) {
-                function callUpdate(num) {
-                    var tobe = respo[num];
-                    if (tobe.history && tobe.donationcount && tobe.history.length != tobe.donationcount) {
-                        tobe.donationcount = tobe.history.length;
-                        Donor.update({
-                            donorid: tobe.donorid,
-                            donationcount: tobe.donationcount,
-                            me: true
-                        }, function(updated) {
-                            if (updated) {
-                                num++;
-                                if (num == respo.length) {
-                                    res.json({
-                                        value: true,
-                                        comment: "Count updated"
-                                    });
-                                } else {
-                                    callUpdate(num);
-                                }
-                            }
-                        });
+    findAndUpdate: function(req, res) {
+        var i = 0;
+        var boochArr = [];
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: false
+                });
+            } else if (db) {
+                db.collection("donor").find().each(function(err, doc) {
+                    if (_.isEmpty(doc)) {
+                        res.json({ booch: boochArr });
                     } else {
-                        num++;
-                        if (num == respo.length) {
-                            res.json({
-                                value: true,
-                                comment: "Count updated"
+                        if (doc.history && doc.history.length != doc.donationcount) {
+                            boochArr.push(doc.donorid);
+                            db.collection("donor").update({ _id: sails.ObjectID(doc._id) }, {
+                                $set: { donationcount: doc.history.length }
+                            }, function(err, updated) {
+                                if (err) {
+                                    console.log(err);
+                                } else {
+                                    res.json({
+                                        value: false,
+                                        comment: ""
+                                    });
+                                }
                             });
-                        } else {
-                            callUpdate(num);
                         }
                     }
-                }
-                callUpdate(0);
-            } else {
-                res.json({
-                    value: false,
-                    comment: "No data found"
                 });
             }
         });
