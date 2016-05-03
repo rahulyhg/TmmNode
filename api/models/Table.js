@@ -378,8 +378,12 @@ module.exports = {
                                                 },
                                                 function(callback) {
                                                     var matchobj = {
+                                                        "oldbottle.camp": data.camp,
                                                         "oldbottle.deletedcamp": data.campnumber
                                                     };
+                                                    if (data.camp == "All") {
+                                                        delete matchobj["oldbottle.camp"];
+                                                    }
                                                     db.collection('donor').aggregate([{
                                                         $unwind: "$oldbottle"
                                                     }, {

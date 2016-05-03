@@ -1834,4 +1834,16 @@ module.exports = {
             });
         }
     },
+    findNan: function(req, res) {
+        if (req.body) {
+            Donor.findNan(req.body, function(respo) {
+                res.json(respo);
+            });
+        } else {
+            res.json({
+                value: false,
+                comment: "Invalid Call"
+            });
+        }
+    }
 };

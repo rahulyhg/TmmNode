@@ -275,6 +275,7 @@ module.exports = {
             };
         } else if (accesslevel == "rejected") {
             var matchobj = {
+                "oldbottle.camp": camp,
                 "oldbottle.deletedcamp": campnumber
             };
         } else if (accesslevel == "giftRejected") {
@@ -511,6 +512,7 @@ module.exports = {
             };
         } else if (accesslevel == "rejected") {
             var matchobj = {
+                "oldbottle.camp": camp,
                 "oldbottle.deletedcamp": campnumber
             };
         } else if (accesslevel == "giftRejected") {
