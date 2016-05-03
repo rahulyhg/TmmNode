@@ -630,7 +630,7 @@ module.exports = {
                     },
                     function(callback) {
                         var matchobj = {
-                            "oldbottle.campnumber": data.campnumber,
+                            "oldbottle.deletedcamp": data.campnumber,
                             "oldbottle.camp": data.camp,
                             "oldbottle.bottle": {
                                 $exists: false

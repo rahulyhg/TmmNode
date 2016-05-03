@@ -379,7 +379,8 @@ module.exports = {
                                                 function(callback) {
                                                     var matchobj = {
                                                         "oldbottle.camp": data.camp,
-                                                        "oldbottle.deletedcamp": data.campnumber
+                                                        "oldbottle.deletedcamp": data.campnumber,
+                                                        "oldbottle.hospital": sails.ObjectID(z._id)
                                                     };
                                                     if (data.camp == "All") {
                                                         delete matchobj["oldbottle.camp"];
