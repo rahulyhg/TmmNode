@@ -2650,7 +2650,6 @@ module.exports = {
     findNan: function(data, callback) {
         var check = new RegExp("nan", "i");
         var arr = [];
-        var i = 0;
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
@@ -2665,65 +2664,93 @@ module.exports = {
                     }
                 }, {
                     donorid: 1
-                }).each(function(err, found) {
-                    if (_.isEmpty(found)) {
-                        callback({
-                            value: true,
-                            comment: "Done"
-                        });
-                    } else if (err) {
+                }).toArray(function(err, found) {
+                    if (err) {
                         console.log(err);
-                    } else {
-                        found.donorid = sails._.capitalize(found.donorid.substring(0, 1) + found.donorid.substring(1, found.donorid.length));
-                        var splitname = sails._.capitalize(found.donorid.substring(0, 1));
-                        var letter = splitname;
-                        splitname = "^" + splitname + "[0-9]";
-                        var checkname = new RegExp(splitname, "i");
-                        db.collection('donor').find({
-                            donorid: {
-                                $regex: checkname
-                            }
-                        }).sort({
-                            donorid: -1
-                        }).limit(1).toArray(function(err, data2) {
-                            if (err) {
-                                console.log(err);
-                                callback({
-                                    value: false,
-                                    comment: "Error"
-                                });
-                            } else if (data2 && data2[0]) {
-                                var regsplit = data2[0].donorid.split(letter);
-                                regsplit[1] = parseInt(regsplit[1]);
-                                found.donorid = regsplit[1] + 1;
-                                found.donorid = found.donorid.toString();
-                                if (found.donorid.length == 1) {
-                                    found.donorid = letter + "0000" + found.donorid;
-                                } else if (found.donorid.length == 2) {
-                                    found.donorid = letter + "000" + found.donorid;
-                                } else if (found.donorid.length == 3) {
-                                    found.donorid = letter + "00" + found.donorid;
-                                } else if (found.donorid.length == 4) {
-                                    found.donorid = letter + "0" + found.donorid;
-                                } else {
-                                    found.donorid = letter + found.donorid;
-                                }
-                                insertid(data);
-                            } else {
-                                found.donorid = letter + "00001";
-                                insertid(data);
-                            }
-
-                            function insertid(found) {
-                                db.collection("donor").update({
-                                    _id: found._id
-                                }, {
-                                    donorid: found.donorid
-                                }, function(err, updated) {
-
-                                });
-                            }
+                        callback({
+                            value: false,
+                            comment: "Error"
                         });
+                        db.close();
+                    } else if (found && found.length > 0) {
+                        function callMe(num) {
+                            abc = found[num];
+                            abc.donorid = sails._.capitalize(abc.donorid.substring(0, 1) + abc.donorid.substring(1, abc.donorid.length));
+                            var splitname = sails._.capitalize(abc.donorid.substring(0, 1));
+                            var letter = splitname;
+                            splitname = "^" + splitname + "[0-9]";
+                            var checkname = new RegExp(splitname);
+                            db.collection('donor').find({
+                                $and: [{
+                                    donorid: {
+                                        $regex: checkname
+                                    }
+                                }, {
+                                    donorid: {
+                                        $nin: ["r00NaN", "R00NaN"]
+                                    }
+                                }]
+                            }).sort({
+                                donorid: -1
+                            }).limit(1).toArray(function(err, data2) {
+                                if (err) {
+                                    console.log(err);
+                                    callback({
+                                        value: false,
+                                        comment: "Error"
+                                    });
+                                } else if (data2 && data2[0]) {
+                                    var regsplit = data2[0].donorid.split(letter);
+                                    regsplit[1] = parseInt(regsplit[1]);
+                                    abc.donorid = regsplit[1] + 1;
+                                    abc.donorid = abc.donorid.toString();
+                                    if (abc.donorid.length == 1) {
+                                        abc.donorid = letter + "0000" + abc.donorid;
+                                    } else if (abc.donorid.length == 2) {
+                                        abc.donorid = letter + "000" + abc.donorid;
+                                    } else if (abc.donorid.length == 3) {
+                                        abc.donorid = letter + "00" + abc.donorid;
+                                    } else if (abc.donorid.length == 4) {
+                                        abc.donorid = letter + "0" + abc.donorid;
+                                    } else {
+                                        abc.donorid = letter + abc.donorid;
+                                    }
+                                    insertid(abc);
+                                } else {
+                                    abc.donorid = letter + "00001";
+                                    insertid(abc);
+                                }
+
+                                function insertid(abc) {
+                                    db.collection("donor").update({
+                                        _id: sails.ObjectID(abc._id)
+                                    }, {
+                                        $set: {
+                                            donorid: abc.donorid
+                                        }
+                                    }, function(err, updated) {
+                                        if (updated) {
+                                            num++;
+                                            if (num == found.length) {
+                                                callback({
+                                                    value: true,
+                                                    comment: "Updated"
+                                                });
+                                            } else {
+                                                callMe(num);
+                                            }
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        callMe(0);
+                    } else {
+                        callback({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
                     }
                 });
             }
