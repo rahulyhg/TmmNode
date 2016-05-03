@@ -2734,7 +2734,8 @@ module.exports = {
                                             if (num == found.length) {
                                                 callback({
                                                     value: true,
-                                                    comment: "Updated"
+                                                    comment: "Updated",
+                                                    data: found
                                                 });
                                             } else {
                                                 callMe(num);
