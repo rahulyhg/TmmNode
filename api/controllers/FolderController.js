@@ -63,5 +63,39 @@ module.exports = {
             res.json(data);
         };
         Folder.findlimited(req.body, callback);
+    },
+    villageUpdate: function(req, res) {
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: false,
+                    comment: "Error"
+                });
+            } else {
+                var i = 0;
+                var boochArr = [];
+                db.collection("donor").find().each(function(err, doc) {
+                    if (_.isEmpty(doc)) {
+                        res.json({ booch: boochArr });
+                    } else {
+                        if (doc.village && Array.isArray(doc.village) == false) {
+                            boochArr.push(doc.donorid);
+                            var obj = {};
+                            obj._id = "-1";
+                            obj.name = doc.village;
+                            doc.village = [];
+                            doc.village.push(obj);
+                            db.collection("donor").update({ _id: sails.ObjectID(doc._id) }, {
+                                $set: { village: doc.village }
+                            }, function(err, updated) {
+                                console.log(err);
+                                console.log(updated);
+                            });
+                        }
+                    }
+                });
+            }
+        });
     }
 };
