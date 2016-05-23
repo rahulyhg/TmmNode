@@ -325,7 +325,7 @@ module.exports = {
                     }
                 }, {
                     $sort: {
-                        ackdate: 1
+                        "oldbottle.ackdate": 1
                     }
                 }]).toArray(function(err, data2) {
                     if (err) {
@@ -550,6 +550,10 @@ module.exports = {
                 }, {
                     $match: matchobj
                 }, {
+                    $sort: {
+                        "oldbottle.ackdate": 1
+                    }
+                }, {
                     $project: {
                         _id: 0,
                         donorid: 1,
@@ -559,10 +563,6 @@ module.exports = {
                         age: 1,
                         gender: 1
                     }
-                }, {
-                    $sort: {
-                        ackdate: 1
-                    }
                 }]).toArray(function(err, data2) {
                     if (err) {
                         console.log(err);
@@ -571,6 +571,7 @@ module.exports = {
                         });
                         db.close();
                     } else if (data2 && data2[0]) {
+                        // res.json(data2);
                         var xls = sails.json2xls(data2);
                         sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
                         var path = './data.xlsx';
