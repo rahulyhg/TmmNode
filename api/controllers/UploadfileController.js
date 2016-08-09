@@ -10,20 +10,93 @@ module.exports = {
                 n.fd = n.fd.split('\\').pop().split('/').pop();
                 var split = n.fd.split('.');
                 n.fd = split[0] + "." + split[1].toLowerCase();
-                var dest = sails.fs.createWriteStream('./bloodimg/' + n.fd);
-                source.pipe(dest);
-                source.on('end', function() {
-                    sails.fs.unlink(oldpath, function(data) {
-                        console.log(data);
-                    });
+                sails.lwip.open(oldpath, function(err, image) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        var dimensions = {};
+                        var height = "";
+                        dimensions.width = image.width();
+                        dimensions.height = image.height();
+                        height = dimensions.height / dimensions.width * 1345;
+                        image.resize(1345, height, "lanczos", function(err, image) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                image.toBuffer('jpg', {
+                                    quality: 100
+                                }, function(err, buffer) {
+                                    if (err) {
+                                        console.log(err);
+                                    } else {
+                                        var dest = sails.fs.createWriteStream('./bloodimg/' + n.fd);
+                                        sails.fs.writeFile(dest.path, buffer, function(respo) {
+                                            sails.fs.unlink(oldpath, function(data) {});
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
                 });
-                source.on('error', function(err) {
-                    console.log(err);
+                // var dest = sails.fs.createWriteStream('./bloodimg/' + n.fd);
+                // source.pipe(dest);
+                // source.on('end', function() {
+                //     sails.fs.unlink(oldpath, function(data) {
+                //         console.log(data);
+                //     });
+                // });
+                // source.on('error', function(err) {
+                //     console.log(err);
+                // });
+            });
+            return res.json({
+                message: uploadedFiles.length + ' file(s) uploaded successfully!',
+                files: uploadedFiles
+
+            });
+        });
+    },
+    upload2: function(req, res) {
+        res.connection.setTimeout(20000000);
+        req.connection.setTimeout(20000000);
+        req.file("file").upload(function(err, uploadedFiles) {
+            if (err) return res.send(500, err);
+            _.each(uploadedFiles, function(n) {
+                var oldpath = n.fd;
+                var source = sails.fs.createReadStream(n.fd);
+                n.fd = n.fd.split('\\').pop().split('/').pop();
+                var split = n.fd.split('.');
+                n.fd = split[0] + "." + split[1].toLowerCase();
+                sails.lwip.open(oldpath, function(err, image) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        image.resize(1345, 420, "lanczos", function(err, image) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                image.toBuffer('jpg', {
+                                    quality: 100
+                                }, function(err, buffer) {
+                                    if (err) {
+                                        console.log(err);
+                                    } else {
+                                        var dest = sails.fs.createWriteStream('./bloodimg/' + n.fd);
+                                        sails.fs.writeFile(dest.path, buffer, function(respo) {
+                                            sails.fs.unlink(oldpath, function(data) {});
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    }
                 });
             });
             return res.json({
                 message: uploadedFiles.length + ' file(s) uploaded successfully!',
                 files: uploadedFiles
+
             });
         });
     },
