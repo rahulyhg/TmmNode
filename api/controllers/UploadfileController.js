@@ -72,7 +72,7 @@ module.exports = {
                     if (err) {
                         console.log(err);
                     } else {
-                        image.resize(1345, 420, "lanczos", function(err, image) {
+                        image.resize(1345, 427, "lanczos", function(err, image) {
                             if (err) {
                                 console.log(err);
                             } else {
