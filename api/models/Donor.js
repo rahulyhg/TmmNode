@@ -2443,7 +2443,7 @@ module.exports = {
                                 });
                                 if (1 == 1) {
                                     sails.request.get({
-                                        url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=vikasvira&to=" + mob + "&from=TMMBLD&message=" + data.message
+                                        url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=Ghfpl@2016$&to=" + mob + "&from=TMMBLD&message=" + data.message
                                     }, function(err, httpResponse, body) {
                                         if (body && body != "") {
                                             i++;
@@ -2507,8 +2507,9 @@ module.exports = {
                                 });
                                 if (1 == 1) {
                                     sails.request.get({
-                                        url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=vikasvira&to=" + mob + "&from=TMMBLD&message=" + data.message
+                                        url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=Ghfpl@2016$&to=" + mob + "&from=TMMBLD&message=" + data.message
                                     }, function(err, httpResponse, body) {
+console.log(body);
                                         if (body && body != "") {
                                             i++;
                                             if (i == abc.length) {
