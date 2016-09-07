@@ -1379,7 +1379,7 @@ module.exports = {
                                             db.close();
                                             if (data.mobile && data.mobile != "") {
                                                 sails.request.get({
-                                                    url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=vikasvira&to=" + data.mobile + "&from=TMMBLD&message=Thank you for donating Blood. Your gesture will go a long way in saving 5 Precious Lives. Regards, TMM."
+                                                    url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=" + sails.smsUsername + "&password=" + sails.smsPassword + "&to=" + data.mobile + "&from=TMMBLD&message=Thank you for donating Blood. Your gesture will go a long way in saving 5 Precious Lives. Regards, TMM."
                                                 }, function(err, httpResponse, body) {});
                                             }
                                         } else {
@@ -2432,7 +2432,7 @@ module.exports = {
                             });
                             db.close();
                         } else if (found && found.length > 0) {
-                            var abc = sails._.chunk(found, 100);
+                            var abc = sails._.chunk(found, 90);
                             var i = 0;
 
                             function callSend(num) {
@@ -2443,8 +2443,9 @@ module.exports = {
                                 });
                                 if (1 == 1) {
                                     sails.request.get({
-                                        url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=Ghfpl@2016$&to=" + mob + "&from=TMMBLD&message=" + data.message
+                                        url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=" + sails.smsUsername + "&password=" + sails.smsPassword + "&to=" + mob + "&from=TMMBLD&message=" + data.message
                                     }, function(err, httpResponse, body) {
+                                        console.log(body);
                                         if (body && body != "") {
                                             i++;
                                             num++;
@@ -2507,9 +2508,9 @@ module.exports = {
                                 });
                                 if (1 == 1) {
                                     sails.request.get({
-                                        url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=gadaharia&password=Ghfpl@2016$&to=" + mob + "&from=TMMBLD&message=" + data.message
+                                        url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=" + sails.smsUsername + "&password=" + sails.smsPassword + "&to=" + mob + "&from=TMMBLD&message=" + data.message
                                     }, function(err, httpResponse, body) {
-console.log(body);
+                                        console.log(body);
                                         if (body && body != "") {
                                             i++;
                                             if (i == abc.length) {
