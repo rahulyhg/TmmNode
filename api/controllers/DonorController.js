@@ -1782,6 +1782,86 @@ module.exports = {
             }
         });
     },
+    downloadNewExcel: function(req, res) {
+        sails.query(function(err, db) {
+            if (err) {
+                console.log(err);
+                res.json({
+                    value: false,
+                    comment: "Error"
+                });
+            } else {
+                db.collection('donor').aggregate([{
+                    $match: {
+                        donorid: {
+                            $exists: true
+                        },
+                        donationcount: {
+                            $gt: 0
+                        }
+                    }
+                }, {
+                    $project: {
+                        _id: 0,
+                        donorid: 1,
+                        name: 1,
+                        village: 1,
+                        area: 1,
+                        mobile: 1,
+                        donationcount: 1,
+                        history: 1
+                    }
+                }]).sort({ donorid: 1 }).toArray(function(err, data2) {
+                    if (err) {
+                        console.log(err);
+                        res.json({
+                            value: false,
+                            comment: "Error"
+                        });
+                        db.close();
+                    } else if (data2 && data2.length > 0) {
+                        var array = [];
+                        _.each(data2, function(n) {
+                            var obj = {
+                                "Donorid": n.donorid,
+                                "Name": n.name,
+                                "Area": n.area,
+                                "Mobile": n.mobile,
+                                "Count": n.donationcount
+                            };
+                            if (n.village && n.village.length > 0) {
+                                obj["Village"] = n.village[0].name;
+                            }
+                            if (n.history && n.history.length > 0) {
+                                var object = sails._.last(n.history);
+                                obj["Last Camp-Number"] = object.campnumber;
+                            }
+                            array.push(obj);
+                        });
+                        var xls = sails.json2xls(mobArr);
+                        var path = './Count-of-donors.xlsx';
+                        sails.fs.writeFileSync(path, xls, 'binary');
+                        var excel = sails.fs.readFileSync(path);
+                        res.set('Content-Type', "application/octet-stream");
+                        res.set('Content-Disposition', "attachment;filename=" + path);
+                        res.send(excel);
+                        setTimeout(function() {
+                            sails.fs.unlink(path, function(data) {
+                                console.log(data);
+                            });
+                        }, 10000);
+                        db.close();
+                    } else {
+                        res.json({
+                            value: false,
+                            comment: "No data found"
+                        });
+                        db.close();
+                    }
+                });
+            }
+        });
+    },
     sms: function(req, res) {
         if (req.body) {
             if (req.body.type && req.body.type != "") {
