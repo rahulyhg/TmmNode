@@ -1829,12 +1829,16 @@ module.exports = {
                                 "Mobile": n.mobile,
                                 "Count": n.donationcount
                             };
-                            if (n.village && n.village.length > 0) {
+                            if (n.village && Array.isArray(n.village) && n.village.length > 0) {
                                 obj["Village"] = n.village[0].name;
+                            } else {
+                                obj["Village"] = "";
                             }
                             if (n.history && n.history.length > 0) {
                                 var object = sails._.last(n.history);
                                 obj["Last Camp-Number"] = object.campnumber;
+                            } else {
+                                obj["Last Camp-Number"] = "";
                             }
                             array.push(obj);
                         });
