@@ -1829,7 +1829,7 @@ module.exports = {
                                 "Mobile": n.mobile,
                                 "Count": n.donationcount
                             };
-                            if (n.village && Array.isArray(n.village) && n.village.length > 0) {
+                            if (n.village && Array.isArray(n.village) && n.village.length > 0 && n.village[0] != null) {
                                 console.log(n.village);
                                 obj["Village"] = n.village[0].name;
                             } else {
