@@ -1830,7 +1830,6 @@ module.exports = {
                                 "Count": n.donationcount
                             };
                             if (n.village && Array.isArray(n.village) && n.village.length > 0 && n.village[0] != null) {
-                                console.log(n.village);
                                 obj["Village"] = n.village[0].name;
                             } else {
                                 obj["Village"] = "";
@@ -1843,7 +1842,7 @@ module.exports = {
                             }
                             array.push(obj);
                         });
-                        var xls = sails.json2xls(mobArr);
+                        var xls = sails.json2xls(array);
                         var path = './Count-of-donors.xlsx';
                         sails.fs.writeFileSync(path, xls, 'binary');
                         var excel = sails.fs.readFileSync(path);
