@@ -1830,6 +1830,7 @@ module.exports = {
                                 "Count": n.donationcount
                             };
                             if (n.village && Array.isArray(n.village) && n.village.length > 0) {
+                                console.log(n.village);
                                 obj["Village"] = n.village[0].name;
                             } else {
                                 obj["Village"] = "";
