@@ -270,7 +270,9 @@ module.exports = {
                                         if (data.donorid) {
                                             if (data.oldbottle && data.oldbottle.length > 0) {
                                                 var olddata = {};
-                                                var index = sails._.findIndex(data.oldbottle, { 'campnumber': data.campnumber });
+                                                var index = sails._.findIndex(data.oldbottle, {
+                                                    'campnumber': data.campnumber
+                                                });
                                                 if (index != -1) {
                                                     data.oldbottle.splice(index, 1);
                                                 }
@@ -1379,7 +1381,7 @@ module.exports = {
                                             db.close();
                                             if (data.mobile && data.mobile != "") {
                                                 sails.request.get({
-                                                    url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=" + sails.smsUsername + "&password=" + sails.smsPassword + "&to=" + data.mobile + "&from=TMMBLD&message=Thank you for donating Blood. Your gesture will go a long way in saving 5 Precious Lives. Regards, TMM."
+                                                    url: "http://esms.mytechnologies.co.in/sendsms.jsp?user=" + sails.smsUsername + "&password=" + sails.smsPassword + "&mobiles=" + data.mobile + "&senderid=TMMBLD&sms=Thank you for donating Blood. Your gesture will go a long way in saving 5 Precious Lives. Regards, TMM."
                                                 }, function(err, httpResponse, body) {});
                                             }
                                         } else {
@@ -2443,14 +2445,18 @@ module.exports = {
                                 });
                                 if (1 == 1) {
                                     sails.request.get({
-                                        url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=" + sails.smsUsername + "&password=" + sails.smsPassword + "&to=" + mob + "&from=TMMBLD&message=" + data.message
+                                        url: "http://esms.mytechnologies.co.in/sendsms.jsp?user=" + sails.smsUsername + "&password=" + sails.smsPassword + "&mobiles=" + mob + "&senderid=TMMBLD&sms=" + data.message
                                     }, function(err, httpResponse, body) {
                                         console.log(body);
                                         if (body && body != "") {
                                             i++;
                                             num++;
                                             if (i == abc.length) {
-                                                callback({ value: true, comment: "Sent", count: abc });
+                                                callback({
+                                                    value: true,
+                                                    comment: "Sent",
+                                                    count: abc
+                                                });
                                                 db.close();
                                             } else {
                                                 callSend(num);
@@ -2508,13 +2514,17 @@ module.exports = {
                                 });
                                 if (1 == 1) {
                                     sails.request.get({
-                                        url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=" + sails.smsUsername + "&password=" + sails.smsPassword + "&to=" + mob + "&from=TMMBLD&message=" + data.message
+                                        url: "http://esms.mytechnologies.co.in/sendsms.jsp?user=" + sails.smsUsername + "&password=" + sails.smsPassword + "&mobiles=" + mob + "&senderid=TMMBLD&sms=" + data.message
                                     }, function(err, httpResponse, body) {
                                         console.log(body);
                                         if (body && body != "") {
                                             i++;
                                             if (i == abc.length) {
-                                                callback({ value: true, comment: "Sent", count: abc });
+                                                callback({
+                                                    value: true,
+                                                    comment: "Sent",
+                                                    count: abc
+                                                });
                                                 db.close();
                                             }
                                         }
@@ -2541,7 +2551,10 @@ module.exports = {
         sails.query(function(err, db) {
             if (err) {
                 console.log(err);
-                callback({ value: false, comment: "Error" });
+                callback({
+                    value: false,
+                    comment: "Error"
+                });
             } else {
                 db.collection("donor").find({
                     campnumber: data.campnumber,

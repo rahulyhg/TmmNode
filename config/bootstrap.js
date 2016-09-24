@@ -31,8 +31,8 @@ module.exports.bootstrap = function(cb) {
         sails.lwip = require('lwip'),
         sails.xlsxj = require("xlsx-to-json"),
         sails.gcm = require("node-gcm"),
-        sails.smsUsername = "gadaharia",
-        sails.smsPassword = "Ghfpl@2016$",
+        sails.smsUsername = "thetmm",
+        sails.smsPassword = "thetmm",
         // Connection URL
         sails.url = 'mongodb://localhost:27017/bloodbank';
     sails.query = function(myfunc) {

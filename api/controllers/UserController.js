@@ -137,7 +137,7 @@ module.exports = {
         if (req.body && req.body.mobile && req.body.mobile.toString().length == 10) {
             var otp = Math.floor(Math.random() * 900000) + 100000;
             sails.request.get({
-                url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=" + sails.smsUsername + "&password=" + sails.smsPassword + "&to=" + req.body.mobile + "&from=TMMBLD&message=Your One Time Password for TMM App is " + otp
+                url: "http://esms.mytechnologies.co.in/sendsms.jsp?user=" + sails.smsUsername + "&password=" + sails.smsPassword + "&mobiles=" + req.body.mobile + "&senderid=TMMBLD&sms=Your One Time Password for TMM App is " + otp
             }, function(err, httpResponse, body) {
                 if (err) {
                     console.log(err);

@@ -53,7 +53,9 @@ module.exports = {
         }
 
         function responseCall() {
-            res.writeHeader(200, { "Content-Type": "text/html" });
+            res.writeHeader(200, {
+                "Content-Type": "text/html"
+            });
             res.write(formbody);
             res.end();
         }
@@ -87,7 +89,7 @@ module.exports = {
                         res.redirect("http://wohlig.co.in/paisoapk/success.html");
                     }
                     sails.request.get({
-                        url: "http://esms.mytechnologies.co.in/api/smsapi.aspx?username=" + sails.smsUsername + "&password=" + sails.smsPassword + "&to=" + ccavResponse.billing_tel + "&from=TMMBLD&message=Thank you for donation. Your transaction was Successful."
+                        url: "http://esms.mytechnologies.co.in/sendsms.jsp?user=" + sails.smsUsername + "&password=" + sails.smsPassword + "&mobiles=" + ccavResponse.billing_tel + "&senderid=TMMBLD&sms=Thank you for donation. Your transaction was Successful."
                     }, function(err, httpResponse, body) {});
                 });
             } else {
