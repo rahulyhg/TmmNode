@@ -2631,7 +2631,9 @@ module.exports = {
                             name: 1,
                             mobile: 1,
                             bloodgroup: 1,
-                            pincode: 1
+                            pincode: 1,
+                            tel1:1,
+                            tel2:1
                         }, {
                             donorid: 1
                         }).skip(data.pagesize * (data.pagenumber - 1)).limit(data.pagesize).toArray(function(err, found) {
