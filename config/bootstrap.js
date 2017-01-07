@@ -32,7 +32,7 @@ module.exports.bootstrap = function(cb) {
         sails.xlsxj = require("xlsx-to-json"),
         sails.gcm = require("node-gcm"),
         sails.smsUsername = "thetmm",
-        sails.smsPassword = "thetmm",
+        sails.smsPassword = "Tmm@2016",
         // Connection URL
         sails.url = 'mongodb://localhost:27017/bloodbank';
     sails.query = function(myfunc) {
