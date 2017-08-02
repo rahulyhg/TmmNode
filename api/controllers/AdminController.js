@@ -6,125 +6,128 @@
  */
 
 module.exports = {
-    adminlogin: function(req, res) {
-        if (req.body) {
-            if (req.body.email && req.body.email != "" && req.body.password && req.body.password != "" && req.body.accesslevel != "" && req.body.accesslevel != "") {
-                var print = function(data) {
-                    res.json(data);
-                }
-                Admin.adminlogin(req.body, print);
-            } else {
-                res.json({
-                    value: false,
-                    comment: "Please provide parameters"
-                });
-            }
-        } else {
-            res.json({
-                value: false,
-                comment: "Please provide parameters"
-            });
+  adminlogin: function (req, res) {
+    if (req.body) {
+      console.log("in admincontroller admin login", req.body.email, req.body.password, req.body.accesslevel)
+      if (req.body.email && req.body.email != "" && req.body.email && req.body.password != "" && req.body.accesslevel != "" && req.body.accesslevel != "") {
+        console.log("hdsjkah")
+        var print = function (data) {
+          console.log("in admincontroller data", data)
+          res.json(data);
         }
-    },
-    save: function(req, res) {
-        if (req.body) {
-            if (req.body._id) {
-                if (req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
-                    admin();
-                } else {
-                    res.json({
-                        value: false,
-                        comment: "Admin-id is incorrect"
-                    });
-                }
-            } else {
-                admin();
-            }
-
-            function admin() {
-                var print = function(data) {
-                    res.json(data);
-                }
-                Admin.save(req.body, print);
-            }
-        } else {
-            res.json({
-                value: false,
-                comment: "Please provide parameters"
-            });
-        }
-    },
-    delete: function(req, res) {
-        if (req.body) {
-            if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
-                var print = function(data) {
-                    res.json(data);
-                }
-                Admin.delete(req.body, print);
-            } else {
-                res.json({
-                    value: false,
-                    comment: "Admin-id is incorrect"
-                });
-            }
-        } else {
-            res.json({
-                value: false,
-                comment: "Please provide parameters"
-            });
-        }
-    },
-    find: function(req, res) {
-        if (req.body) {
-            function callback(data) {
-                res.json(data);
-            };
-            Admin.find(req.body, callback);
-        } else {
-            res.json({
-                value: false,
-                comment: "Please provide parameters"
-            });
-        }
-    },
-    findone: function(req, res) {
-        if (req.body) {
-            if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
-                var print = function(data) {
-                    res.json(data);
-                }
-                Admin.findone(req.body, print);
-            } else {
-                res.json({
-                    value: false,
-                    comment: "Admin-id is incorrect"
-                });
-            }
-        } else {
-            res.json({
-                value: false,
-                comment: "Please provide parameters"
-            });
-        }
-    },
-    findlimited: function(req, res) {
-        if (req.body) {
-            if (req.body.pagesize && req.body.pagesize != "" && req.body.pagenumber && req.body.pagenumber != "") {
-                function callback(data) {
-                    res.json(data);
-                };
-                Admin.findlimited(req.body, callback);
-            } else {
-                res.json({
-                    value: false,
-                    comment: "Please provide parameters"
-                });
-            }
-        } else {
-            res.json({
-                value: false,
-                comment: "Please provide parameters"
-            });
-        }
+        Admin.adminlogin(req.body, print);
+      } else {
+        res.json({
+          value: false,
+          comment: "Please provide parameters"
+        });
+      }
+    } else {
+      res.json({
+        value: false,
+        comment: "Please provide parameters"
+      });
     }
+  },
+  save: function (req, res) {
+    if (req.body) {
+      if (req.body._id) {
+        if (req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
+          admin();
+        } else {
+          res.json({
+            value: false,
+            comment: "Admin-id is incorrect"
+          });
+        }
+      } else {
+        admin();
+      }
+
+      function admin() {
+        var print = function (data) {
+          res.json(data);
+        }
+        Admin.save(req.body, print);
+      }
+    } else {
+      res.json({
+        value: false,
+        comment: "Please provide parameters"
+      });
+    }
+  },
+  delete: function (req, res) {
+    if (req.body) {
+      if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
+        var print = function (data) {
+          res.json(data);
+        }
+        Admin.delete(req.body, print);
+      } else {
+        res.json({
+          value: false,
+          comment: "Admin-id is incorrect"
+        });
+      }
+    } else {
+      res.json({
+        value: false,
+        comment: "Please provide parameters"
+      });
+    }
+  },
+  find: function (req, res) {
+    if (req.body) {
+      function callback(data) {
+        res.json(data);
+      };
+      Admin.find(req.body, callback);
+    } else {
+      res.json({
+        value: false,
+        comment: "Please provide parameters"
+      });
+    }
+  },
+  findone: function (req, res) {
+    if (req.body) {
+      if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
+        var print = function (data) {
+          res.json(data);
+        }
+        Admin.findone(req.body, print);
+      } else {
+        res.json({
+          value: false,
+          comment: "Admin-id is incorrect"
+        });
+      }
+    } else {
+      res.json({
+        value: false,
+        comment: "Please provide parameters"
+      });
+    }
+  },
+  findlimited: function (req, res) {
+    if (req.body) {
+      if (req.body.pagesize && req.body.pagesize != "" && req.body.pagenumber && req.body.pagenumber != "") {
+        function callback(data) {
+          res.json(data);
+        };
+        Admin.findlimited(req.body, callback);
+      } else {
+        res.json({
+          value: false,
+          comment: "Please provide parameters"
+        });
+      }
+    } else {
+      res.json({
+        value: false,
+        comment: "Please provide parameters"
+      });
+    }
+  }
 };
