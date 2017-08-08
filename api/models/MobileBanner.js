@@ -1,5 +1,5 @@
 /**
- * donationRequest.js
+ * mobilebanner.js
  *
  * @description :: TODO: You might write a short summary of how this model works and what it represents here.
  * @docs        :: http://sailsjs.org/#!documentation/models
@@ -16,7 +16,7 @@ module.exports = {
         // console.log("db 16: ", db);
         if (!data._id) {
           data._id = sails.ObjectID();
-          db.collection('donationRequest').insert(data, function (err, created) {
+          db.collection('mobilebanner').insert(data, function (err, created) {
             if (err) {
               console.log(err);
               callback({
@@ -37,10 +37,10 @@ module.exports = {
             }
           });
         } else {
-          var donationRequest = sails.ObjectID(data._id);
+          var mobilebanner = sails.ObjectID(data._id);
           delete data._id;
-          db.collection('donationRequest').update({
-            _id: donationRequest
+          db.collection('mobilebanner').update({
+            _id: mobilebanner
           }, {
             $set: data
           }, function (err, updated) {
@@ -100,7 +100,7 @@ module.exports = {
       } else if (db) {
         if (!data._id) {
           data._id = sails.ObjectID();
-          db.collection('donationRequest').insert(data, function (err, created) {
+          db.collection('mobilebanner').insert(data, function (err, created) {
             if (err) {
               console.log(err);
               callback({
@@ -121,10 +121,10 @@ module.exports = {
             }
           });
         } else {
-          var donationRequest = sails.ObjectID(data._id);
+          var mobilebanner = sails.ObjectID(data._id);
           delete data._id;
-          db.collection('donationRequest').update({
-            _id: donationRequest
+          db.collection('mobilebanner').update({
+            _id: mobilebanner
           }, {
             $set: data
           }, function (err, updated) {
@@ -172,7 +172,7 @@ module.exports = {
         });
       }
       if (db) {
-        db.collection("donationRequest").count({
+        db.collection("mobilebanner").count({
           fullname: {
             '$regex': check
           }
@@ -196,7 +196,7 @@ module.exports = {
         });
 
         function callbackfunc() {
-          db.collection("donationRequest").find({
+          db.collection("mobilebanner").find({
             fullname: {
               '$regex': check
             }
@@ -233,7 +233,7 @@ module.exports = {
         });
       }
       if (db) {
-        db.collection("donationRequest").find({}, {}).toArray(function (err, found) {
+        db.collection("mobilebanner").find({}, {}).toArray(function (err, found) {
           if (err) {
             callback({
               value: false
@@ -264,7 +264,7 @@ module.exports = {
         });
       }
       if (db) {
-        db.collection("donationRequest").find({
+        db.collection("mobilebanner").find({
           "_id": sails.ObjectID(data._id)
         }, {}).toArray(function (err, found) {
           if (err) {
@@ -274,7 +274,6 @@ module.exports = {
             console.log(err);
             db.close();
           } else if (found && found[0]) {
-            console.log("$$$$$$found", found[0])
             callback(found[0]);
             db.close()
           } else {
@@ -289,7 +288,6 @@ module.exports = {
     });
   },
   delete: function (data, callback) {
-    console.log("^^^^^^^in DonationRequest", data)
     sails.query(function (err, db) {
       if (err) {
         console.log(err);
@@ -297,7 +295,7 @@ module.exports = {
           value: false
         });
       }
-      db.collection('donationRequest').remove({
+      db.collection('mobilebanner').remove({
         _id: sails.ObjectID(data._id)
       }, function (err, deleted) {
         if (deleted) {

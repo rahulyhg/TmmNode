@@ -378,6 +378,123 @@ module.exports = {
       }
     });
   },
+  findoneAndUpdate: function (data, callback) {
+    console.log("in findoneand update", data)
+    sails.query(function (err, db) {
+      if (err) {
+        console.log(err);
+        callback({
+          value: false
+        });
+      } else if (db) {
+
+        // var newreturns = {};
+        // newreturns.data = [];
+        // var checklastname = "";
+        // var checkmiddlename = "";
+        // var checkfirstname = "";
+        // if (data.name != "") {
+        //   var splitname = data.fullname.split(" ");
+        //   data.lastname = splitname[0];
+        //   checklastname = new RegExp(data.lastname, "i");
+        //   if (splitname[2] != "") {
+        //     data.middlename = splitname[2];
+        //     checkmiddlename = new RegExp(data.middlename, "i");
+        //   }
+        //   if (splitname[1] != "") {
+        //     data.firstname = splitname[1];
+        //     checkfirstname = new RegExp(data.firstname, "i");
+        //   }
+        // } else {
+        //   data.firstname = data.firstname;
+        //   data.middlename = data.middlename;
+        //   data.lastname = data.lastname;
+        //   checkfirstname = new RegExp(data.firstname, "i");
+        //   checkmiddlename = new RegExp(data.middlename, "i");
+        //   checklastname = new RegExp(data.lastname, "i");
+        // }
+
+        // console.log("**********checklastname", checklastname, "checkmiddlename", checkmiddlename, "checkfirstname", checkfirstname)
+
+        // var matchobj = {
+        //   firstname: checkfirstname,
+        //   middlename: checkmiddlename,
+        //   lastname: checklastname
+        // };
+        // console.log("machobj", matchobj)
+
+
+
+        db.collection("donor").find({
+          $or: [{
+            donorid: data.donorid
+          }, {
+            name: data.fullname
+          }]
+        }, {}).toArray(function (err, data2) {
+          if (err) {
+            console.log(err);
+            callback({
+              value: false
+            });
+            db.close();
+          } else if (data2 && data2[0]) {
+            console.log("in findoneandupdate", data2);
+            console.log("in findoneandupdate", data2[0]);
+            var arr = (data2[0].history).length;
+            console.log("Length", data2[0].history[0].date);
+            data2[0].donationcount = parseInt(data2[0].donationcount) + 1;
+            var newEle = {};
+            newEle.date = new Date();
+            newEle.campnumber = "App_Donation_001";
+            data2[0].history.push(newEle)
+            console.log("&&&&&&&", data2[0].history)
+            db.collection('donor').update({
+              _id: data2[0]._id
+            }, {
+              $set: data2[0]
+
+            }, function (err, updated) {
+              // console.log("****$$$$updated", updated)
+              if (err) {
+                console.log(err);
+                callback({
+                  value: false,
+                  comment: "Error"
+                });
+                db.close();
+              } else if (updated.result.nModified != 0 && updated.result.n != 0) {
+                console.log("something happened 11");
+                callback(data2[0]);
+
+              } else if (updated.result.nModified == 0 && updated.result.n != 0) {
+                console.log("something happened 22");
+                callback(data2[0]);
+
+              } else {
+                // callback({
+                //   value: false,
+                //   comment: "No data found or Some Error"
+                // });
+                db.close();
+              }
+            });
+
+
+            // callback(data2[0]);
+            db.close();
+          } else {
+            callback({
+              value: false,
+              comment: "No data found"
+            });
+            db.close();
+          }
+        });
+      }
+    });
+  },
+
   findlimited: function (data, callback) {
     var newreturns = {};
     newreturns.data = [];
@@ -1561,8 +1678,11 @@ module.exports = {
     });
   },
   update: function (data, callback) {
+    console.log("in update ", data)
     if (data.me) {
       data.donationcount = parseInt(data.donationcount);
+    } else if (data.donorid) {
+      callme();
     } else {
       delete data.donationcount;
     }
