@@ -39,53 +39,71 @@ module.exports = {
         } else {
           var donationRequest = sails.ObjectID(data._id);
           delete data._id;
-          db.collection('donationRequest').update({
-            _id: donationRequest
-          }, {
-            $set: data
-          }, function (err, updated) {
-            if (err) {
-              console.log(err);
-              callback({
-                value: false
-              });
-              db.close();
-            } else if (updated.result.nModified != 0 && updated.result.n != 0) {
-              if (data.status == 'Accepted') {
-                console.log("in update count", data)
-                Donor.findoneAndUpdate(data, callback)
-                // console.log("******in update donation count", data, db.collection);
-                // db.collection('donor').udpate({
-                //   donorid: data.donorid
-                // }, {
-                //   $inc: {
-                //     donationcount: 1
-                //   }
-                // }).exec(function (err, response) {
-                //   console.log("donation count update: ", err, response);
-                //   callback(err, response);
-                // });
 
-              } else {
-                callback({
-                  value: true
-                });
-              }
-              db.close();
-            } else if (updated.result.nModified == 0 && updated.result.n != 0) {
-              callback({
-                value: true,
-                comment: "Data already updated"
+          db.collection('donationRequest').findOne({
+            _id: donationRequest
+          }, function (err, requestRecord) {
+            if (!_.isEmpty(requestRecord)) {
+              db.collection('donationRequest').update({
+                _id: donationRequest
+              }, {
+                $set: data
+              }, function (err, updated) {
+                if (err) {
+                  console.log(err);
+                  callback({
+                    value: false
+                  });
+                  db.close();
+                } else if (updated.result.nModified != 0 && updated.result.n != 0) {
+                  if (data.status == 'Accepted') {
+                    console.log("in update count", data);
+                    data.updateCount = 'inc';
+                    Donor.findoneAndUpdate(data, callback)
+                    // console.log("******in update donation count", data, db.collection);
+                    // db.collection('donor').udpate({
+                    //   donorid: data.donorid
+                    // }, {
+                    //   $inc: {
+                    //     donationcount: 1
+                    //   }
+                    // }).exec(function (err, response) {
+                    //   console.log("donation count update: ", err, response);
+                    //   callback(err, response);
+                    // });
+                  } // decrement donor count if status is changed from accepted to not accepted
+                  else if (data.status != 'Accepted' && requestRecord.status == 'Accepted') {
+                    data.updateCount = 'dec';
+                    Donor.findoneAndUpdate(data, callback)
+                  } else {
+                    callback({
+                      value: true
+                    });
+                  }
+                  db.close();
+                } else if (updated.result.nModified == 0 && updated.result.n != 0) {
+                  callback({
+                    value: true,
+                    comment: "Data already updated"
+                  });
+                  db.close();
+                } else {
+                  callback({
+                    value: false,
+                    comment: "No data found"
+                  });
+                  db.close();
+                }
               });
-              db.close();
             } else {
+              console.log("Error at DonationRequest.js 99: noRecordFound");
               callback({
                 value: false,
-                comment: "No data found"
+                comment: "noRecordFound"
               });
               db.close();
             }
-          });
+          })
         }
       }
     });
@@ -98,6 +116,7 @@ module.exports = {
           value: false
         });
       } else if (db) {
+        // console.log("db 16: ", db);
         if (!data._id) {
           data._id = sails.ObjectID();
           db.collection('donationRequest').insert(data, function (err, created) {
@@ -135,9 +154,26 @@ module.exports = {
               });
               db.close();
             } else if (updated.result.nModified != 0 && updated.result.n != 0) {
-              callback({
-                value: true
-              });
+              if (data.status == 'Rejected' || data.status == 'Pending') {
+                console.log("in update count", data)
+                Donor.findoneAndUpdate(data, callback)
+                // console.log("******in update donation count", data, db.collection);
+                // db.collection('donor').udpate({
+                //   donorid: data.donorid
+                // }, {
+                //   $inc: {
+                //     donationcount: 1
+                //   }
+                // }).exec(function (err, response) {
+                //   console.log("donation count update: ", err, response);
+                //   callback(err, response);
+                // });
+
+              } else {
+                callback({
+                  value: true
+                });
+              }
               db.close();
             } else if (updated.result.nModified == 0 && updated.result.n != 0) {
               callback({
