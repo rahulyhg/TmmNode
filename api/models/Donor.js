@@ -379,7 +379,8 @@ module.exports = {
     });
   },
   findoneAndUpdate: function (data, callback) {
-    console.log("in findoneand update", data)
+    console.log("in findoneand update", data);
+    // var fullname={}
     sails.query(function (err, db) {
       if (err) {
         console.log(err);
@@ -429,6 +430,9 @@ module.exports = {
           $or: [{
             donorid: data.donorid
           }, {
+            // lastname: data.lastname,
+            // firstname: data.firstname,
+            // middlename: data.middlename,
             name: data.fullname
           }]
         }, {}).toArray(function (err, data2) {
