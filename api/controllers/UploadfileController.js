@@ -20,7 +20,7 @@ module.exports = {
         //   console.error(err);
         // });
 
-        sails.lwip.open(oldpath, function (err, image) {
+        lwip.open(oldpath, function (err, image) {
           if (err) {
             console.log(err);
           } else {
