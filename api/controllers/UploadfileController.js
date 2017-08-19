@@ -1,6 +1,7 @@
 module.exports = {
   upload: function (req, res) {
     // var Jimp = require("jimp");
+    var lwip = require("lwip");
     res.connection.setTimeout(20000000);
     req.connection.setTimeout(20000000);
     req.file("file").upload(function (err, uploadedFiles) {
