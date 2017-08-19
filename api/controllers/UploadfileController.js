@@ -1,6 +1,6 @@
 module.exports = {
   upload: function (req, res) {
-    var Jimp = require("jimp");
+    // var Jimp = require("jimp");
     res.connection.setTimeout(20000000);
     req.connection.setTimeout(20000000);
     req.file("file").upload(function (err, uploadedFiles) {
@@ -12,42 +12,42 @@ module.exports = {
         var split = n.fd.split('.');
         n.fd = split[0] + "." + split[1].toLowerCase();
 
-        Jimp.read(oldpath, function (err, image) {
-          image.resize(1345, Jimp.AUTO).quality(60).write('./bloodimg/' + n.fd);
-          sails.fs.unlink(oldpath, function (data) {});
-        }).catch(function (err) {
-          console.error(err);
-        });
-
-        // sails.lwip.open(oldpath, function (err, image) {
-        //   if (err) {
-        //     console.log(err);
-        //   } else {
-        //     var dimensions = {};
-        //     var height = "";
-        //     dimensions.width = image.width();
-        //     dimensions.height = image.height();
-        //     height = dimensions.height / dimensions.width * 1345;
-        //     image.resize(1345, height, "lanczos", function (err, image) {
-        //       if (err) {
-        //         console.log(err);
-        //       } else {
-        //         image.toBuffer('jpg', {
-        //           quality: 100
-        //         }, function (err, buffer) {
-        //           if (err) {
-        //             console.log(err);
-        //           } else {
-        //             var dest = sails.fs.createWriteStream('./bloodimg/' + n.fd);
-        //             sails.fs.writeFile(dest.path, buffer, function (respo) {
-        //               sails.fs.unlink(oldpath, function (data) {});
-        //             });
-        //           }
-        //         });
-        //       }
-        //     });
-        //   }
+        // Jimp.read(oldpath, function (err, image) {
+        //   image.resize(1345, Jimp.AUTO).quality(60).write('./bloodimg/' + n.fd);
+        //   sails.fs.unlink(oldpath, function (data) {});
+        // }).catch(function (err) {
+        //   console.error(err);
         // });
+
+        sails.lwip.open(oldpath, function (err, image) {
+          if (err) {
+            console.log(err);
+          } else {
+            var dimensions = {};
+            var height = "";
+            dimensions.width = image.width();
+            dimensions.height = image.height();
+            height = dimensions.height / dimensions.width * 1345;
+            image.resize(1345, height, "lanczos", function (err, image) {
+              if (err) {
+                console.log(err);
+              } else {
+                image.toBuffer('jpg', {
+                  quality: 100
+                }, function (err, buffer) {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    var dest = sails.fs.createWriteStream('./bloodimg/' + n.fd);
+                    sails.fs.writeFile(dest.path, buffer, function (respo) {
+                      sails.fs.unlink(oldpath, function (data) {});
+                    });
+                  }
+                });
+              }
+            });
+          }
+        });
         // var dest = sails.fs.createWriteStream('./bloodimg/' + n.fd);
         // source.pipe(dest);
         // source.on('end', function() {
