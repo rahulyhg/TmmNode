@@ -17,7 +17,7 @@ module.exports = {
           sails.fs.unlink(oldpath, function (data) {});
         }).catch(function (err) {
           console.error(err);
-        });;
+        });
 
         // sails.lwip.open(oldpath, function (err, image) {
         //   if (err) {
