@@ -16,6 +16,7 @@ module.exports = {
         // console.log("db 16: ", db);
         if (!data._id) {
           data._id = sails.ObjectID();
+          data.status = 'Pending';
           db.collection('donationRequest').insert(data, function (err, created) {
             if (err) {
               console.log(err);
