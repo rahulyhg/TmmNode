@@ -173,7 +173,7 @@ module.exports = {
       }
       if (db) {
         db.collection("mobilebanner").count({
-          fullname: {
+          title: {
             '$regex': check
           }
         }, function (err, number) {
@@ -197,7 +197,7 @@ module.exports = {
 
         function callbackfunc() {
           db.collection("mobilebanner").find({
-            fullname: {
+            title: {
               '$regex': check
             }
           }, {}).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function (err, found) {
