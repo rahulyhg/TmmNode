@@ -677,7 +677,8 @@ module.exports = {
             lastname: checklastname,
             campnumber: data.campnumber,
             camp: data.camp,
-            mobile: data.pincode,
+            pincode: data.pincode,
+            mobile: data.mobile,
             new: {
               $ne: 1
             }
@@ -690,7 +691,8 @@ module.exports = {
             lastname: checklastname,
             campnumber: data.campnumber,
             camp: data.camp,
-            mobile: data.pincode
+            pincode: data.pincode,
+            mobile: data.mobile
           };
         }
         if (data.donorid == "") {
@@ -712,6 +714,9 @@ module.exports = {
           delete matchobj.camp;
         }
         if (data.pincode == "") {
+          delete matchobj.pincode;
+        }
+        if (data.mobile == "") {
           delete matchobj.mobile;
         }
         callbackfunc1();
