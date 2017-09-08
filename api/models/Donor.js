@@ -447,7 +447,7 @@ module.exports = {
             console.log("in findoneandupdate", data2[0]);
             if (data2[0].history) {
               var arr = (data2[0].history).length;
-              console.log("Length", data2[0].history[0].date);
+              // console.log("Length", data2[0].history[0].date);
             } else {
               data2[0].history = [];
             }
