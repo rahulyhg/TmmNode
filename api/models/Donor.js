@@ -445,8 +445,12 @@ module.exports = {
           } else if (data2 && data2[0]) {
             console.log("in findoneandupdate", data2);
             console.log("in findoneandupdate", data2[0]);
-            var arr = (data2[0].history).length;
-            console.log("Length", data2[0].history[0].date);
+            if (data2[0].history) {
+              var arr = (data2[0].history).length;
+              console.log("Length", data2[0].history[0].date);
+            } else {
+              data2[0].history = [];
+            }
             var updateQuery = {}; // query to inc/dec donationCount
             if (data.updateCount == 'inc') {
               data2[0].donationcount = parseInt(data2[0].donationcount) + 1;
