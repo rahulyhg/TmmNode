@@ -1186,6 +1186,11 @@ module.exports = {
       }
     });
   },
+  chageNaN: function(data, callback) {
+    sails.query(function (err, db) {
+      Donor.fin
+    });      
+  },
   delete: function (data, callback) {
     sails.query(function (err, db) {
       if (err) {
@@ -1985,6 +1990,7 @@ module.exports = {
         });
       } else if (db) {
         if (!data._id) {
+          console.log(checkname)
           data._id = sails.ObjectID();
           db.collection('donor').find({
             donorid: {
@@ -2000,6 +2006,7 @@ module.exports = {
                 comment: "Error"
               });
             } else if (data2 && data2[0]) {
+              console.log(data2);
               var regsplit = data2[0].donorid.split(letter);
               regsplit[1] = parseInt(regsplit[1]);
               data.donorid = regsplit[1] + 1;

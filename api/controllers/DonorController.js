@@ -60,6 +60,20 @@ module.exports = {
       });
     }
   },
+  changeNaN: function (req, res) {
+    if (req.body) {
+      var print = function (data) {
+        res.json(data);
+      }
+        Donor.changeNaN(req.body, print);
+      
+    } else {
+      res.json({
+        value: false,
+        comment: "Please provide parameters"
+      });
+    }
+  },
   deletedata: function (req, res) {
     if (req.body) {
       if (req.body.donorid && req.body.donorid != "" && req.body.campnumber && req.body.campnumber != "") {

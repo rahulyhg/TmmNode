@@ -722,5 +722,19 @@ module.exports = {
                 comment: "Please provide parameters"
             });
         }
+    },
+    recheckCounts: function(req, res) {
+        if (req.body) {
+                function callback(data) {
+                    res.json(data);
+                };
+                Camp.recheckCounts(req.body, callback);
+            
+        } else {
+            res.json({
+                value: false,
+                comment: "Please provide parameters"
+            });
+        }
     }
 };
