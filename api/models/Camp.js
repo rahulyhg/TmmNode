@@ -990,7 +990,7 @@ module.exports = {
           delete matchobj.mobile;
         }
         console.log(matchobj)
-        
+
         callbackfunc1();
 
         function callbackfunc1() {
@@ -1391,7 +1391,7 @@ module.exports = {
       }
     });
   },
-  recheckCounts: function(data,callback){
+  recheckCounts: function (data, callback) {
     sails.query(function (err, db) {
       if (err) {
         console.log(err);
@@ -1401,6 +1401,7 @@ module.exports = {
       }
       if (db) {
         var cnt = 0;
+        var allCollectionsObjects = [];
         db.collection("camp").find().sort({
           date: -1
         }).toArray(function (err, found) {
@@ -1410,19 +1411,29 @@ module.exports = {
             });
             db.close();
           } else if (found && found[0]) {
-            async.waterfall
-            _.each(found, function(n){
-              if(n.venues){
-                _.each(n.venues, function(m){
-                  _.each(m.hospital, function(l){
-                    collectAllCount({"oldbottle.campnumber": n.campnumber,"oldbottle.camp":m.value,"oldbottle.hospital":sails.ObjectID(l._id)},l)
+            _.each(found, function (n) {
+              if (n.venues) {
+                _.each(n.venues, function (m) {
+                  _.each(m.hospital, function (l) {
+                    collectAllCountAdd({
+                      "oldbottle.campnumber": n.campnumber,
+                      "oldbottle.camp": m.value,
+                      "oldbottle.hospital": sails.ObjectID(l._id)
+                    }, l)
                   });
                 });
-              }else{
-                collectAllCount({"oldbottle.campnumber": n.campnumber},{});
+              } else {
+                collectAllCountAdd({
+                  "oldbottle.campnumber": n.campnumber
+                }, {});
               }
             });
-            db.close();
+            async.eachSeries(allCollectionsObjects, function (n,callback) {
+              collectAllCount(n.obj, n.hospital, callback);
+            },function(err) {
+              db.close();
+            });
+            
           } else {
             callback({
               value: false,
@@ -1432,253 +1443,292 @@ module.exports = {
           }
         });
 
-        function collectAllCount(obj,hospital){
+       
+        function collectAllCountAdd(obj,hospital) {
+           allCollectionsObjects.push({obj:obj,hospital:hospital});
+        }
 
-            async.parallel({
-              entry: function(callback){
-                db.collection('donor').aggregate([{
-                  $unwind: "$oldbottle"
-                }, {
-                  $match: obj
-                }, {
-                  $count:"count"
-                  
-                }]).toArray(function (err, result) {
-                  if (result) {
-                    if(result == ""){
-                      callback(null,{'count':0});
-                    }else{
-                      callback(null,result[0]);                      
-                    }                  } else if (err) {
-                    console.log(err);
-                    callback(null,{
-                      count: 0
-                    });
-                    db.close();
-                  } 
-                });
-              },
-              rejected: function(callback){
-                db.collection('donor').aggregate([{
-                  $unwind: "$oldbottle"
-                }, {
-                  $match: obj
-                },{
-                  $match: {
-                    'oldbottle.deletedcamp':obj["oldbottle.campnumber"]}
-                }, {
-                  $count:"count"
-                  
-                }]).toArray(function (err, result) {
-                  if (result) {
-                    if(result == ""){
-                      callback(null,{'count':0});
-                    }else{
-                      callback(null,result[0]);                      
-                    }
-                  } else if (err) {
-                    console.log(err);
-                    callback(null,{
-                      count: 0
-                    });
-                    db.close();
-                  } 
-                });
-              },
-              pendingV: function(callback){
-                db.collection('donor').aggregate([{
-                  $unwind: "$oldbottle"
-                }, {
-                  $match: obj
-                },{
-                  $match: {
-                    'oldbottle.bottle': { '$exists': true },
-                    'oldbottle.verified': { '$exists': false }
-                  }
-                }, {
-                  $count:"count"
-                  
-                }]).toArray(function (err, result) {
-                  if (result) {
-                    if(result == ""){
-                      callback(null,{'count':0});
-                    }else{
-                      callback(null,result[0]);                      
-                    }
-                  } else if (err) {
-                    console.log(err);
-                    callback(null,{
-                      count: 0
-                    });
-                    db.close();
-                  } 
-                });
-              },
-              verify: function(callback){
-                db.collection('donor').aggregate([{
-                  $unwind: "$oldbottle"
-                }, {
-                  $match: obj
-                },{
-                  $match: {
-                    'oldbottle.bottle': { '$exists': true },
-                    'oldbottle.verified': { '$exists': true }
-                  }
-                }, {
-                  $count:"count"
-                  
-                }]).toArray(function (err, result) {
-                  if (result) {
-                    if(result == ""){
-                      callback(null,{'count':0});
-                    }else{
-                      callback(null,result[0]);                      
-                    }
-                  } else if (err) {
-                    console.log(err);
-                    callback(null,{
-                      count: 0
-                    });
-                    db.close();
-                  } 
-                });
-              },
-              giftRejected: function(callback){
-                db.collection('donor').aggregate([{
-                  $unwind: "$oldbottle"
-                }, {
-                  $match: obj
-                },{
-                  $match: {
-                    'oldbottle.bottle': { '$exists': true },
-                    'oldbottle.verified': { '$exists': true },
-                    'oldbottle.giftdone': { '$eq': false }
-                  }
-                }, {
-                  $count:"count"
-                  
-                }]).toArray(function (err, result) {
-                  if (result) {
-                    if(result == ""){
-                      callback(null,{'count':0});
-                    }else{
-                      callback(null,result[0]);                      
-                    }
-                  } else if (err) {
-                    console.log(err);
-                    callback(null,{
-                      count: 0
-                    });
-                    db.close();
-                  } 
-                });
-              },
-              pendingG: function(callback){
-                db.collection('donor').aggregate([{
-                  $unwind: "$oldbottle"
-                }, {
-                  $match: obj
-                },{
-                  $match: {
-                    'oldbottle.bottle': { '$exists': true },
-                    'oldbottle.verified': { '$exists': true },
-                    'oldbottle.giftdone': { '$exists': false }
-                  }
-                }, {
-                  $count:"count"
-                  
-                }]).toArray(function (err, result) {
-                  if (result) {
-                    if(result == ""){
-                      callback(null,{'count':0});
-                    }else{
-                      callback(null,result[0]);                      
-                    }
-                  } else if (err) {
-                    console.log(err);
-                    callback(null,{
-                      count: 0
-                    });
-                    db.close();
-                  } 
-                });
-              },
-              gift: function(callback){
-                db.collection('donor').aggregate([{
-                  $unwind: "$oldbottle"
-                }, {
-                  $match: obj
-                },{
-                  $match: {
-                    'oldbottle.bottle': { '$exists': true },
-                    'oldbottle.verified': { '$exists': true },
-                    'oldbottle.giftdone': { '$eq': true }
-                  }
-                }, {
-                  $count:"count"
-                  
-                }]).toArray(function (err, result) {
-                  if (result) {
-                    if(result == ""){
-                      callback(null,{'count':0});
-                    }else{
-                      callback(null,result[0]);                      
-                    }
-                  } else if (err) {
-                    console.log(err);
-                    callback(null,{
-                      count: 0
-                    });
-                    db.close();
-                  } 
-                });
-              }
-            },function(err,result){
 
-              var matchobj = {};
-              var findCondition = {};
-              
-              matchobj.gift = parseInt(result.gift.count);
-              matchobj.giftRejected = parseInt(result.gift.count);
-              matchobj.pendingG = parseInt(result.gift.count);
-              matchobj.entry = parseInt(result.gift.count);
-              matchobj.pendingV = parseInt(result.gift.count);
-              matchobj.rejected = parseInt(result.gift.count);
-              matchobj.verify = parseInt(result.gift.count);
-              matchobj.campnumber = obj["oldbottle.campnumber"];
-              findCondition.campnumber = obj["oldbottle.campnumber"];
-              
-              if(obj["oldbottle.camp"]){
-                matchobj.camp = obj["oldbottle.camp"];
-                findCondition.camp = obj["oldbottle.camp"];
-              }
-              if(hospital && hospital.name){
-                matchobj.hospitalname = hospital.name;
-                findCondition.hospitalname = hospital.name;                
-              }
+        function collectAllCount(obj, hospital, callback) {
 
-              if(hospital && hospital._id){
-                matchobj.id = hospital._id;
-                findCondition.id = hospital._id;
-              }
+          async.parallel({
+            entry: function (callback) {
+              db.collection('donor').aggregate([{
+                $unwind: "$oldbottle"
+              }, {
+                $match: obj
+              }, {
+                $count: "count"
 
-              console.log("------------------------------------------");
-              console.log(findCondition);
-              db.collection("table").find({ "campnumber": 'C091'}, {}).toArray(function(err, found) {
-                if (err) {
-                    
-                    console.log(err);
-                    db.close();
-                } else if (found) {
-                  console.log("HERE IN Result",found);
-                  // db.collection("table").update()
-                    // callback(found[0]);
-                    return found;
+              }]).toArray(function (err, result) {
+                if (result) {
+                  if (result == "") {
+                    callback(null, {
+                      'count': 0
+                    });
+                  } else {
+                    callback(null, result[0]);
+                  }
+                } else if (err) {
+                  console.log(err);
+                  callback(null, {
+                    count: 0
+                  });
                 }
+              });
+            },
+            rejected: function (callback) {
+              db.collection('donor').aggregate([{
+                $unwind: "$oldbottle"
+              }, {
+                $match: obj
+              }, {
+                $match: {
+                  'oldbottle.deletedcamp': obj["oldbottle.campnumber"]
+                }
+              }, {
+                $count: "count"
+
+              }]).toArray(function (err, result) {
+                if (result) {
+                  if (result == "") {
+                    callback(null, {
+                      'count': 0
+                    });
+                  } else {
+                    callback(null, result[0]);
+                  }
+                } else if (err) {
+                  console.log(err);
+                  callback(null, {
+                    count: 0
+                  });
+                }
+              });
+            },
+            pendingV: function (callback) {
+              db.collection('donor').aggregate([{
+                $unwind: "$oldbottle"
+              }, {
+                $match: obj
+              }, {
+                $match: {
+                  'oldbottle.bottle': {
+                    '$exists': true
+                  },
+                  'oldbottle.verified': {
+                    '$exists': false
+                  }
+                }
+              }, {
+                $count: "count"
+
+              }]).toArray(function (err, result) {
+                if (result) {
+                  if (result == "") {
+                    callback(null, {
+                      'count': 0
+                    });
+                  } else {
+                    callback(null, result[0]);
+                  }
+                } else if (err) {
+                  console.log(err);
+                  callback(null, {
+                    count: 0
+                  });
+                }
+              });
+            },
+            verify: function (callback) {
+              db.collection('donor').aggregate([{
+                $unwind: "$oldbottle"
+              }, {
+                $match: obj
+              }, {
+                $match: {
+                  'oldbottle.bottle': {
+                    '$exists': true
+                  },
+                  'oldbottle.verified': {
+                    '$exists': true
+                  }
+                }
+              }, {
+                $count: "count"
+
+              }]).toArray(function (err, result) {
+                if (result) {
+                  if (result == "") {
+                    callback(null, {
+                      'count': 0
+                    });
+                  } else {
+                    callback(null, result[0]);
+                  }
+                } else if (err) {
+                  console.log(err);
+                  callback(null, {
+                    count: 0
+                  });
+                }
+              });
+            },
+            giftRejected: function (callback) {
+              db.collection('donor').aggregate([{
+                $unwind: "$oldbottle"
+              }, {
+                $match: obj
+              }, {
+                $match: {
+                  'oldbottle.bottle': {
+                    '$exists': true
+                  },
+                  'oldbottle.verified': {
+                    '$exists': true
+                  },
+                  'oldbottle.giftdone': {
+                    '$eq': false
+                  }
+                }
+              }, {
+                $count: "count"
+
+              }]).toArray(function (err, result) {
+                if (result) {
+                  if (result == "") {
+                    callback(null, {
+                      'count': 0
+                    });
+                  } else {
+                    callback(null, result[0]);
+                  }
+                } else if (err) {
+                  console.log(err);
+                  callback(null, {
+                    count: 0
+                  });
+                }
+              });
+            },
+            pendingG: function (callback) {
+              db.collection('donor').aggregate([{
+                $unwind: "$oldbottle"
+              }, {
+                $match: obj
+              }, {
+                $match: {
+                  'oldbottle.bottle': {
+                    '$exists': true
+                  },
+                  'oldbottle.verified': {
+                    '$exists': true
+                  },
+                  'oldbottle.giftdone': {
+                    '$exists': false
+                  }
+                }
+              }, {
+                $count: "count"
+
+              }]).toArray(function (err, result) {
+                if (result) {
+                  if (result == "") {
+                    callback(null, {
+                      'count': 0
+                    });
+                  } else {
+                    callback(null, result[0]);
+                  }
+                } else if (err) {
+                  console.log(err);
+                  callback(null, {
+                    count: 0
+                  });
+                }
+              });
+            },
+            gift: function (callback) {
+              db.collection('donor').aggregate([{
+                $unwind: "$oldbottle"
+              }, {
+                $match: obj
+              }, {
+                $match: {
+                  'oldbottle.bottle': {
+                    '$exists': true
+                  },
+                  'oldbottle.verified': {
+                    '$exists': true
+                  },
+                  'oldbottle.giftdone': {
+                    '$eq': true
+                  }
+                }
+              }, {
+                $count: "count"
+
+              }]).toArray(function (err, result) {
+                if (result) {
+                  if (result == "") {
+                    callback(null, {
+                      'count': 0
+                    });
+                  } else {
+                    callback(null, result[0]);
+                  }
+                } else if (err) {
+                  console.log(err);
+                  callback(null, {
+                    count: 0
+                  });
+                }
+              });
+            }
+          }, function (err, result) {
+
+            var matchobj = {};
+            var findCondition = {};
+
+            matchobj.gift = parseInt(result.gift.count);
+            matchobj.giftRejected = parseInt(result.gift.count);
+            matchobj.pendingG = parseInt(result.gift.count);
+            matchobj.entry = parseInt(result.gift.count);
+            matchobj.pendingV = parseInt(result.gift.count);
+            matchobj.rejected = parseInt(result.gift.count);
+            matchobj.verify = parseInt(result.gift.count);
+            matchobj.campnumber = obj["oldbottle.campnumber"];
+            findCondition.campnumber = obj["oldbottle.campnumber"];
+
+            if (obj["oldbottle.camp"]) {
+              matchobj.camp = obj["oldbottle.camp"];
+              findCondition.camp = obj["oldbottle.camp"];
+            }
+            if (hospital && hospital.name) {
+              matchobj.hospitalname = hospital.name;
+              findCondition.hospitalname = hospital.name;
+            }
+
+            if (hospital && hospital._id) {
+              matchobj.id = hospital._id;
+              findCondition.id = hospital._id;
+            }
+
+            console.log("------------------------------------------");
+            console.log(findCondition);
+            db.collection("table").find({
+              "campnumber": 'C091'
+            }, {}).toArray(function (err, found) {
+              callback();
+              if (err) {
+                console.log(err);
+              } else if (found) {
+                console.log("HERE IN Result", found);
+                // db.collection("table").update()
+                // callback(found[0]);
+              }
             });
-            console.log(result);
-            
-            })
+          })
         }
       }
     });
