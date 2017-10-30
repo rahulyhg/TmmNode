@@ -1411,29 +1411,44 @@ module.exports = {
             });
             db.close();
           } else if (found && found[0]) {
-            _.each(found, function (n) {
-              if (n.venues) {
-                _.each(n.venues, function (m) {
-                  _.each(m.hospital, function (l) {
+
+            db.collection('table').remove({}, function(err, deleted) {
+              if (deleted) {
+                _.each(found, function (n) {
+                  if (n.venues) {
+                    _.each(n.venues, function (m) {
+                      _.each(m.hospital, function (l) {
+                        collectAllCountAdd({
+                          "oldbottle.campnumber": n.campnumber,
+                          "oldbottle.camp": m.value,
+                          "oldbottle.hospital": sails.ObjectID(l._id)
+                        }, l)
+                      });
+                    });
+                  } else {
                     collectAllCountAdd({
-                      "oldbottle.campnumber": n.campnumber,
-                      "oldbottle.camp": m.value,
-                      "oldbottle.hospital": sails.ObjectID(l._id)
-                    }, l)
-                  });
+                      "oldbottle.campnumber": n.campnumber
+                    }, {});
+                  }
                 });
+                async.eachSeries(allCollectionsObjects, function (n,callback) {
+                  collectAllCount(n.obj, n.hospital, callback);
+                },function(err) {
+                  db.close();
+                });
+              } else if (err) {
+                  console.log(err);
+                  callback({
+                      value: false
+                  });
               } else {
-                collectAllCountAdd({
-                  "oldbottle.campnumber": n.campnumber
-                }, {});
+                  callback({
+                      value: false,
+                      comment: "No data found"
+                  });
               }
-            });
-            async.eachSeries(allCollectionsObjects, function (n,callback) {
-              collectAllCount(n.obj, n.hospital, callback);
-            },function(err) {
-              db.close();
-            });
-            
+          });
+                   
           } else {
             callback({
               value: false,
@@ -1691,12 +1706,12 @@ module.exports = {
             var findCondition = {};
 
             matchobj.gift = parseInt(result.gift.count);
-            matchobj.giftRejected = parseInt(result.gift.count);
-            matchobj.pendingG = parseInt(result.gift.count);
-            matchobj.entry = parseInt(result.gift.count);
-            matchobj.pendingV = parseInt(result.gift.count);
-            matchobj.rejected = parseInt(result.gift.count);
-            matchobj.verify = parseInt(result.gift.count);
+            matchobj.giftRejected = parseInt(result.giftRejected.count);
+            matchobj.pendingG = parseInt(result.pendingG.count);
+            matchobj.entry = parseInt(result.entry.count);
+            matchobj.pendingV = parseInt(result.pendingV.count);
+            matchobj.rejected = parseInt(result.rejected.count);
+            matchobj.verify = parseInt(result.verify.count);
             matchobj.campnumber = obj["oldbottle.campnumber"];
             findCondition.campnumber = obj["oldbottle.campnumber"];
 
@@ -1714,20 +1729,18 @@ module.exports = {
               findCondition.id = hospital._id;
             }
 
-            console.log("------------------------------------------");
             console.log(findCondition);
-            db.collection("table").find({
-              "campnumber": 'C091'
-            }, {}).toArray(function (err, found) {
+            db.collection('table').insert(matchobj, function(err, created) {
               callback();
               if (err) {
-                console.log(err);
-              } else if (found) {
-                console.log("HERE IN Result", found);
-                // db.collection("table").update()
-                // callback(found[0]);
+                  console.log(err);
+                  
+              } else if (created) {
+                  console.log(created);
+              } else {
+                  
               }
-            });
+          });
           })
         }
       }
