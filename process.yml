@@ -1,6 +1,6 @@
 apps:
   - script: "app.js"
-    name: "TMM Node - 80"
+    name: "TMM Node - 1337"
     watch: false
     args: "--prod"
     exec_mode: "cluster"
