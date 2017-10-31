@@ -861,10 +861,7 @@ module.exports = {
             lastname: checklastname,
             mobile: data.pincode,
             "oldbottle.campnumber": data.campnumber,
-            "oldbottle.camp": data.camp,
-            "oldbottle.bottle": {
-              $exists: true
-            }
+            "oldbottle.camp": data.camp
           };
         } else if (data.accesslevel == "verify") {
           var matchobj = {
@@ -1466,6 +1463,7 @@ module.exports = {
 
         function collectAllCount(obj, hospital, callback) {
 
+          
           async.parallel({
             entry: function (callback) {
               db.collection('donor').aggregate([{
@@ -1493,6 +1491,9 @@ module.exports = {
               });
             },
             rejected: function (callback) {
+              console.log("...........");
+              console.log(obj);
+
               db.collection('donor').aggregate([{
                 $unwind: "$oldbottle"
               }, {
