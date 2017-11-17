@@ -1,5 +1,58 @@
 module.exports = {
+  addDonor: function (data, callback) {
+    console.log("inside addDonor");
+    async.waterfall([
+      function (wfcallback) {
+        console.log("inside 1st save callback");
+        Donor.save(data, wfcallback);
+      },
+      function (DonorData, wfcallback) {
+        console.log("inside 2nd callback");
+        //console.log(Donor);
+        if (sails.ObjectID.isValid(DonorData.id) && DonorData.value == true) {
+          // sails.query(function (err, db) {
+          //   if (err) {
+          //     console.log(err);
+          //     callback({
+          //       value: false
+          //     });
+          //   }
+         //   if (db) {        
+           console.log("before findone");
+           console.log(data._id);
+          Donor.findone({_id:DonorData.id},
+            function (donorData) {
+              console.log("inside donor data cond");
+              console.log(donorData);
+              Donor.acksave(donorData, wfcallback);
+            });
+          //}
+          //});
+        }
+      },
+      function (DonorData, wfcallback) {
+        console.log("inside 3rd callback");
+        console.log(DonorData);
+        if (sails.ObjectID.isValid(DonorData.id) && DonorData.value == true) {
+          
+          Donor.findone({_id:DonorData.id},
+            function (donorData) {
+              donorData.giftdone = true;
+              Donor.giftsave(donorData, wfcallback);
+            });
+          //   }
+          // });
+        }
+      }
+
+    ], function (err, data) {
+      callback(err, data);
+    });
+
+  },
+
   save: function (data, callback) {
+   // console.log("inside save function");
     if (data.bottle && data.bottle != "") {
       data.bottle = parseInt(data.bottle);
     }
@@ -17,6 +70,8 @@ module.exports = {
       insert._id = data.hospital;
       Hospital.findone(insert, function (respo) {
         if (respo != false) {
+
+         // console.log("got hospital");
           data.hospitalname = respo.name;
           sails.query(function (err, db) {
             if (err) {
@@ -26,7 +81,9 @@ module.exports = {
               });
             }
             if (db) {
-              if (!data._id) {
+           //   console.log(!_.isEmpty(data._id));
+              if (!_.isEmpty(data._id)) {
+             //   console.log("got data  id");
                 check(data);
 
                 function generate(data) {
@@ -122,7 +179,12 @@ module.exports = {
                     }
                     y.hospital = sails.ObjectID(y.hospital);
                   });
+
                 }
+                var donor = sails.ObjectID(data._id);
+                delete data._id;
+              //  console.log("inside editdata");
+               // console.log(donor);
                 db.collection('donor').update({
                   _id: donor
                 }, {
@@ -230,7 +292,7 @@ module.exports = {
                       Table.findCount(data2, function (result) {
                         sails.sockets.blast(data2.camp + "_" + data2.campnumber, result);
                       });
-                      callback({
+                      callback(null, {
                         value: true,
                         id: donor
                       });
@@ -247,6 +309,7 @@ module.exports = {
               }
 
               function check(data) {
+               // console.log("inside check");
                 db.collection("donor").find({
                   campnumber: data.campnumber,
                   bottle: data.bottle,
@@ -268,6 +331,7 @@ module.exports = {
                   } else {
                     data.new = 1;
                     if (data.donorid) {
+                     // console.log("inside data.donorid", data.donorid);
                       if (data.oldbottle && data.oldbottle.length > 0) {
                         var olddata = {};
                         var index = sails._.findIndex(data.oldbottle, {
@@ -282,6 +346,8 @@ module.exports = {
                         olddata.hospitalname = data.hospitalname;
                         olddata.campnumber = data.campnumber;
                         data.oldbottle.push(olddata);
+                      //  console.log("before edit");
+                       // console.log(data);
                         editdonor(data);
                       } else {
                         data.oldbottle = [];
@@ -355,12 +421,14 @@ module.exports = {
           value: false
         });
       } else if (db) {
+       // console.log("inside findone");
+       // console.log(data._id);
         db.collection("donor").find({
           _id: sails.ObjectID(data._id)
         }, {}).toArray(function (err, data2) {
           if (err) {
             console.log(err);
-            callback({
+            callback({  
               value: false
             });
             db.close();
@@ -1186,10 +1254,10 @@ module.exports = {
       }
     });
   },
-  chageNaN: function(data, callback) {
+  chageNaN: function (data, callback) {
     sails.query(function (err, db) {
       Donor.fin
-    });      
+    });
   },
   delete: function (data, callback) {
     sails.query(function (err, db) {
@@ -1554,6 +1622,8 @@ module.exports = {
     });
   },
   acksave: function (data, callback) {
+   // console.log("inside acksave");
+   // console.log(data);
     if (data.bottle && data.bottle != "") {
       data.bottle = parseInt(data.bottle);
     }
@@ -1599,6 +1669,7 @@ module.exports = {
             var hospitalID = userrespo.hospital;
 
             function calledit() {
+              //console.log("inside calledit acksave");
               var donor = sails.ObjectID(data._id);
               delete data._id;
               db.collection('donor').update({
@@ -1644,13 +1715,14 @@ module.exports = {
                       Table.findCount(data2, function (result) {
                         sails.sockets.blast(data2.camp + "_" + data2.campnumber, result);
                       });
-                      callback({
+                      callback(null, {
+                        id: donor,
                         value: true
                       });
                       db.close();
                       if (data.mobile && data.mobile != "") {
                         sails.request.get({
-                          url: "http://esms.mytechnologies.co.in/sendsms.jsp?user=" + sails.smsUsername + "&password=" + sails.smsPassword + "&mobiles=" + data.mobile + "&senderid=TMMBLD&sms=Thank you for donating Blood. Your gesture will go a long way in saving 5 Precious Lives. Regards, TMM."
+                          // url: "http://esms.mytechnologies.co.in/sendsms.jsp?user=" + sails.smsUsername + "&password=" + sails.smsPassword + "&mobiles=" + data.mobile + "&senderid=TMMBLD&sms=Thank you for donating Blood. Your gesture will go a long way in saving 5 Precious Lives. Regards, TMM."
                         }, function (err, httpResponse, body) {});
                       }
                     } else {
@@ -2788,7 +2860,7 @@ module.exports = {
                 });
                 if (1 == 1) {
                   sails.request.get({
-                    url: "http://esms.mytechnologies.co.in/sendsms.jsp?user=" + sails.smsUsername + "&password=" + sails.smsPassword + "&mobiles=" + mob + "&senderid=TMMBLD&sms=" + data.message
+                     url: "http://esms.mytechnologies.co.in/sendsms.jsp?user=" + sails.smsUsername + "&password=" + sails.smsPassword + "&mobiles=" + mob + "&senderid=TMMBLD&sms=" + data.message
                   }, function (err, httpResponse, body) {
                     console.log(body);
                     if (body && body != "") {
@@ -2874,14 +2946,18 @@ module.exports = {
           comment: "Error"
         });
       } else {
+       // console.log( data.pincode);
         async.parallel([
+          
           function (callback) {
-            db.collection("donor").count({
-              bloodgroup: data.bloodgrp,
+            var matchObj = {bloodgroup: data.bloodgrp,
               pincode: {
                 $in: data.pincode
+              }};
+              if(data.pincode == 'All'){
+                  delete matchObj['pincode'];  
               }
-            }, function (err, number) {
+            db.collection("donor").count(matchObj, function (err, number) {
               if (number && number != "") {
                 newreturns.totalpages = Math.ceil(number / data.pagesize);
                 callback(null, newreturns);
@@ -2894,12 +2970,16 @@ module.exports = {
             });
           },
           function (callback) {
-            db.collection("donor").find({
-              bloodgroup: data.bloodgrp,
+            var matchObj = {bloodgroup: data.bloodgrp,
               pincode: {
                 $in: data.pincode
+              }};
+              if(data.pincode == 'All'){
+                  delete matchObj['pincode'];  
               }
-            }, {
+            db.collection("donor").find(
+              matchObj
+            , {
               _id: 1,
               donorid: 1,
               name: 1,
@@ -2916,6 +2996,7 @@ module.exports = {
                 callback(err, null);
               } else if (found && found.length > 0) {
                 newreturns.data = found;
+                console.log(found);
                 callback(null, newreturns);
               } else {
                 callback(null, newreturns);

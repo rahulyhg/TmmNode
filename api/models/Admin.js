@@ -8,8 +8,11 @@ module.exports = {
       email: data.email,
       password: data.password,
       accesslevel: data.accesslevel,
-      camp: data.camp,
-      campnumber: data.campnumber,
+      $or: [{campnumber:'All'}, {
+        camp: data.camp,
+        campnumber: data.campnumber
+      }],
+
       status: "enable"
     };
 
@@ -31,6 +34,8 @@ module.exports = {
             console.log(err);
             db.close();
           } else if (found && found[0]) {
+            found[0].camp = data.camp;
+            found[0].campnumber = data.campnumber;
             callback(found[0]);
             db.close();
           } else {

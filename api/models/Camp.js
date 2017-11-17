@@ -1007,6 +1007,8 @@ module.exports = {
               count: 1
             }
           }]).toArray(function (err, result) {
+            //console.log("result");
+            
             if (result && result[0]) {
               newreturns.total = result[0].count;
               newreturns.totalpages = Math.ceil(result[0].count / data.pagesize);
@@ -1027,6 +1029,8 @@ module.exports = {
           });
 
           function callbackfunc() {
+            console.log("Rejected"); 
+            console.log(matchobj);
             db.collection('donor').aggregate([{
               $unwind: "$oldbottle"
             }, {
@@ -1293,11 +1297,16 @@ module.exports = {
             var i = 0;
             _.each(data2[0].venues, function (mydata) {
               _.each(mydata.hospital, function (hospdata) {
+                // db.collection("camp").find({
+                //   _id:sails.ObjectID();
+                // });
+
                 hospdata.camp = mydata.value;
                 hosp.push(hospdata);
               });
               i++;
               if (i == data2[0].venues.length) {
+               // console.log(hosp);
                 callback(hosp);
                 db.close();
               }
@@ -1620,7 +1629,7 @@ module.exports = {
                     callback(null, result[0]);
                   }
                 } else if (err) {
-                  console.log(err);
+                //  console.log(err);deletedcamp
                   callback(null, {
                     count: 0
                   });

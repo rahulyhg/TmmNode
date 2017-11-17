@@ -215,6 +215,7 @@ module.exports = {
         var accesslevel = req.param('accesslevel');
         res.connection.setTimeout(20000000);
         req.connection.setTimeout(20000000);
+        //console.log(accesslevel);
         if (accesslevel == "entry") {
             var matchobj = {
                 "oldbottle.campnumber": campnumber,
@@ -308,6 +309,7 @@ module.exports = {
                     value: false
                 });
             } else if (db) {
+                //console.log(matchobj);
                 db.collection("donor").aggregate([{
                     $unwind: "$oldbottle"
                 }, {
@@ -321,7 +323,8 @@ module.exports = {
                         oldbottle: 1,
                         deletereason: 1,
                         age: 1,
-                        gender: 1
+                        gender: 1,
+                        
                     }
                 }, {
                     $sort: {
@@ -336,6 +339,8 @@ module.exports = {
                         db.close();
                     } else if (data2 && data2[0]) {
                         // res.json(data2);
+                        //console.log("Camp report download");
+                        //console.log(data2.length);
                         var locals = {
                             data: data2
                         };
@@ -452,6 +457,7 @@ module.exports = {
         var accesslevel = req.param('accesslevel');
         res.connection.setTimeout(20000000);
         req.connection.setTimeout(20000000);
+       // console.log(accesslevel);
         if (accesslevel == "entry") {
             var matchobj = {
                 "oldbottle.campnumber": campnumber,
@@ -545,6 +551,7 @@ module.exports = {
                     value: false
                 });
             } else if (db) {
+              //  console.log(matchobj);
                 db.collection("donor").aggregate([{
                     $unwind: "$oldbottle"
                 }, {
@@ -560,8 +567,10 @@ module.exports = {
                         name: 1,
                         bloodgroup: 1,
                         bottle_no: "$oldbottle.bottle",
+                        bank:"$oldbottle.hospitalname",
                         age: 1,
-                        gender: 1
+                        gender: 1,
+                        reason:1
                     }
                 }]).toArray(function(err, data2) {
                     if (err) {
@@ -572,6 +581,7 @@ module.exports = {
                         db.close();
                     } else if (data2 && data2[0]) {
                         // res.json(data2);
+                        //console.log(data2.length);
                         var xls = sails.json2xls(data2);
                         sails.fs.writeFileSync('./data.xlsx', xls, 'binary');
                         var path = './data.xlsx';

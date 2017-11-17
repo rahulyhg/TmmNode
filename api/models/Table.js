@@ -213,6 +213,7 @@ module.exports = {
                 });
             }
             if (db) {
+               // console.log(matchobj);
                 db.collection("table").find(matchobj).toArray(function(err, found) {
                     if (err) {
                         callback({
@@ -378,9 +379,9 @@ module.exports = {
                                                 },
                                                 function(callback) {
                                                     var matchobj = {
-                                                        "oldbottle.camp": data.camp,
+                                                        "oldbottle.camp": z.camp,
                                                         "oldbottle.deletedcamp": data.campnumber,
-                                                        "oldbottle.hospital": sails.ObjectID(z._id)
+                                                        "oldbottle.hospitalname": z.name
                                                     };
                                                     if (data.camp == "All") {
                                                         delete matchobj["oldbottle.camp"];
@@ -391,7 +392,7 @@ module.exports = {
                                                         $match: matchobj
                                                     }, {
                                                         $group: {
-                                                            _id: donor,
+                                                            _id: null,
                                                             count: {
                                                                 $sum: 1
                                                             }
@@ -405,6 +406,9 @@ module.exports = {
                                                             console.log(err);
                                                             callback(err, null);
                                                         } else if (result && result[0]) {
+                                                            // console.log("rejected");
+                                                            // console.log(result[0].count);
+                                                            // console.log(result);
                                                             newreturns.rejected = result[0].count;
                                                             callback(null, newreturns);
                                                         } else {
@@ -477,6 +481,8 @@ module.exports = {
                                                             responseData.push(newreturns);
                                                             abc++;
                                                             if (abc == countme.length) {
+                                                                // console.log("abc " + abc);
+                                                                // console.log("countme.length " + countme.length);
                                                                 callback(responseData);
                                                                 db.close();
                                                             } else {

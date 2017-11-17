@@ -5,7 +5,34 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 module.exports = {
-  save: function (req, res) {
+  trial: function(req, res){
+    sails.query(function (err, db) {
+      db.collection("donor").aggregate([{
+        $unwind: "$oldbottle"
+      },{
+        $match: {"oldbottle.deletedcamp": 'C090'}
+      }]).toArray(function (err, result) {
+        console.log(result.length);
+        _.each(result, function(data, key){
+        db.collection("camp").find({
+          "venues.value": data.oldbottle.camp,
+          "venues.hospital.name": data.oldbottle.hospitalname,
+          'campnumber':'C090'
+        }).toArray(function (err, data2) {
+         
+          if(_.isEmpty(data2)){
+             console.log(" Not found" + key );
+             console.log(data2);
+          }else{
+            console.log("found"+ key);
+            //console.log(data2);
+          }
+        });
+      });
+      });
+    });
+  },
+  addDonor: function (req, res) {
     if (req.body) {
       if (req.body._id) {
         if (req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
@@ -30,6 +57,45 @@ module.exports = {
       function theme() {
         var print = function (data) {
           res.json(data);
+        }
+        Donor.addDonor(req.body, print);
+      }
+    } else {
+      res.json({
+        value: false,
+        comment: "Please provide parameters"
+      });
+    }
+  },
+  save: function (req, res) {
+    if (req.body) {
+      if (req.body._id) {
+        if (req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
+          theme();
+        } else {
+          res.json({
+            value: false,
+            comment: "Donor-id is incorrect"
+          });
+        }
+      } else {
+        if (req.body.lastname && req.body.lastname != "") {
+          theme();
+        } else {
+          res.json({
+            value: false,
+            comment: "Please provide parameters"
+          });
+        }
+      }
+
+      function theme() {
+        var print = function (err, data) {
+          if(_.isEmpty(err)){
+            res.json(data);  
+          }else{
+          res.json(err);
+          }
         }
         Donor.save(req.body, print);
       }
@@ -175,8 +241,12 @@ module.exports = {
   acksave: function (req, res) {
     if (req.body) {
       if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id) && req.body.verified && req.body.verified == true) {
-        var print = function (data) {
-          res.json(data);
+        var print = function (err, data) {
+          if(_.isEmpty(err)){
+            res.json(data);  
+          }else{
+          res.json(err);
+          }
         }
         Donor.acksave(req.body, print);
       } else {
@@ -195,8 +265,12 @@ module.exports = {
   giftsave: function (req, res) {
     if (req.body) {
       if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
-        var print = function (data) {
-          res.json(data);
+        var print = function (err, data) {
+          if(_.isEmpty(err)){
+            res.json(data);  
+          }else{
+          res.json(err);
+          }
         }
         Donor.giftsave(req.body, print);
       } else {
@@ -1770,23 +1844,23 @@ module.exports = {
         });
       } else {
         db.collection('donor').find({
-          $and: [{
-            $or: [{
-              discontinued: {
-                $exists: false
-              }
-            }, {
-              discontinued: "no"
-            }]
-          }, {
-            $or: [{
-              reason: {
-                $exists: false
-              }
-            }, {
-              reason: ""
-            }]
-          }]
+          // $and: [{
+          //   $or: [{
+          //     discontinued: {
+          //       $exists: false
+          //     }
+          //   }, {
+          //     discontinued: "no"
+          //   }]
+          // }, {
+          //   $or: [{
+          //     reason: {
+          //       $exists: false
+          //     }
+          //   }, {
+          //     reason: ""
+          //   }]
+          // }]
         }, {
           _id: 0,
           donorid: 1,
@@ -1796,10 +1870,14 @@ module.exports = {
           area: 1,
           city: 1,
           pincode: 1,
-          mobile: 1
-        }).sort({
-          donorid: 1
-        }).toArray(function (err, data2) {
+          mobile: 1,
+          bottle:1,
+          age:1
+        })
+        // .sort({
+        //   donorid: 1
+        // })
+        .toArray(function (err, data2) {
           if (err) {
             console.log(err);
             res.json({
@@ -1808,18 +1886,30 @@ module.exports = {
             });
             db.close();
           } else if (data2 && data2.length > 0) {
-            var xls = sails.json2xls(data2);
-            var path = './Label-Excel.xlsx';
+            // var fdata = _.filter(data2, function(value){
+            //   return !_.isEmpty(value);
+            // });
+
+           console.log('fdata', data2);
+           var path = './Label-Excel.xlsx';
+            var xls = sails.json2xls(data2, {
+          bottle:1,
+          fields: {name:'string',donorid:'string',mobile:'string',address1:'string',address2:'string',area:'string',city:'string',pincode:'string',bottle:'string',age:'string'}
+
+          });
+
             sails.fs.writeFileSync(path, xls, 'binary');
+            
             var excel = sails.fs.readFileSync(path);
             res.set('Content-Type', "application/octet-stream");
             res.set('Content-Disposition', "attachment;filename=" + path);
             res.send(excel);
-            setTimeout(function () {
-              sails.fs.unlink(path, function (data) {
-                console.log(data);
-              });
-            }, 10000);
+            db.close();
+            // setTimeout(function () {
+            //   sails.fs.unlink(path, function (data) {
+            //     console.log(data);
+            //   });
+            // }, 10000);
             db.close();
           } else {
             res.json({
