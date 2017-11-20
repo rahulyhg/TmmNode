@@ -82,7 +82,8 @@ module.exports = {
             }
             if (db) {
            //   console.log(!_.isEmpty(data._id));
-              if (!_.isEmpty(data._id)) {
+           console.log(!data._id);
+              if (!data._id) {
              //   console.log("got data  id");
                 check(data);
 
