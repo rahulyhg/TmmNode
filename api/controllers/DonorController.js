@@ -31,6 +31,50 @@ module.exports = {
       });
       });
     });
+  },  
+  removeAck: function (req, res) {
+    console.log("inside controller");
+    console.log(req.body);
+    if (req.body) {
+      // if (req.body._id) {
+      //   if (req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
+      //     theme();
+      //   } else {
+      //     res.json({
+      //       value: false,
+      //       comment: "Donor-id is incorrect"
+      //     });
+      //   }
+      // } else {
+      //   if (req.body.lastname && req.body.lastname != "") {
+      //     theme();
+      //   } else {
+      //     res.json({
+      //       value: false,
+      //       comment: "Please provide parameters"
+      //     });
+      //   }
+      // }
+
+      // function theme() {
+        var print = function (err, data) {
+          if(err){
+            res.json(err);  
+          }else{
+          res.json(data);
+          
+          }
+        }
+       // }
+        console.log("inside the con");
+        Donor.removeAck(req.body, print);
+      
+    } else {
+      res.json({
+        value: false,
+        comment: "Please provide parameters"
+      });
+    }
   },
   addDonor: function (req, res) {
     if (req.body) {
@@ -140,6 +184,7 @@ module.exports = {
       });
     }
   },
+  //
   deletedata: function (req, res) {
     if (req.body) {
       if (req.body.donorid && req.body.donorid != "" && req.body.campnumber && req.body.campnumber != "") {
