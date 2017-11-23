@@ -475,9 +475,11 @@ module.exports = {
         });
       }
       if (db) {
-        User.findone({
+        console.log("idfotuser", data);
+        Donor.findone({
           _id: sails.ObjectID(data._id)
         }, function (respo) {
+          console.log(respo);
           if (respo.value != false) {
             data.userid = respo._id;
             delete data._id;
