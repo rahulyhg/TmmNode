@@ -546,7 +546,8 @@ module.exports = {
                   } else if (created) {
                     callback({
                       value: true,
-                      id: data._id
+                      id: data._id,
+                      donorid: data.donorid
                     });
                     db.close();
                   } else {
@@ -580,7 +581,8 @@ module.exports = {
                   data._id = donor;
                   callback({
                     value: true,
-                    id: data._id
+                    id: data._id,
+                    donorid: data.donorid
                   });
                   db.close();
                 } else {
