@@ -476,7 +476,7 @@ module.exports = {
       }
       if (db) {
         console.log("idfotuser", data);
-        Donor.findone({
+        User.findone({
           _id: sails.ObjectID(data._id)
         }, function (respo) {
           console.log(respo);
