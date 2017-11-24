@@ -8,6 +8,12 @@
 module.exports = {
     save: function(req, res) {
         if (req.body) {
+            function user() {
+                var print = function(data) {
+                    res.json(data);
+                }
+                User.save(req.body, print);
+            }
             if (req.body._id) {
                 if (req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
                     user();
@@ -18,12 +24,7 @@ module.exports = {
                     });
                 }
 
-                function user() {
-                    var print = function(data) {
-                        res.json(data);
-                    }
-                    User.save(req.body, print);
-                }
+                
             } else {
                 user();
             }
