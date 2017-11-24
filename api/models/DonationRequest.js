@@ -17,6 +17,7 @@ module.exports = {
         if (!data._id) {
           data._id = sails.ObjectID();
           data.status = 'Pending';
+          data.checked = false;
           db.collection('donationRequest').insert(data, function (err, created) {
             if (err) {
               console.log(err);
@@ -237,7 +238,7 @@ module.exports = {
             fullname: {
               '$regex': check
             }
-          }, {}).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function (err, found) {
+          }, {}).sort({_id:-1}).skip(pagesize * (pagenumber - 1)).limit(pagesize).toArray(function (err, found) {
             if (err) {
               callback({
                 value: false
@@ -301,6 +302,23 @@ module.exports = {
         });
       }
       if (db) {
+
+        db.collection('donationRequest').update({
+          _id: sails.ObjectID(data._id)
+        }, {
+          $set: {checked:true}
+        }, function (err, updated) {
+          if (err) {
+            console.log(err);
+            callback({
+              value: false
+            });
+            db.close();
+          } else {
+
+          }
+        });
+
         db.collection("donationRequest").find({
           "_id": sails.ObjectID(data._id)
         }, {}).toArray(function (err, found) {
