@@ -671,17 +671,31 @@ module.exports = {
             console.log("in findoneandupdate", data2);
             console.log("in findoneandupdate", data2[0]);
             if (data2[0].history) {
-              var arr = (data2[0].history).length;
+              function paddy(n, p, c) {
+                var pad_char = typeof c !== 'undefined' ? c : '0';
+                var pad = new Array(1 + p).join(pad_char);
+                return (pad + n).slice(-pad.length);
+            }
+              var arr = data2[0].history.length;
+             // console.log(arr);
+              var stringObj = data2[0].history[arr - 1].campnumber;
+              //console.log(stringObj);
+              var strVal = stringObj.split('_');
+              var finalval = Number(strVal.pop()) + 1;
+               var camp    =  paddy(finalval, 3, 0);
+               var campnumberData ="App_Donation_" + camp;
               // console.log("Length", data2[0].history[0].date);
             } else {
               data2[0].history = [];
+              var campnumberData ="App_Donation_001" ;
             }
             var updateQuery = {}; // query to inc/dec donationCount
             if (data.updateCount == 'inc') {
               data2[0].donationcount = parseInt(data2[0].donationcount) + 1;
               var newEle = {};
               newEle.date = new Date();
-              newEle.campnumber = "App_Donation_001";
+              newEle.campnumber = campnumberData;
+
               data2[0].history.push(newEle);
               updateQuery = {
                 $set: data2[0]
