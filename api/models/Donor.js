@@ -158,7 +158,7 @@ module.exports = {
           //   }
           //   if (db) {        
           console.log("before findone");
-          console.log(data._id);
+          console.log(DonorData.id);
           Donor.findone({
               _id: DonorData.id
             },
@@ -189,6 +189,7 @@ module.exports = {
       }
 
     ], function (err, data) {
+      console.log("final callback");
       callback(err, data);
     });
 
@@ -309,11 +310,11 @@ module.exports = {
               } else {
                 var donor = sails.ObjectID(data._id);
               //  delete data._id;
-                if (data.new == 1) {
-                  editOldDonor(data);
-                } else {
+                // if (data.new == 1) {
+                //   editOldDonor(data);
+                // } else {
                   check(data);
-                }
+               // }
               }
 
               function editdonor(data) {
@@ -362,6 +363,7 @@ module.exports = {
               }
 
               function editOldDonor(data) {
+                console.log("old donor");
                 delete data.donationcount;
                 delete data.oldbottle;
                 delete data.history;
@@ -381,13 +383,13 @@ module.exports = {
                     });
                     db.close();
                   } else if (updated.result.nModified != 0 && updated.result.n != 0) {
-                    callback({
+                    callback(null,{
                       value: true,
                       id: donor
                     });
                     db.close();
                   } else if (updated.result.nModified == 0 && updated.result.n != 0) {
-                    callback({
+                    callback(null, {
                       value: true,
                       id: donor
                     });
@@ -1840,17 +1842,18 @@ module.exports = {
             var hospitalID = userrespo.hospital;
 
             function calledit() {
-              //console.log("inside calledit acksave");
+              console.log("inside calledit acksave");
               var donor = sails.ObjectID(data._id);
               delete data._id;
               db.collection('donor').update({
                 _id: donor,
-                verified: {
-                  $ne: true
-                }
+                // verified: {
+                //   $ne: true
+                // }
               }, {
                 $set: data
               }, function (err, updated) {
+                console.log("inside updated estimated");
                 if (err) {
                   console.log(err);
                   callback({
@@ -1859,6 +1862,7 @@ module.exports = {
                   });
                   db.close();
                 } else if (updated.result.nModified != 0 && updated.result.n != 0) {
+                  console.log("updated estimated");
                   db.collection('table').findAndModify({
                     id: hospitalID.toString(),
                     hospitalname: data.hospitalname,
@@ -1897,6 +1901,8 @@ module.exports = {
                         }, function (err, httpResponse, body) {});
                       }
                     } else {
+                     console.log("Yes true");
+
                       callback({
                         value: false,
                         comment: "No data found"
@@ -1953,15 +1959,19 @@ module.exports = {
 
             function callgift() {
               var donor = sails.ObjectID(data._id);
+              console.log("save gift, ", data._id);
+              console.log("save gift, ", donor);
               delete data._id;
               db.collection('donor').update({
                 _id: donor,
-                giftdone: {
-                  $exists: false
-                }
+                // giftdone: {
+                //   $exists: false
+                // }
               }, {
                 $set: data
               }, function (err, updated) {
+                console.log("before inside ");
+               // console.log(updated);
                 if (err) {
                   console.log(err);
                   callback({
@@ -1970,6 +1980,7 @@ module.exports = {
                   });
                   db.close();
                 } else if (updated.result.nModified != 0 && updated.result.n != 0) {
+                  console.log("inside ");
                   var incobj = {};
                   if (data.giftdone == true) {
                     incobj = {
@@ -2220,6 +2231,7 @@ module.exports = {
     //delete data.donationcount;
     delete data.oldbottle;
     delete data.history;
+    data.donationcount = Number(data.donationcount);
     data.name = data.lastname + " " + data.firstname + " " + data.middlename;
     var splitname = data.lastname.substring(0, 1);
     var letter = splitname;
@@ -2298,6 +2310,7 @@ module.exports = {
             });
           }
         } else {
+          data.donationcount = Number(data.donationcount);
           //delete data.donationcount;
           if (data.oldbottle && data.oldbottle.length > 0) {
             _.each(data.oldbottle, function (y) {
