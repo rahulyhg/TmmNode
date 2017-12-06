@@ -1888,6 +1888,8 @@ module.exports = {
           comment: "Error"
         });
       } else {
+        res.connection.setTimeout(200000000);
+        req.connection.setTimeout(200000000);
         db.collection('donor').find({
           // $and: [{
           //   $or: [{
@@ -1917,7 +1919,8 @@ module.exports = {
           pincode: 1,
           mobile: 1,
           bottle:1,
-          age:1
+          age:1,
+          donationcount:1
         })
         // .sort({
         //   donorid: 1
@@ -1934,12 +1937,12 @@ module.exports = {
             // var fdata = _.filter(data2, function(value){
             //   return !_.isEmpty(value);
             // });
-
-           console.log('fdata', data2);
+             
+           //console.log('fdata', data2);
            var path = './Label-Excel.xlsx';
             var xls = sails.json2xls(data2, {
-          bottle:1,
-          fields: {name:'string',donorid:'string',mobile:'string',address1:'string',address2:'string',area:'string',city:'string',pincode:'string',bottle:'string',age:'string'}
+        
+          fields: {donorid:'string',name:'string',age:'string',address1:'string',address2:'string',area:'string',city:'string',pincode:'string',mobile:'string',donationcount:"string"}
 
           });
 
