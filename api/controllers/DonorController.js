@@ -5,33 +5,35 @@
  * @help        :: See http://sailsjs.org/#!/documentation/concepts/Controllers
  */
 module.exports = {
-  trial: function(req, res){
+  trial: function (req, res) {
     sails.query(function (err, db) {
       db.collection("donor").aggregate([{
         $unwind: "$oldbottle"
-      },{
-        $match: {"oldbottle.deletedcamp": 'C090'}
+      }, {
+        $match: {
+          "oldbottle.deletedcamp": 'C090'
+        }
       }]).toArray(function (err, result) {
         console.log(result.length);
-        _.each(result, function(data, key){
-        db.collection("camp").find({
-          "venues.value": data.oldbottle.camp,
-          "venues.hospital.name": data.oldbottle.hospitalname,
-          'campnumber':'C090'
-        }).toArray(function (err, data2) {
-         
-          if(_.isEmpty(data2)){
-             console.log(" Not found" + key );
-             console.log(data2);
-          }else{
-            console.log("found"+ key);
-            //console.log(data2);
-          }
+        _.each(result, function (data, key) {
+          db.collection("camp").find({
+            "venues.value": data.oldbottle.camp,
+            "venues.hospital.name": data.oldbottle.hospitalname,
+            'campnumber': 'C090'
+          }).toArray(function (err, data2) {
+
+            if (_.isEmpty(data2)) {
+              console.log(" Not found" + key);
+              console.log(data2);
+            } else {
+              console.log("found" + key);
+              //console.log(data2);
+            }
+          });
         });
       });
-      });
     });
-  },  
+  },
   removeAck: function (req, res) {
     console.log("inside controller");
     console.log(req.body);
@@ -57,18 +59,18 @@ module.exports = {
       // }
 
       // function theme() {
-        var print = function (err, data) {
-          if(err){
-            res.json(err);  
-          }else{
+      var print = function (err, data) {
+        if (err) {
+          res.json(err);
+        } else {
           res.json(data);
-          
-          }
+
         }
-       // }
-        console.log("inside the con");
-        Donor.removeAck(req.body, print);
-      
+      }
+      // }
+      console.log("inside the con");
+      Donor.removeAck(req.body, print);
+
     } else {
       res.json({
         value: false,
@@ -135,10 +137,10 @@ module.exports = {
 
       function theme() {
         var print = function (err, data) {
-          if(_.isEmpty(err)){
-            res.json(data);  
-          }else{
-          res.json(err);
+          if (_.isEmpty(err)) {
+            res.json(data);
+          } else {
+            res.json(err);
           }
         }
         Donor.save(req.body, print);
@@ -175,8 +177,8 @@ module.exports = {
       var print = function (data) {
         res.json(data);
       }
-        Donor.changeNaN(req.body, print);
-      
+      Donor.changeNaN(req.body, print);
+
     } else {
       res.json({
         value: false,
@@ -287,10 +289,10 @@ module.exports = {
     if (req.body) {
       if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id) && req.body.verified && req.body.verified == true) {
         var print = function (err, data) {
-          if(_.isEmpty(err)){
-            res.json(data);  
-          }else{
-          res.json(err);
+          if (_.isEmpty(err)) {
+            res.json(data);
+          } else {
+            res.json(err);
           }
         }
         Donor.acksave(req.body, print);
@@ -311,10 +313,10 @@ module.exports = {
     if (req.body) {
       if (req.body._id && req.body._id != "" && sails.ObjectID.isValid(req.body._id)) {
         var print = function (err, data) {
-          if(_.isEmpty(err)){
-            res.json(data);  
-          }else{
-          res.json(err);
+          if (_.isEmpty(err)) {
+            res.json(data);
+          } else {
+            res.json(err);
           }
         }
         Donor.giftsave(req.body, print);
@@ -1890,83 +1892,101 @@ module.exports = {
       } else {
         res.connection.setTimeout(200000000);
         req.connection.setTimeout(200000000);
-        db.collection('donor').find({
-          // $and: [{
-          //   $or: [{
-          //     discontinued: {
-          //       $exists: false
-          //     }
-          //   }, {
-          //     discontinued: "no"
-          //   }]
-          // }, {
-          //   $or: [{
-          //     reason: {
-          //       $exists: false
-          //     }
-          //   }, {
-          //     reason: ""
-          //   }]
-          // }]
-        }, {
-          _id: 0,
-          donorid: 1,
-          name: 1,
-          address1: 1,
-          address2: 1,
-          area: 1,
-          city: 1,
-          pincode: 1,
-          mobile: 1,
-          bottle:1,
-          age:1,
-          donationcount:1
-        })
-        // .sort({
-        //   donorid: 1
-        // })
-        .toArray(function (err, data2) {
-          if (err) {
-            console.log(err);
-            res.json({
-              value: false,
-              comment: "Error"
-            });
-            db.close();
-          } else if (data2 && data2.length > 0) {
-            // var fdata = _.filter(data2, function(value){
-            //   return !_.isEmpty(value);
-            // });
-             
-           //console.log('fdata', data2);
-           var path = './Label-Excel.xlsx';
-            var xls = sails.json2xls(data2, {
-        
-          fields: {donorid:'string',name:'string',age:'string',address1:'string',address2:'string',area:'string',city:'string',pincode:'string',mobile:'string',donationcount:"string"}
+        db.collection('donor').aggregate([{
+            //   {
+            //   // $and: [{
+            //   //   $or: [{
+            //   //     discontinued: {
+            //   //       $exists: false
+            //   //     }
+            //   //   }, {
+            //   //     discontinued: "no"
+            //   //   }]
+            //   // }, {
+            //   //   $or: [{
+            //   //     reason: {
+            //   //       $exists: false
+            //   //     }
+            //   //   }, {
+            //   //     reason: ""
+            //   //   }]
+            //   // }]
+            // }, 
+            $project: {
+              _id: 0,
+              "Donor Id": "$donorid",
+              Name: "$name",
+              Address1: "$address1",
+              Address2: "$address2",
+              Area: "$area",
+              city: 1,
+              Pincode: "$pincode",
+              "Mobile No": "$mobile",
+              "City": "$city",
+              //"Donor":"Donor", 
+              //"bottle": "bottle",
+              Age: "$age",
+              Count: "$donationcount"
 
+            }
+          }])
+          // .sort({
+          //   donorid: 1
+          // })
+          .toArray(function (err, data2) {
+            if (err) {
+              console.log(err);
+              res.json({
+                value: false,
+                comment: "Error"
+              });
+              db.close();
+            } else if (data2 && data2.length > 0) {
+              // var fdata = _.filter(data2, function(value){
+              //   return !_.isEmpty(value);
+              // });
+
+            //  console.log('fdata', data2);
+              var path = './Label-Excel.xlsx';
+              var xls = sails.json2xls(data2, {
+
+                fields: {
+                  "Donor Id": 'string',
+                  Name: 'string',
+                  Age: 'string',
+                  Address1: 'string',
+                  Address2: 'string',
+                  Area: 'string',
+                  City: 'string',
+                  Pincode: 'string',
+                  "Mobile No": 'string',
+                  Count: "string",
+                 // "bottle": 'string'
+                }
+
+              });
+
+              sails.fs.writeFileSync(path, xls, 'binary');
+
+              var excel = sails.fs.readFileSync(path);
+              res.set('Content-Type', "application/octet-stream");
+              res.set('Content-Disposition', "attachment;filename=" + path);
+              res.send(excel);
+              db.close();
+              // setTimeout(function () {
+              //   sails.fs.unlink(path, function (data) {
+              //     console.log(data);
+              //   });
+              // }, 10000);
+              db.close();
+            } else {
+              res.json({
+                value: false,
+                comment: "No data found"
+              });
+              db.close();
+            }
           });
-
-            sails.fs.writeFileSync(path, xls, 'binary');
-            
-            var excel = sails.fs.readFileSync(path);
-            res.set('Content-Type', "application/octet-stream");
-            res.set('Content-Disposition', "attachment;filename=" + path);
-            res.send(excel);
-            db.close();
-            // setTimeout(function () {
-            //   sails.fs.unlink(path, function (data) {
-            //     console.log(data);
-            //   });
-            // }, 10000);
-            db.close();
-          } else {
-            res.json({
-              value: false,
-              comment: "No data found"
-            });
-            db.close();
-          }
-        });
       }
     });
   },
