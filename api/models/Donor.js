@@ -101,6 +101,14 @@ module.exports = {
               var arr = doc.oldbottle;
               var length = arr.length;
               delete doc.verified;
+              _.each(doc.history, function(hs, index){
+                  if(hs.campnumber == data.campnumber){
+                      delete doc.history[index];
+                  }
+              }
+                      
+              );
+              doc.donationcount = Number(doc.donationcount) - 1;
               for (var i = 0; i < length; i++) {
                 if(arr[i]["campnumber"] == data.campnumber && arr[i]["camp"] == data.camp && arr[i]["hospitalname"]==data.hospitalname){
                       delete arr[i]["ackdate"];
@@ -583,7 +591,7 @@ module.exports = {
         // console.log("inside findone");
         // console.log(data._id);
         db.collection("donor").find({
-          _id: sails.ObjectID(data._id)
+          _id: sails.ObjectID(data._id),
         }, {}).toArray(function (err, data2) {
           if (err) {
             console.log(err);
@@ -592,6 +600,7 @@ module.exports = {
             });
             db.close();
           } else if (data2 && data2[0]) {
+            
             callback(data2[0]);
             db.close();
           } else {
