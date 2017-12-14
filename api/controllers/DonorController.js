@@ -2048,12 +2048,16 @@ module.exports = {
               } else {
                 obj["Village"] = "";
               }
-              // if (n.history && n.history.length > 0) {
-              //   var object = sails._.last(n.history);
-              //   obj["Last Camp-Number"] = object.campnumber;
-              // } else {
-              //   obj["Last Camp-Number"] = "";
-              // }
+              if (n.history && n.history.length > 0) {
+                var object = sails._.last(n.history);
+                if(object){
+                obj["Last Camp-Number"] = object.campnumber;
+                }else{
+                  obj["Last Camp-Number"] = "";
+                }
+              } else {
+                obj["Last Camp-Number"] = "";
+              }
               array.push(obj);
             });
             var xls = sails.json2xls(array);
