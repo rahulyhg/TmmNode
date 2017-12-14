@@ -1999,16 +1999,18 @@ module.exports = {
           comment: "Error"
         });
       } else {
-        db.collection('donor').aggregate([{
-          $match: {
-            donorid: {
-              $exists: true
-            },
-            donationcount: {
-              $gt: 0
-            }
-          }
-        }, {
+        db.collection('donor').aggregate([
+        //   {
+        //   // $match: {
+        //   //   donorid: {
+        //   //     $exists: true
+        //   //   },
+        //   //   donationcount: {
+        //   //     $gt: 0
+        //   //   }
+        //   // }
+        // }, 
+        {
           $project: {
             _id: 0,
             donorid: 1,
@@ -2017,7 +2019,8 @@ module.exports = {
             area: 1,
             mobile: 1,
             donationcount: 1,
-            history: 1
+            history: 1,
+            reason:1
           }
         }]).sort({
           donorid: 1
@@ -2037,19 +2040,20 @@ module.exports = {
                 "Name": n.name,
                 "Area": n.area,
                 "Mobile": n.mobile,
-                "Count": n.donationcount
+                "Count": n.donationcount,
+                "Discontinue Reason":n.reason
               };
               if (n.village && Array.isArray(n.village) && n.village.length > 0 && n.village[0] != null) {
                 obj["Village"] = n.village[0].name;
               } else {
                 obj["Village"] = "";
               }
-              if (n.history && n.history.length > 0) {
-                var object = sails._.last(n.history);
-                obj["Last Camp-Number"] = object.campnumber;
-              } else {
-                obj["Last Camp-Number"] = "";
-              }
+              // if (n.history && n.history.length > 0) {
+              //   var object = sails._.last(n.history);
+              //   obj["Last Camp-Number"] = object.campnumber;
+              // } else {
+              //   obj["Last Camp-Number"] = "";
+              // }
               array.push(obj);
             });
             var xls = sails.json2xls(array);
