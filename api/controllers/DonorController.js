@@ -2020,7 +2020,10 @@ module.exports = {
             mobile: 1,
             donationcount: 1,
             history: 1,
-            reason:1
+            reason:1,
+            address1:1,
+            address2:1,
+            pincode:1
           }
         }]).sort({
           donorid: 1
@@ -2041,7 +2044,10 @@ module.exports = {
                 "Area": n.area,
                 "Mobile": n.mobile,
                 "Count": n.donationcount,
-                "Discontinue Reason":n.reason
+                "Discontinue Reason":n.reason,
+                "Address1":n.address1,
+                "Address2":n.address2,
+                "Pincode":n.pincode
               };
               if (n.village && Array.isArray(n.village) && n.village.length > 0 && n.village[0] != null) {
                 obj["Village"] = n.village[0].name;
