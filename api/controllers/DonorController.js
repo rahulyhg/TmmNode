@@ -1159,6 +1159,41 @@ module.exports = {
       });
     }
   },
+  donorUpdate: function (req, res) {
+    console.log("inside donorUpdate");
+    var data = {
+      discontinued: "yes",
+      reason: "Not fit for donation"
+    };
+    sails.query(function (err, db) {
+      if (db) {
+        db.collection('donor').update({
+          age: {
+            $gt: 60
+          }
+        }, {
+          $set: data
+        }, {
+          multi: true
+        }, function (err, updated) {
+          if (err) {
+            res.json({
+              value: false
+            });
+          } else {
+            res.json({
+              value: true
+            });
+          }
+        });
+
+      } else {
+        res.json({
+          value: false
+        });
+      }
+    });
+  },
   updateMail: function (req, res) {
     sails.query(function (err, db) {
       if (err) {
@@ -1946,7 +1981,7 @@ module.exports = {
               //   return !_.isEmpty(value);
               // });
 
-            //  console.log('fdata', data2);
+              //  console.log('fdata', data2);
               var path = './Label-Excel.xlsx';
               var xls = sails.json2xls(data2, {
 
@@ -1961,7 +1996,7 @@ module.exports = {
                   Pincode: 'string',
                   "Mobile No": 'string',
                   Count: "string",
-                 // "bottle": 'string'
+                  // "bottle": 'string'
                 }
 
               });
@@ -2000,32 +2035,33 @@ module.exports = {
         });
       } else {
         db.collection('donor').aggregate([
-        //   {
-        //   // $match: {
-        //   //   donorid: {
-        //   //     $exists: true
-        //   //   },
-        //   //   donationcount: {
-        //   //     $gt: 0
-        //   //   }
-        //   // }
-        // }, 
-        {
-          $project: {
-            _id: 0,
-            donorid: 1,
-            name: 1,
-            village: 1,
-            area: 1,
-            mobile: 1,
-            donationcount: 1,
-            history: 1,
-            reason:1,
-            address1:1,
-            address2:1,
-            pincode:1
+          //   {
+          //   // $match: {
+          //   //   donorid: {
+          //   //     $exists: true
+          //   //   },
+          //   //   donationcount: {
+          //   //     $gt: 0
+          //   //   }
+          //   // }
+          // }, 
+          {
+            $project: {
+              _id: 0,
+              donorid: 1,
+              name: 1,
+              village: 1,
+              area: 1,
+              mobile: 1,
+              donationcount: 1,
+              history: 1,
+              reason: 1,
+              address1: 1,
+              address2: 1,
+              pincode: 1
+            }
           }
-        }]).sort({
+        ]).sort({
           donorid: 1
         }).toArray(function (err, data2) {
           if (err) {
@@ -2044,10 +2080,10 @@ module.exports = {
                 "Area": n.area,
                 "Mobile": n.mobile,
                 "Count": n.donationcount,
-                "Discontinue Reason":n.reason,
-                "Address1":n.address1,
-                "Address2":n.address2,
-                "Pincode":n.pincode
+                "Discontinue Reason": n.reason,
+                "Address1": n.address1,
+                "Address2": n.address2,
+                "Pincode": n.pincode
               };
               if (n.village && Array.isArray(n.village) && n.village.length > 0 && n.village[0] != null) {
                 obj["Village"] = n.village[0].name;
@@ -2056,9 +2092,9 @@ module.exports = {
               }
               if (n.history && n.history.length > 0) {
                 var object = sails._.last(n.history);
-                if(object){
-                obj["Last Camp-Number"] = object.campnumber;
-                }else{
+                if (object) {
+                  obj["Last Camp-Number"] = object.campnumber;
+                } else {
                   obj["Last Camp-Number"] = "";
                 }
               } else {
