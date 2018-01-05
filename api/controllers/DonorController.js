@@ -1169,7 +1169,7 @@ module.exports = {
       if (db) {
         db.collection('donor').update({
           age: {
-            $gt: 60
+            $gt: 65
           }
         }, {
           $set: data
