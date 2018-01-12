@@ -1906,7 +1906,7 @@ module.exports = {
                       db.close();
                       if (data.mobile && data.mobile != "") {
                         sails.request.get({
-                          // url: "http://esms.mytechnologies.co.in/sendsms.jsp?user=" + sails.smsUsername + "&password=" + sails.smsPassword + "&mobiles=" + data.mobile + "&senderid=TMMBLD&sms=Thank you for donating Blood. Your gesture will go a long way in saving 5 Precious Lives. Regards, TMM."
+                          url: "http://esms.mytechnologies.co.in/sendsms.jsp?user=" + sails.smsUsername + "&password=" + sails.smsPassword + "&mobiles=" + data.mobile + "&senderid=TMMBLD&sms=Thank you for donating Blood. Your gesture will go a long way in saving 5 Precious Lives. Regards, TMM."
                         }, function (err, httpResponse, body) {});
                       }
                     } else {
